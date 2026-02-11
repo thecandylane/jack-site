@@ -11,7 +11,12 @@ function useScrollReveal() {
     const el = ref.current;
     if (!el) return;
     const obs = new IntersectionObserver(
-      ([entry]) => { if (entry.isIntersecting) setVisible(true); },
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setVisible(true);
+          obs.unobserve(el);
+        }
+      },
       { threshold: 0.15 }
     );
     obs.observe(el);
@@ -60,7 +65,7 @@ function Nav() {
         height: 64,
       }}>
         <a href="#home" style={{
-          fontFamily: "'JetBrains Mono', 'Fira Code', monospace",
+          fontFamily: "var(--font-jetbrains), 'Fira Code', monospace",
           fontSize: '0.85rem', fontWeight: 700, letterSpacing: '0.15em',
           color: '#c89b50', textDecoration: 'none', textTransform: 'uppercase',
         }}>
@@ -71,7 +76,7 @@ function Nav() {
             <a key={s} href={`#${s}`}
               className="nav-link"
               style={{
-                fontFamily: "'JetBrains Mono', monospace",
+                fontFamily: "var(--font-jetbrains), monospace",
                 fontSize: '0.7rem', letterSpacing: '0.12em', textTransform: 'uppercase',
                 color: 'rgba(255,255,255,0.5)',
                 textDecoration: 'none',
@@ -85,9 +90,11 @@ function Nav() {
             </a>
           ))}
           <a href="#contact" style={{
-            fontFamily: "'JetBrains Mono', monospace",
+            fontFamily: "var(--font-jetbrains), monospace",
             fontSize: '0.7rem', letterSpacing: '0.1em',
-            padding: '8px 20px',
+            padding: '10px 20px',
+            minHeight: 44,
+            display: 'inline-flex', alignItems: 'center',
             border: '1px solid #c89b50',
             color: '#c89b50',
             textDecoration: 'none',
@@ -139,7 +146,7 @@ function Hero() {
           opacity: loaded ? 1 : 0,
           transform: loaded ? 'translateX(0)' : 'translateX(-20px)',
           transition: 'all 0.6s ease 0.2s',
-          fontFamily: "'JetBrains Mono', monospace",
+          fontFamily: "var(--font-jetbrains), monospace",
           fontSize: '0.7rem', letterSpacing: '0.2em', color: '#c89b50',
           marginBottom: '2rem', textTransform: 'uppercase',
           display: 'flex', alignItems: 'center', gap: '1rem',
@@ -151,11 +158,11 @@ function Hero() {
             display: 'inline-block',
             animation: 'pulse 2s infinite',
           }} />
-          Available for projects &amp; consulting
+          Baton Rouge, Louisiana
         </div>
 
         <h1 style={{
-          fontFamily: "'Playfair Display', Georgia, serif",
+          fontFamily: "var(--font-playfair), Georgia, serif",
           fontSize: 'clamp(2.5rem, 7vw, 6rem)',
           fontWeight: 400, lineHeight: 1.05,
           color: '#fff', margin: 0,
@@ -168,7 +175,7 @@ function Hero() {
         </h1>
 
         <p style={{
-          fontFamily: "'DM Sans', 'Helvetica Neue', sans-serif",
+          fontFamily: "var(--font-dm-sans), 'Helvetica Neue', sans-serif",
           fontSize: 'clamp(1rem, 2vw, 1.3rem)',
           lineHeight: 1.7, color: 'rgba(255,255,255,0.55)',
           maxWidth: 620, marginTop: '2rem',
@@ -176,9 +183,9 @@ function Hero() {
           transform: loaded ? 'translateY(0)' : 'translateY(20px)',
           transition: 'all 0.8s ease 0.7s',
         }}>
-          Full-stack engineer. Controls systems background. Cybersecurity specialist.
-          From programming industrial robots to building AI verification tools —
-          I bring safety-critical rigor to every layer of the stack.
+          Software. Industrial controls. Cybersecurity. AI. Hardware.
+          If it runs on code or current, I build it, fix it, or secure it.
+          Baton Rouge&apos;s complete technology resource.
         </p>
 
         <div style={{
@@ -188,26 +195,23 @@ function Hero() {
           transition: 'opacity 1s ease 1s',
         }}>
           {[
-            { num: '215+', label: 'GitHub Repositories' },
-            { num: '6+', label: 'Production Deployments' },
-            { num: '4', label: 'Languages in Active Use' },
-            { num: '3+', label: 'Years in Industry' },
-          ].map((m, i) => (
+            'Systems Architecture',
+            'Industrial Controls',
+            'Web Platforms',
+            'AI Integration',
+            'Cybersecurity',
+            'Hardware & Repair',
+          ].map((label, i) => (
             <div key={i} style={{
               borderLeft: '1px solid rgba(200,155,80,0.3)',
               paddingLeft: '1.5rem',
             }}>
               <div style={{
-                fontFamily: "'Playfair Display', serif",
-                fontSize: 'clamp(1.5rem, 3vw, 2.2rem)',
-                color: '#c89b50', fontWeight: 700,
-              }}>{m.num}</div>
-              <div style={{
-                fontFamily: "'JetBrains Mono', monospace",
+                fontFamily: "var(--font-jetbrains), monospace",
                 fontSize: '0.65rem', letterSpacing: '0.1em',
-                color: 'rgba(255,255,255,0.4)', marginTop: 4,
+                color: 'rgba(255,255,255,0.4)',
                 textTransform: 'uppercase',
-              }}>{m.label}</div>
+              }}>{label}</div>
             </div>
           ))}
         </div>
@@ -220,7 +224,7 @@ function Hero() {
         opacity: loaded ? 0.4 : 0, transition: 'opacity 1.5s ease 1.5s',
       }}>
         <div style={{
-          fontFamily: "'JetBrains Mono', monospace",
+          fontFamily: "var(--font-jetbrains), monospace",
           fontSize: '0.6rem', letterSpacing: '0.15em', color: '#fff',
           textTransform: 'uppercase',
         }}>Scroll</div>
@@ -253,14 +257,14 @@ function NarrativeSection() {
       year: '2023',
       tag: 'SOFTWARE ENGINEERING',
       title: 'Full-Stack Expansion',
-      body: 'Flatiron School bootcamp: React, JavaScript, Flask, Python. Then immediately into production — building e-commerce platforms, marketing sites, and learning management systems. 215+ repositories later, the stack spans TypeScript, Python, C/C++, and everything between the browser and the bare metal.',
+      body: 'Flatiron School, then straight to production — e-commerce platforms, marketing sites, learning management systems. Built the stack from TypeScript and Python to C/C++, covering everything between the browser and the bare metal.',
       accent: '#3b82f6',
     },
     {
       year: '2024–NOW',
       tag: 'CYBERSECURITY + AI',
       title: 'Adversarial Intelligence',
-      body: 'Pursuing a B.S. in Computer Science with Cybersecurity Concentration at LSU. TestOut Security Pro certified. Building AI-powered document processing systems. Co-founding LSU\'s Web Application Development Club. The thesis: the adversarial mindset that secures systems is the same mindset needed to verify AI.',
+      body: 'B.S. Computer Science, Cybersecurity Concentration at LSU. TestOut Security Pro certified. Building AI-powered document processing systems. Co-founded LSU\'s Web Application Development Club. The adversarial mindset that secures systems is the same mindset needed to verify AI.',
       accent: '#c89b50',
     },
   ];
@@ -273,12 +277,12 @@ function NarrativeSection() {
       <div style={{ maxWidth: 1400, margin: '0 auto' }}>
         <RevealSection>
           <div style={{
-            fontFamily: "'JetBrains Mono', monospace",
+            fontFamily: "var(--font-jetbrains), monospace",
             fontSize: '0.7rem', letterSpacing: '0.2em', color: '#c89b50',
             textTransform: 'uppercase', marginBottom: '1rem',
           }}>The Arc</div>
           <h2 style={{
-            fontFamily: "'Playfair Display', serif",
+            fontFamily: "var(--font-playfair), serif",
             fontSize: 'clamp(1.8rem, 4vw, 3rem)',
             fontWeight: 400, color: '#fff', margin: 0,
             maxWidth: 700,
@@ -301,7 +305,7 @@ function NarrativeSection() {
               }}>
                 <div>
                   <div style={{
-                    fontFamily: "'JetBrains Mono', monospace",
+                    fontFamily: "var(--font-jetbrains), monospace",
                     fontSize: '0.7rem', color: 'rgba(255,255,255,0.3)',
                     letterSpacing: '0.05em',
                   }}>{s.year}</div>
@@ -312,17 +316,17 @@ function NarrativeSection() {
                 </div>
                 <div>
                   <div style={{
-                    fontFamily: "'JetBrains Mono', monospace",
+                    fontFamily: "var(--font-jetbrains), monospace",
                     fontSize: '0.6rem', letterSpacing: '0.15em',
                     color: s.accent, marginBottom: 8, textTransform: 'uppercase',
                   }}>{s.tag}</div>
                   <h3 style={{
-                    fontFamily: "'Playfair Display', serif",
+                    fontFamily: "var(--font-playfair), serif",
                     fontSize: 'clamp(1.2rem, 2.5vw, 1.6rem)',
                     fontWeight: 600, color: '#fff', margin: '0 0 1rem 0',
                   }}>{s.title}</h3>
                   <p style={{
-                    fontFamily: "'DM Sans', sans-serif",
+                    fontFamily: "var(--font-dm-sans), sans-serif",
                     fontSize: '0.95rem', lineHeight: 1.8,
                     color: 'rgba(255,255,255,0.5)', margin: 0,
                     maxWidth: 600,
@@ -342,7 +346,7 @@ function ServicesSection() {
   const services = [
     {
       num: '01',
-      title: 'Development Services',
+      title: 'Software Development',
       subtitle: 'Full-Stack Engineering & E-Commerce',
       items: [
         'Next.js / React production applications',
@@ -355,8 +359,8 @@ function ServicesSection() {
     },
     {
       num: '02',
-      title: 'AI Consulting',
-      subtitle: 'Integration, Verification & Safety',
+      title: 'AI & Automation',
+      subtitle: 'Agents, Verification & Safety',
       items: [
         'LLM-powered workflow automation',
         'AI agent architecture & document processing',
@@ -368,14 +372,40 @@ function ServicesSection() {
     },
     {
       num: '03',
-      title: 'Tech Literacy',
-      subtitle: 'Education, Workshops & Mentorship',
+      title: 'Hardware & Repair',
+      subtitle: 'Diagnostics, Repair & Custom Builds',
+      items: [
+        'Computer diagnostics & repair',
+        'Component-level board repair & soldering',
+        'Custom PC builds & upgrades',
+        'Firmware & embedded systems',
+        'Industrial controls & PLC programming',
+      ],
+      icon: '⬡',
+    },
+    {
+      num: '04',
+      title: 'Networks & Infrastructure',
+      subtitle: 'Setup, Security & Administration',
+      items: [
+        'Network design & installation',
+        'System administration (Linux, Windows Server)',
+        'Cloud infrastructure & deployment',
+        'Security hardening & monitoring',
+        'Remote access & VPN configuration',
+      ],
+      icon: '⬢',
+    },
+    {
+      num: '05',
+      title: 'Training & Consulting',
+      subtitle: 'Education, Workshops & Strategy',
       items: [
         'AI-assisted development workshops',
         'Modern web development training',
         'Cybersecurity awareness & best practices',
         'Technical consulting for non-technical teams',
-        'University club leadership & curriculum',
+        'Technology strategy & vendor evaluation',
       ],
       icon: '△',
     },
@@ -389,23 +419,23 @@ function ServicesSection() {
       <div style={{ maxWidth: 1400, margin: '0 auto' }}>
         <RevealSection>
           <div style={{
-            fontFamily: "'JetBrains Mono', monospace",
+            fontFamily: "var(--font-jetbrains), monospace",
             fontSize: '0.7rem', letterSpacing: '0.2em', color: '#c89b50',
             textTransform: 'uppercase', marginBottom: '1rem',
           }}>Services</div>
           <h2 style={{
-            fontFamily: "'Playfair Display', serif",
+            fontFamily: "var(--font-playfair), serif",
             fontSize: 'clamp(1.8rem, 4vw, 3rem)',
             fontWeight: 400, color: '#fff', margin: '0 0 4rem 0',
           }}>
-            Three pillars,<br />
-            <span style={{ fontStyle: 'italic', color: '#c89b50' }}>one mission.</span>
+            Whatever the problem,<br />
+            <span style={{ fontStyle: 'italic', color: '#c89b50' }}>one call.</span>
           </h2>
         </RevealSection>
 
         <div style={{
           display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 320px), 1fr))',
+          gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 280px), 1fr))',
           gap: '1.5rem',
         }}>
           {services.map((s, i) => (
@@ -429,19 +459,19 @@ function ServicesSection() {
                   marginBottom: '1.5rem',
                 }}>
                   <span style={{
-                    fontFamily: "'JetBrains Mono', monospace",
-                    fontSize: '0.65rem', color: 'rgba(255,255,255,0.2)',
+                    fontFamily: "var(--font-jetbrains), monospace",
+                    fontSize: '0.65rem', color: 'rgba(255,255,255,0.35)',
                     letterSpacing: '0.1em',
                   }}>{s.num}</span>
                   <span style={{ fontSize: '1.2rem', opacity: 0.6 }}>{s.icon}</span>
                 </div>
                 <h3 style={{
-                  fontFamily: "'Playfair Display', serif",
+                  fontFamily: "var(--font-playfair), serif",
                   fontSize: '1.3rem', fontWeight: 600,
                   color: '#fff', margin: '0 0 0.3rem 0',
                 }}>{s.title}</h3>
                 <div style={{
-                  fontFamily: "'JetBrains Mono', monospace",
+                  fontFamily: "var(--font-jetbrains), monospace",
                   fontSize: '0.65rem', letterSpacing: '0.1em',
                   color: '#c89b50', marginBottom: '1.5rem',
                   textTransform: 'uppercase',
@@ -449,7 +479,7 @@ function ServicesSection() {
                 <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
                   {s.items.map((item, j) => (
                     <li key={j} style={{
-                      fontFamily: "'DM Sans', sans-serif",
+                      fontFamily: "var(--font-dm-sans), sans-serif",
                       fontSize: '0.85rem', color: 'rgba(255,255,255,0.45)',
                       padding: '0.45rem 0',
                       borderTop: '1px solid rgba(255,255,255,0.04)',
@@ -479,7 +509,7 @@ function ProjectsSection() {
     {
       tag: 'AI + EDUCATION',
       title: 'BRCC Course Override System',
-      desc: 'Collaborating with the Dean of Engineering to rebuild Baton Rouge Community College\'s class application and override request system. Architecting a custom AI agent for automated document processing, course equivalency lookup, and intelligent form routing.',
+      desc: 'Working with the Dean of Engineering to rebuild Baton Rouge Community College\'s course override system. Architecting a custom AI agent for automated document processing, course equivalency lookup, and intelligent form routing.',
       tech: ['Next.js', 'Python', 'LangChain', 'AI Agents'],
       status: 'In Development',
       statusColor: '#4ade80',
@@ -496,7 +526,7 @@ function ProjectsSection() {
     {
       tag: 'EDTECH PLATFORM',
       title: 'Socratic Analytics',
-      desc: 'Contracted developer for a proprietary tutoring and exam intelligence platform. Contributing to core features including question banks, adaptive pacing, timing controls, and performance analytics dashboards.',
+      desc: 'Core developer on a proprietary tutoring and exam intelligence platform. Building question banks, adaptive pacing, timing controls, and performance analytics dashboards.',
       tech: ['Django', 'Python', 'PostgreSQL', 'Analytics'],
       status: 'Live',
       statusColor: '#c89b50',
@@ -538,16 +568,16 @@ function ProjectsSection() {
       <div style={{ maxWidth: 1400, margin: '0 auto' }}>
         <RevealSection>
           <div style={{
-            fontFamily: "'JetBrains Mono', monospace",
+            fontFamily: "var(--font-jetbrains), monospace",
             fontSize: '0.7rem', letterSpacing: '0.2em', color: '#c89b50',
             textTransform: 'uppercase', marginBottom: '1rem',
           }}>Selected Work</div>
           <h2 style={{
-            fontFamily: "'Playfair Display', serif",
+            fontFamily: "var(--font-playfair), serif",
             fontSize: 'clamp(1.8rem, 4vw, 3rem)',
             fontWeight: 400, color: '#fff', margin: '0 0 4rem 0',
           }}>
-            Projects that <span style={{ fontStyle: 'italic', color: '#c89b50' }}>prove</span> the point.
+            Projects that <span style={{ fontStyle: 'italic', color: '#c89b50' }}>speak for themselves.</span>
           </h2>
         </RevealSection>
 
@@ -581,12 +611,12 @@ function ProjectsSection() {
                     marginBottom: '1rem',
                   }}>
                     <span style={{
-                      fontFamily: "'JetBrains Mono', monospace",
+                      fontFamily: "var(--font-jetbrains), monospace",
                       fontSize: '0.6rem', letterSpacing: '0.15em',
                       color: '#c89b50', textTransform: 'uppercase',
                     }}>{p.tag}</span>
                     <span style={{
-                      fontFamily: "'JetBrains Mono', monospace",
+                      fontFamily: "var(--font-jetbrains), monospace",
                       fontSize: '0.6rem', letterSpacing: '0.05em',
                       color: p.statusColor,
                       display: 'flex', alignItems: 'center', gap: 6,
@@ -599,12 +629,12 @@ function ProjectsSection() {
                     </span>
                   </div>
                   <h3 style={{
-                    fontFamily: "'Playfair Display', serif",
+                    fontFamily: "var(--font-playfair), serif",
                     fontSize: '1.25rem', fontWeight: 600,
                     color: '#fff', margin: '0 0 0.75rem 0',
                   }}>{p.title}</h3>
                   <p style={{
-                    fontFamily: "'DM Sans', sans-serif",
+                    fontFamily: "var(--font-dm-sans), sans-serif",
                     fontSize: '0.85rem', lineHeight: 1.75,
                     color: 'rgba(255,255,255,0.45)',
                     margin: '0 0 1.25rem 0', flex: 1,
@@ -617,7 +647,7 @@ function ProjectsSection() {
                   }}>
                     {p.tech.map((t, j) => (
                       <span key={j} style={{
-                        fontFamily: "'JetBrains Mono', monospace",
+                        fontFamily: "var(--font-jetbrains), monospace",
                         fontSize: '0.6rem', letterSpacing: '0.05em',
                         padding: '4px 10px',
                         background: 'rgba(200,155,80,0.08)',
@@ -628,7 +658,7 @@ function ProjectsSection() {
                     {p.link && (
                       <span style={{
                         marginLeft: 'auto',
-                        fontFamily: "'JetBrains Mono', monospace",
+                        fontFamily: "var(--font-jetbrains), monospace",
                         fontSize: '0.6rem', color: '#c89b50',
                         opacity: hovered === i ? 1 : 0,
                         transition: 'opacity 0.3s',
@@ -690,13 +720,25 @@ function ExpertiseSection() {
       ],
     },
     {
-      category: 'Industrial & Hardware',
+      category: 'Hardware & Industrial',
       items: [
         { name: 'Allen-Bradley PLCs', level: 'Professional' },
         { name: 'Studio 5000 Logix', level: 'Professional' },
         { name: 'Fanuc Robotics', level: 'Professional' },
-        { name: 'Raspberry Pi / PiSound', level: 'Hobbyist' },
+        { name: 'Computer Repair & Diagnostics', level: 'Professional' },
+        { name: 'Soldering & Board Repair', level: 'Proficient' },
+        { name: 'Raspberry Pi / Embedded', level: 'Proficient' },
         { name: 'Klipper Firmware / 3D Print', level: 'Hobbyist' },
+      ],
+    },
+    {
+      category: 'Networking & Systems',
+      items: [
+        { name: 'Linux Administration', level: 'Proficient' },
+        { name: 'Windows Server / Active Directory', level: 'Proficient' },
+        { name: 'Network Configuration & Setup', level: 'Proficient' },
+        { name: 'SSH / Remote Administration', level: 'Proficient' },
+        { name: 'Troubleshooting & Diagnostics', level: 'Professional' },
       ],
     },
     {
@@ -704,7 +746,7 @@ function ExpertiseSection() {
       items: [
         { name: 'TestOut Security Pro', level: 'Certified' },
         { name: 'IBM Cloud Core', level: 'Certified' },
-        { name: 'Network Security', level: 'Academic' },
+        { name: 'Network Security', level: 'Proficient' },
         { name: 'Applied Cryptography', level: 'Academic' },
         { name: 'Mobile Security', level: 'Academic' },
       ],
@@ -728,25 +770,24 @@ function ExpertiseSection() {
       <div style={{ maxWidth: 1400, margin: '0 auto' }}>
         <RevealSection>
           <div style={{
-            fontFamily: "'JetBrains Mono', monospace",
+            fontFamily: "var(--font-jetbrains), monospace",
             fontSize: '0.7rem', letterSpacing: '0.2em', color: '#c89b50',
             textTransform: 'uppercase', marginBottom: '1rem',
           }}>Technical Depth</div>
           <h2 style={{
-            fontFamily: "'Playfair Display', serif",
+            fontFamily: "var(--font-playfair), serif",
             fontSize: 'clamp(1.8rem, 4vw, 3rem)',
             fontWeight: 400, color: '#fff', margin: '0 0 1rem 0',
           }}>
-            Honest about <span style={{ fontStyle: 'italic', color: '#c89b50' }}>every level.</span>
+            The full <span style={{ fontStyle: 'italic', color: '#c89b50' }}>toolkit.</span>
           </h2>
           <p style={{
-            fontFamily: "'DM Sans', sans-serif",
+            fontFamily: "var(--font-dm-sans), sans-serif",
             fontSize: '0.95rem', lineHeight: 1.7,
             color: 'rgba(255,255,255,0.45)', maxWidth: 600,
             margin: '0 0 3rem 0',
           }}>
-            No inflated claims. Every skill listed with its real proficiency level.
-            Primary means daily production use. Working means functional and growing.
+            Primary means daily production use. Working means actively building proficiency.
           </p>
         </RevealSection>
 
@@ -762,7 +803,7 @@ function ExpertiseSection() {
                 paddingTop: '1.25rem',
               }}>
                 <h4 style={{
-                  fontFamily: "'JetBrains Mono', monospace",
+                  fontFamily: "var(--font-jetbrains), monospace",
                   fontSize: '0.7rem', letterSpacing: '0.12em',
                   color: 'rgba(255,255,255,0.6)', textTransform: 'uppercase',
                   margin: '0 0 1rem 0',
@@ -775,11 +816,11 @@ function ExpertiseSection() {
                     borderBottom: '1px solid rgba(255,255,255,0.03)',
                   }}>
                     <span style={{
-                      fontFamily: "'DM Sans', sans-serif",
+                      fontFamily: "var(--font-dm-sans), sans-serif",
                       fontSize: '0.85rem', color: 'rgba(255,255,255,0.55)',
                     }}>{item.name}</span>
                     <span style={{
-                      fontFamily: "'JetBrains Mono', monospace",
+                      fontFamily: "var(--font-jetbrains), monospace",
                       fontSize: '0.55rem', letterSpacing: '0.08em',
                       color: levelColor(item.level),
                       textTransform: 'uppercase',
@@ -808,31 +849,31 @@ function ContactSection() {
           <div style={{
             display: 'grid',
             gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 400px), 1fr))',
-            gap: '4rem',
+            gap: 'clamp(2rem, 6vw, 4rem)',
           }}>
             <div>
               <div style={{
-                fontFamily: "'JetBrains Mono', monospace",
+                fontFamily: "var(--font-jetbrains), monospace",
                 fontSize: '0.7rem', letterSpacing: '0.2em', color: '#c89b50',
                 textTransform: 'uppercase', marginBottom: '1rem',
               }}>Get In Touch</div>
               <h2 style={{
-                fontFamily: "'Playfair Display', serif",
+                fontFamily: "var(--font-playfair), serif",
                 fontSize: 'clamp(1.8rem, 4vw, 2.8rem)',
                 fontWeight: 400, color: '#fff', margin: '0 0 1.5rem 0',
               }}>
-                Let&apos;s build<br />
-                <span style={{ fontStyle: 'italic', color: '#c89b50' }}>something real.</span>
+                One call for every<br />
+                <span style={{ fontStyle: 'italic', color: '#c89b50' }}>tech problem.</span>
               </h2>
               <p style={{
-                fontFamily: "'DM Sans', sans-serif",
+                fontFamily: "var(--font-dm-sans), sans-serif",
                 fontSize: '0.95rem', lineHeight: 1.8,
                 color: 'rgba(255,255,255,0.45)', maxWidth: 480,
                 margin: 0,
               }}>
-                Whether you need a production application, AI integration consulting,
-                or technical training for your team — I bring the same rigor I learned
-                programming industrial robots to every project I touch.
+                Software, hardware, networking, AI, security, training — whatever the
+                technology challenge, I handle it personally. Based in Baton Rouge,
+                serving businesses, teams, and individuals across Louisiana.
               </p>
             </div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
@@ -861,13 +902,13 @@ function ContactSection() {
                   }}
                 >
                   <span style={{
-                    fontFamily: "'JetBrains Mono', monospace",
+                    fontFamily: "var(--font-jetbrains), monospace",
                     fontSize: '0.6rem', letterSpacing: '0.15em',
                     color: '#c89b50', textTransform: 'uppercase',
                     marginBottom: 4,
                   }}>{c.label}</span>
                   <span style={{
-                    fontFamily: "'DM Sans', sans-serif",
+                    fontFamily: "var(--font-dm-sans), sans-serif",
                     fontSize: '0.95rem', color: 'rgba(255,255,255,0.7)',
                   }}>{c.value}</span>
                 </a>
@@ -883,16 +924,16 @@ function ContactSection() {
           flexWrap: 'wrap', gap: '1rem',
         }}>
           <span style={{
-            fontFamily: "'JetBrains Mono', monospace",
+            fontFamily: "var(--font-jetbrains), monospace",
             fontSize: '0.65rem', letterSpacing: '0.1em',
-            color: 'rgba(255,255,255,0.2)',
+            color: 'rgba(255,255,255,0.35)',
           }}>
             © 2026 JACK SCHLIEWE — BATON ROUGE, LA
           </span>
           <span style={{
-            fontFamily: "'JetBrains Mono', monospace",
+            fontFamily: "var(--font-jetbrains), monospace",
             fontSize: '0.65rem', letterSpacing: '0.1em',
-            color: 'rgba(255,255,255,0.2)',
+            color: 'rgba(255,255,255,0.35)',
           }}>
             BUILT WITH NEXT.JS
           </span>
