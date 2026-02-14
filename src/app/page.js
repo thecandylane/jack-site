@@ -509,7 +509,7 @@ function ProjectsSection() {
     {
       tag: 'AI + EDUCATION',
       title: 'BRCC Course Override System',
-      desc: 'Working with the Dean of Engineering to rebuild Baton Rouge Community College\'s course override system. Architecting a custom AI agent for automated document processing, course equivalency lookup, and intelligent form routing.',
+      desc: 'Built through CSC 4700: AI & LLM Development with Henry Hayes and Dr. Keith Mills. Working with the Dean of Engineering to rebuild Baton Rouge Community College\'s course override system. Architecting a custom AI agent for automated document processing, course equivalency lookup, and intelligent form routing.',
       tech: ['Next.js', 'Python', 'LangChain', 'AI Agents'],
       status: 'In Development',
       statusColor: '#4ade80',
