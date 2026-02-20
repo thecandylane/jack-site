@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from 'react';
 
-const SECTIONS = ['home', 'narrative', 'services', 'projects', 'expertise', 'contact'];
+const SECTIONS = ['home', 'approach', 'services', 'projects', 'expertise', 'contact'];
 
 function useScrollReveal() {
   const ref = useRef(null);
@@ -170,8 +170,8 @@ function Hero() {
           transform: loaded ? 'translateY(0)' : 'translateY(30px)',
           transition: 'all 0.8s ease 0.4s',
         }}>
-          I build the tools<br />
-          <span style={{ color: '#c89b50', fontStyle: 'italic' }}>that build</span> the future.
+          Software to silicon.<br />
+          <span style={{ color: '#c89b50', fontStyle: 'italic' }}>Full stack.</span>
         </h1>
 
         <p style={{
@@ -183,9 +183,8 @@ function Hero() {
           transform: loaded ? 'translateY(0)' : 'translateY(20px)',
           transition: 'all 0.8s ease 0.7s',
         }}>
-          Software. Industrial controls. Cybersecurity. AI. Hardware.
-          If it runs on code or current, I build it, fix it, or secure it.
-          Baton Rouge&apos;s complete technology resource.
+          Software development, hardware repair, network infrastructure,
+          AI integration, and cybersecurity. Based in Baton Rouge.
         </p>
 
         <div style={{
@@ -195,12 +194,12 @@ function Hero() {
           transition: 'opacity 1s ease 1s',
         }}>
           {[
-            'Systems Architecture',
-            'Industrial Controls',
-            'Web Platforms',
-            'AI Integration',
+            'AI & Machine Learning',
+            'Data Engineering',
+            'Full-Stack Development',
+            'Infrastructure',
             'Cybersecurity',
-            'Hardware & Repair',
+            'Systems & Hardware',
           ].map((label, i) => (
             <div key={i} style={{
               borderLeft: '1px solid rgba(200,155,80,0.3)',
@@ -245,32 +244,32 @@ function Hero() {
 }
 
 function NarrativeSection() {
-  const stages = [
+  const pillars = [
     {
-      year: '2018–2023',
-      tag: 'INDUSTRIAL SYSTEMS',
-      title: 'Safety-Critical Foundations',
-      body: 'Started where bugs cause physical harm. Programmed Fanuc M-10id and Denso VM-Series robotic systems. Wrote ladder logic for Allen-Bradley PLCs with safety interlocks. Wired electrical panels. Learned that in controls engineering, every line of code has consequences measured in steel and speed.',
+      num: '01',
+      tag: 'BREADTH',
+      title: 'Full Coverage',
+      body: 'Software, hardware, networking, and industrial controls. Application development through physical infrastructure and PLC programming.',
       accent: '#ef4444',
     },
     {
-      year: '2023',
-      tag: 'SOFTWARE ENGINEERING',
-      title: 'Full-Stack Expansion',
-      body: 'Flatiron School, then straight to production — e-commerce platforms, marketing sites, learning management systems. Built the stack from TypeScript and Python to C/C++, covering everything between the browser and the bare metal.',
+      num: '02',
+      tag: 'RELIABILITY',
+      title: 'Production Tested',
+      body: 'Live platforms generating revenue. Self-hosted infrastructure with monitoring, automated backups, and continuous uptime. Everything ships to production.',
       accent: '#3b82f6',
     },
     {
-      year: '2024–NOW',
-      tag: 'CYBERSECURITY + AI',
-      title: 'Adversarial Intelligence',
-      body: 'B.S. Computer Science, Cybersecurity Concentration at LSU. TestOut Security Pro certified. Building AI-powered document processing systems. Co-founded LSU\'s Web Application Development Club. The adversarial mindset that secures systems is the same mindset needed to verify AI.',
+      num: '03',
+      tag: 'DEFENSE',
+      title: 'Security First',
+      body: 'Encryption, access control, hardened configurations, and threat modeling integrated into every build from the start.',
       accent: '#c89b50',
     },
   ];
 
   return (
-    <section id="narrative" style={{
+    <section id="approach" style={{
       padding: 'clamp(4rem, 10vw, 8rem) clamp(1rem, 4vw, 3rem)',
       position: 'relative',
     }}>
@@ -280,35 +279,35 @@ function NarrativeSection() {
             fontFamily: "var(--font-jetbrains), monospace",
             fontSize: '0.7rem', letterSpacing: '0.2em', color: '#c89b50',
             textTransform: 'uppercase', marginBottom: '1rem',
-          }}>The Arc</div>
+          }}>Approach</div>
           <h2 style={{
             fontFamily: "var(--font-playfair), serif",
             fontSize: 'clamp(1.8rem, 4vw, 3rem)',
             fontWeight: 400, color: '#fff', margin: 0,
             maxWidth: 700,
           }}>
-            From industrial robots to<br />
-            <span style={{ fontStyle: 'italic', color: '#c89b50' }}>artificial intelligence.</span>
+            How Schliewe Systems<br />
+            <span style={{ fontStyle: 'italic', color: '#c89b50' }}>operates.</span>
           </h2>
         </RevealSection>
 
         <div style={{ marginTop: '4rem' }}>
-          {stages.map((s, i) => (
+          {pillars.map((s, i) => (
             <RevealSection key={i} delay={i * 0.15}>
               <div style={{
                 display: 'grid',
-                gridTemplateColumns: 'clamp(80px, 12vw, 160px) 1fr',
+                gridTemplateColumns: 'clamp(40px, 6vw, 60px) 1fr',
                 gap: 'clamp(1rem, 3vw, 3rem)',
                 paddingBottom: '3rem',
                 marginBottom: '3rem',
-                borderBottom: i < stages.length - 1 ? '1px solid rgba(255,255,255,0.06)' : 'none',
+                borderBottom: i < pillars.length - 1 ? '1px solid rgba(255,255,255,0.06)' : 'none',
               }}>
                 <div>
                   <div style={{
                     fontFamily: "var(--font-jetbrains), monospace",
                     fontSize: '0.7rem', color: 'rgba(255,255,255,0.3)',
                     letterSpacing: '0.05em',
-                  }}>{s.year}</div>
+                  }}>{s.num}</div>
                   <div style={{
                     width: 32, height: 2, background: s.accent,
                     marginTop: 12, borderRadius: 1,
@@ -362,11 +361,11 @@ function ServicesSection() {
       title: 'AI & Automation',
       subtitle: 'Agents, Verification & Safety',
       items: [
-        'LLM-powered workflow automation',
         'AI agent architecture & document processing',
-        'Model evaluation & red-teaming',
-        'AI-assisted development training',
-        'Safety-critical AI system design',
+        'RAG pipelines (LlamaIndex, LangChain)',
+        'Local model inference (Ollama, GPU passthrough)',
+        'LLM API integration (OpenAI, Anthropic)',
+        'NLP pipeline design & data extraction',
       ],
       icon: '◆',
     },
@@ -388,11 +387,11 @@ function ServicesSection() {
       title: 'Networks & Infrastructure',
       subtitle: 'Setup, Security & Administration',
       items: [
-        'Network design & installation',
-        'System administration (Linux, Windows Server)',
-        'Cloud infrastructure & deployment',
-        'Security hardening & monitoring',
-        'Remote access & VPN configuration',
+        'Self-hosted infrastructure (Proxmox VE, Docker Compose)',
+        'CI/CD platforms (Coolify, automated git-push deploys)',
+        'Monitoring & observability (Prometheus, Grafana)',
+        'Security hardening (LUKS, Fail2ban, UFW, WireGuard)',
+        'Cloud infrastructure (AWS, Azure, Linux administration)',
       ],
       icon: '⬢',
     },
@@ -428,8 +427,8 @@ function ServicesSection() {
             fontSize: 'clamp(1.8rem, 4vw, 3rem)',
             fontWeight: 400, color: '#fff', margin: '0 0 4rem 0',
           }}>
-            Whatever the problem,<br />
-            <span style={{ fontStyle: 'italic', color: '#c89b50' }}>one call.</span>
+            What Schliewe Systems<br />
+            <span style={{ fontStyle: 'italic', color: '#c89b50' }}>delivers.</span>
           </h2>
         </RevealSection>
 
@@ -509,10 +508,45 @@ function ProjectsSection() {
     {
       tag: 'AI + EDUCATION',
       title: 'BRCC Course Override System',
-      desc: 'Built through CSC 4700: AI & LLM Development with Henry Hayes and Dr. Keith Mills. Working with the Dean of Engineering to rebuild Baton Rouge Community College\'s course override system. Architecting a custom AI agent for automated document processing, course equivalency lookup, and intelligent form routing.',
+      desc: 'Custom AI agent that automates document processing, course equivalency lookup, and intelligent form routing for a community college. NLP pipelines extract structured data from unstructured student documents — replacing a fully manual workflow with same-day turnaround.',
       tech: ['Next.js', 'Python', 'LangChain', 'AI Agents'],
       status: 'In Development',
       statusColor: '#4ade80',
+    },
+    {
+      tag: 'AI INFRASTRUCTURE',
+      title: 'Local AI Inference Infrastructure',
+      desc: 'Private LLM serving on local NVIDIA GPU hardware with Ollama. Multiple models deployed across Proxmox VMs with GPU passthrough. All inference stays on-premises — no external API calls, no data leaving the network.',
+      tech: ['Ollama', 'NVIDIA GPU', 'Proxmox VE', 'Python'],
+      status: 'Current',
+      statusColor: '#4ade80',
+    },
+    {
+      tag: 'AI HACKATHON',
+      title: 'ImJustABill',
+      desc: 'Retrieval-augmented generation application that indexes legislative PDF documents for natural language search. LlamaIndex handles parsing, vector indexing, and semantic retrieval. Streamlit frontend for document upload and query.',
+      tech: ['Python', 'LlamaIndex', 'Streamlit', 'RAG'],
+      status: 'Complete',
+      statusColor: '#3b82f6',
+      link: 'https://github.com/thecandylane/ImJustABill',
+    },
+    {
+      tag: 'INFRASTRUCTURE & DATA',
+      title: 'Schliewe Systems — Self-Hosted Production Infrastructure',
+      desc: 'The production platform behind this site and every client project. Multi-VM infrastructure on Proxmox VE with Docker Compose, PostgreSQL databases, Prometheus monitoring, and Grafana dashboards. Automated CI/CD via Coolify. Hardened with LUKS encryption, Fail2ban, UFW, and DNS-over-HTTPS.',
+      tech: ['Proxmox VE', 'Docker', 'PostgreSQL', 'Python'],
+      status: 'Current',
+      statusColor: '#4ade80',
+      link: 'https://schliewesystems.com',
+    },
+    {
+      tag: 'EDTECH PLATFORM',
+      title: 'Socratic Analytics',
+      desc: 'Proprietary tutoring and analytics platform with question banks, adaptive pacing algorithms, timing controls, and performance dashboards. PostgreSQL-backed with real-time student progress tracking.',
+      tech: ['Django', 'Python', 'PostgreSQL', 'Analytics'],
+      status: 'Live',
+      statusColor: '#c89b50',
+      link: 'https://socraticanalyticsllc.com',
     },
     {
       tag: 'E-COMMERCE',
@@ -524,15 +558,6 @@ function ProjectsSection() {
       link: 'https://lellisdesigns.com',
     },
     {
-      tag: 'EDTECH PLATFORM',
-      title: 'Socratic Analytics',
-      desc: 'Core developer on a proprietary tutoring and exam intelligence platform. Building question banks, adaptive pacing, timing controls, and performance analytics dashboards.',
-      tech: ['Django', 'Python', 'PostgreSQL', 'Analytics'],
-      status: 'Live',
-      statusColor: '#c89b50',
-      link: 'https://socraticanalyticsllc.com',
-    },
-    {
       tag: 'LOW-LEVEL SYSTEMS',
       title: 'RISC-V Disassembler',
       desc: 'RISC-V instruction set disassembler in C++, translating binary machine code back to human-readable assembly. Computer architecture, instruction encoding, and low-level systems programming.',
@@ -540,24 +565,6 @@ function ProjectsSection() {
       status: 'Complete',
       statusColor: '#3b82f6',
       link: 'https://github.com/thecandylane/RISC-V_Disassembler',
-    },
-    {
-      tag: 'AI HACKATHON',
-      title: 'ImJustABill',
-      desc: 'AI-powered legislative analysis tool built at a hackathon. Uses natural language processing to make government bills accessible and understandable to everyday citizens.',
-      tech: ['Python', 'AI/NLP', 'LLM APIs'],
-      status: 'Complete',
-      statusColor: '#3b82f6',
-      link: 'https://github.com/thecandylane/ImJustABill',
-    },
-    {
-      tag: 'FULL-STACK',
-      title: 'Candiboard V2',
-      desc: 'Full-stack application built with TypeScript, React, Next.js on the frontend and Flask/Python on the backend. The TypeScript + Python dual-stack that defines modern AI-augmented development.',
-      tech: ['TypeScript', 'React', 'Next.js', 'Flask'],
-      status: 'Complete',
-      statusColor: '#3b82f6',
-      link: 'https://github.com/thecandylane/Candiboard-V2',
     },
   ];
 
@@ -707,6 +714,21 @@ function ExpertiseSection() {
         { name: 'MongoDB / PostgreSQL', level: 'Proficient' },
         { name: 'AWS / Azure / Firebase', level: 'Proficient' },
         { name: 'Docker / Linux / SSH', level: 'Proficient' },
+        { name: 'Proxmox VE', level: 'Proficient' },
+        { name: 'Docker Compose', level: 'Proficient' },
+        { name: 'Coolify CI/CD', level: 'Proficient' },
+        { name: 'WireGuard', level: 'Proficient' },
+      ],
+    },
+    {
+      category: 'Data & Databases',
+      items: [
+        { name: 'PostgreSQL', level: 'Primary' },
+        { name: 'MongoDB', level: 'Proficient' },
+        { name: 'SQL', level: 'Proficient' },
+        { name: 'Database Migration & ETL', level: 'Proficient' },
+        { name: 'Prometheus (time-series)', level: 'Proficient' },
+        { name: 'Grafana (visualization)', level: 'Proficient' },
       ],
     },
     {
@@ -714,6 +736,10 @@ function ExpertiseSection() {
       items: [
         { name: 'LangChain / LlamaIndex', level: 'Active' },
         { name: 'OpenAI / Claude APIs', level: 'Active' },
+        { name: 'RAG Pipelines', level: 'Active' },
+        { name: 'AI Agent Architecture', level: 'Active' },
+        { name: 'Local Inference / Ollama', level: 'Active' },
+        { name: 'NLP', level: 'Active' },
         { name: 'TensorFlow / PyTorch', level: 'Working' },
         { name: 'YOLO / OpenCV', level: 'Working' },
         { name: 'pandas / NumPy', level: 'Proficient' },
@@ -862,8 +888,8 @@ function ContactSection() {
                 fontSize: 'clamp(1.8rem, 4vw, 2.8rem)',
                 fontWeight: 400, color: '#fff', margin: '0 0 1.5rem 0',
               }}>
-                One call for every<br />
-                <span style={{ fontStyle: 'italic', color: '#c89b50' }}>tech problem.</span>
+                Start a<br />
+                <span style={{ fontStyle: 'italic', color: '#c89b50' }}>conversation.</span>
               </h2>
               <p style={{
                 fontFamily: "var(--font-dm-sans), sans-serif",
@@ -871,15 +897,16 @@ function ContactSection() {
                 color: 'rgba(255,255,255,0.45)', maxWidth: 480,
                 margin: 0,
               }}>
-                Software, hardware, networking, AI, security, training — whatever the
-                technology challenge, I handle it personally. Based in Baton Rouge,
-                serving businesses, teams, and individuals across Louisiana.
+                Software, hardware, networking, AI, security, and training.
+                Based in Baton Rouge, serving businesses, teams, and
+                individuals across Louisiana.
               </p>
             </div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
               {[
                 { label: 'Email', value: 'jschli3@lsu.edu', href: 'mailto:jschli3@lsu.edu' },
                 { label: 'Phone', value: '225-572-3924', href: 'tel:2255723924' },
+                { label: 'Website', value: 'schliewesystems.com', href: 'https://schliewesystems.com' },
                 { label: 'GitHub', value: 'github.com/thecandylane', href: 'https://github.com/thecandylane' },
                 { label: 'LinkedIn', value: 'linkedin.com/in/jack-schliewe', href: 'https://linkedin.com/in/jack-schliewe' },
               ].map((c, i) => (
