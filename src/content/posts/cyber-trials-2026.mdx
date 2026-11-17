@@ -1,0 +1,56 @@
+export const meta = {
+  title: 'Cyber Trials 2026: five rooms and the bugs behind them',
+  lede: "What my team and I ran into at TryHackMe's Cyber Trials: the bug behind each room, why it was there, and how a defender would catch or fix it.",
+  date: '2026-11-17',
+  tags: ['ctf', 'tryhackme', 'appsec', 'pwn', 'ai-security'],
+}
+
+On November 13, my team played TryHackMe's Cyber Trials 2026, a jeopardy CTF covering AI security, web, binary exploitation and a full box. We played from brick, a cockpit I built for the night: one process, one SQLite file, eight seats and a live board. I finished as a Cyber Trials Completionist.
+
+This isn't a walkthrough. There are no flags or exploit steps here, because the rooms may still be live and the fun is in solving them. Instead, for each room, here's the bug, why it existed, and what would have stopped it. Those are the parts worth keeping.
+
+## The Forge: three ways memory goes wrong
+
+The Forge was three binary exploitation challenges against small Linux programs listening on the network. Each one read input carelessly, and each one had a different set of defenses turned on.
+
+- **The Forbidden Rune** was a classic stack overflow. The program had a function that printed the flag, but nothing ever called it. With no stack canary and no address randomization (no PIE), overflowing a buffer let us redirect the program's return into that function.
+- **Borrowed Steel** had no such function, so we had to borrow code from the C library the program already loaded. That technique is called ret2libc.
+- **The Silenced Forge** added a seccomp filter that blocked running a shell at all. The way through was to use only the system calls the filter still allowed: open, read and write.
+
+**The fix:** use bounded reads, and compile with stack canaries, PIE and full RELRO. Seccomp helped in the third challenge, but it only limited what an attacker could do, not whether they got in. Defenses stack; none of them replaces reading input safely.
+
+## The Ashen Frontier: one blind command becomes a foothold
+
+The Ashen Frontier was a full box: get a user, then get root. Its web app had a status feature that took a hostname and checked it. It passed that input to a shell, so it could run other commands too. The app only reported whether the command succeeded, not its output, which made it a *blind* command injection. We turned that one bit of feedback into a working channel, got a foothold, moved to a real user over SSH, and reached root through a `sudo` rule that allowed a tool able to run other programs.
+
+**The fix:** never build shell commands from user input; call the program directly with arguments. And review `sudo` rules against GTFOBins: plenty of everyday tools, like `find`, `vim` and `less`, can run a shell.
+
+## The War Camp: an upload chain
+
+The War Camp was a ledger app with file uploads, and it fell to two bugs in a row.
+
+1. **XXE in an SVG upload.** SVG is XML, and the server parsed uploaded SVGs with external entities enabled. An image upload became a way to read files off the server, including a config file with a token in it.
+2. **Zip slip in a backup restore.** The restore feature extracted archives without checking entry paths, so a path like `../` could write outside the restore folder. Combined with a plugin directory that the app reloaded on request, a file write became code running inside the app.
+
+**The fix:** turn off external entities and DTDs in every XML parser (or never parse untrusted SVG on the server at all). Resolve every archive entry path and refuse any that leaves the target folder. Don't let a web request reload code from a writable directory.
+
+## The King's Seal: trusting the token to describe itself
+
+The King's Seal was a JWT challenge in three stages. The app published a description of how it verified tokens, and the verifier trusted the token's own header too much: which key to use, and what kind of key it was. Once the server lets the token choose its own key or algorithm, a forged token can pass as a real one, and from there we could impersonate a privileged user.
+
+**The fix:** pin the algorithm and the key on the server, and never let the token's header choose either. Fetch keys only from your own trusted set (JWKS), never from a URL or key embedded in the token.
+
+## The Binding Circle: an AI agent that hurts itself
+
+My team's favorite. The Binding Circle was an AI agent with a few tools and a planner that refused anything dangerous. Two weaknesses made the refusal useless:
+
+1. **It couldn't tell its owner's instructions from ours.** Text that we controlled ended up in its context, and it followed it. That's indirect prompt injection.
+2. **A tool checked only the start of its input.** A diagnostics tool approved commands by their first word, so anything chained after an approved command ran too.
+
+**The fix:** treat everything a model reads as data, never as instructions, and enforce rules in the tools, not in the prompt. A tool should validate its whole input against a strict allowlist, because the model can always be talked into calling it.
+
+I liked this room so much that I rebuilt it on this site. Press `~` and type `familiar` to play [the familiar](/blog/the-familiar-agent-ctf), which has the same two weaknesses.
+
+## What the night taught
+
+Every room was a trust boundary in the wrong place: a buffer that trusted its input's length, a shell that trusted a hostname, a parser that trusted an image, an extractor that trusted a path, a verifier that trusted a token, and an agent that trusted whatever it read. The tools differ, but the habit that prevents all six is the same: decide where untrusted input enters, and check it there, completely.

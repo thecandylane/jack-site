@@ -1,0 +1,63 @@
+export const meta = {
+  title: 'Defanging Shai-Hulud: keeping a worm you never run',
+  lede: 'How I kept a copy of the Shai-Hulud npm worm for study, safe to open in an editor or hand to a coding agent, without running a single byte of it.',
+  date: '2026-11-17',
+  tags: ['malware', 'supply-chain', 'ai-security', 'bash'],
+}
+
+This summer, the source of the Shai-Hulud worm showed up on GitHub. Shai-Hulud spread through npm packages and developer machines, and it was one of the first to reach into AI coding assistants: it hooked into the routines those tools run when they start, so it never needed anyone to execute it directly. I wanted a copy to study, and to keep. Repos like that get taken down, and in a few years the next worm will hook the next generation of tools the same way.
+
+The problem is that a repo like this is dangerous to *open*, not just to run. So before I read a line of it, I wrote `defang-specimen.sh`, a single bash script that turns the repo into a copy nothing can run by accident.
+
+## Why opening it is the dangerous part
+
+Most people think of malware as something you have to run. A modern dev repo runs itself in a dozen quiet ways:
+
+- **Package managers run install scripts.** One `npm install` in the wrong folder runs whatever `postinstall` says.
+- **Git runs hooks and filters.** A `.gitattributes` filter or a hook runs code on checkout, commit or diff.
+- **Editors run tasks.** A `.vscode` folder or a `.code-workspace` file can define tasks and settings that run when you open the folder.
+- **Coding agents read instructions.** `CLAUDE.md`, `.mcp.json`, `claude_desktop_config.json` and plain Markdown are read by agents as instructions. An agent asked to "help me read this repo" can be told to do something else entirely. That is exactly the door Shai-Hulud used.
+- **Shells read dotfiles.** `.envrc`, `.bashrc` and friends run the moment a tool sources them.
+
+So the goal was a copy where every one of those doors is shut, and where I can still read every byte.
+
+## Rename, don't modify
+
+The core rule is to change file *names*, never file *contents*. Every script, manifest, config and agent file gets a suffix, so `package.json` becomes `package.json.AUDIT-SPECIMEN.txt`. Nothing recognizes it anymore: npm doesn't see a package, git doesn't see a hook, an editor doesn't see a workspace, and an agent doesn't see a config. But the bytes are untouched, so the analysis is still of the real thing.
+
+The script is about 1,500 lines, and it runs as a pipeline of phases over a copy. The original is never modified. Among them:
+
+- **Manifests and configs**, over 100 name patterns across npm, Bun, Deno, Python, Rust, Go, Ruby, Java, Docker, CI and agent tooling, renamed and kept.
+- **Source and executables**, from `.js` and `.sh` to `.ps1`, `.lnk`, `.hta`, Office macro formats, `.jar`, disk images and `.apk`, renamed.
+- **Archives** renamed to `.AUDIT-SPECIMEN-ARCHIVE.txt` and never extracted.
+- **Folders that tools act on**, like `.git`, `.github`, `.vscode`, `.husky`, `node_modules` and build output, renamed but kept, because shipped build artifacts can be the payload.
+- **Symlinks neutralized**, special files stripped, and executable bits removed.
+- **Shebang lines found and flagged**, so a renamed file that still starts with `#!` stands out.
+- **Opaque blobs detected** with an entropy check, so a packed or encrypted payload hiding as a `.txt` gets flagged.
+- **Markdown flagged** as possible agent instructions.
+- **Unicode flagged.** Non-ASCII file names are reported, and names are normalized to catch two files that look identical but aren't.
+
+## The rules the script holds itself to
+
+A defanger with a bug is worse than none, because you trust it. So the script states its invariants at the top and treats any violation as a bug:
+
+1. The specimen is never executed. Its bytes are only read by `sha256sum`, a small entropy helper, `rsync`, `tar` and `gzip`.
+2. Specimen content is never printed to the terminal. Even file names are hex-escaped before they are logged, so a crafted name can't inject escape sequences into my terminal.
+3. Every `find` uses `-print0` and every `read` uses `-d ''`, so a file name with a newline in it can't split into two.
+4. No `eval`, no `source`, no unquoted expansion, and `printf '%s\n'` only.
+5. Every destructive path is guarded with `${var:?}`, and every temp file lives under `mktemp -d`, removed on exit.
+6. It refuses to run as root.
+
+Before it touches anything, it checks the repo's own git setup: it refuses any `.gitattributes` filter, any hook beyond git's samples, and any `core.hooksPath`.
+
+## What comes out
+
+The output is the defanged tree, a manifest of every rename, drop and flag, and a README that explains what was done. It's packed into a byte-reproducible `.tgz` with two hashes, one for the inner tar and one for the archive. Anyone who runs the same version on the same commit gets the same hashes, so the copy can be verified years from now. The commit itself is pinned up front: the script takes the source commit's hash as a required argument and refuses to start if it doesn't match.
+
+## What it isn't
+
+It isn't a sandbox. Defanging stops accidents: an install, a hook, an editor task, an agent reading the wrong file. It doesn't make the code safe to run, and the real analysis still happens in an isolated VM with no credentials on it. The point is that I can open the copy, grep it, and hand it to a coding agent for context without any of those tools turning it back into a worm.
+
+## What I took away
+
+The worm's real lesson is that AI coding tools widened the attack surface of a repo from "the code you run" to "every file a tool reads". Any folder you open with an agent is input to that agent. If you build agent tooling, treat configs and Markdown in a repo like untrusted input. And if you study malware, assume the specimen is armed until every door is shut.
