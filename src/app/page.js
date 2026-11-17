@@ -155,7 +155,7 @@ export default async function Home() {
           <div className="bootlog">{boot.rows}</div>
           <h1>I build custom, secure hardware and software.</h1>
           <FlowText text={INTRO} />
-          <p className="hint muted">Drag the radar. Press any empty space to drop a log in the rain, and drag it around. Press ~ for the terminal.</p>
+          <p className="hint muted">Press ~ for the terminal.</p>
           <nav className="cta" aria-label="Start here">
             <a href={RADAR}>Open ref-radar</a>
             <a href="#work">Work</a>
