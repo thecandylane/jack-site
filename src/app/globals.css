@@ -123,6 +123,15 @@ a { color: inherit; text-decoration: none; -webkit-tap-highlight-color: transpar
 .play-out .fail { color: var(--key); margin-bottom: .25rem; }
 .play-out .ok { color: var(--muted); }
 .play-out .no, .play-out .err { color: var(--key); }
+.play-out .warn { color: var(--fg); }
+/* Interactive tools in posts and /lab: NpmDiff, YaraPlayground. */
+.tool-form { display: flex; flex-wrap: wrap; gap: .5rem; padding: .75rem 1.25rem; }
+.tool-form input, .tool-form select { flex: 1 1 14rem; min-width: 0; font: 13.5px/1.4 var(--mono); padding: .45em .8ch; border: 1px solid var(--frame); background: var(--bg); color: var(--fg); }
+.tool-form input:focus, .tool-form select:focus, .yara-src:focus, .yara-in:focus { outline: 1px solid var(--accent); outline-offset: -1px; }
+.yara-src, .yara-in { display: block; width: 100%; box-sizing: border-box; resize: vertical; margin: 0; padding: .9rem 1.25rem; border: 0; border-bottom: 1px solid var(--frame);
+  background: transparent; color: var(--fg); font: 13px/1.6 var(--mono); tab-size: 2; white-space: pre; overflow: auto; }
+.yara-in { border-top: 1px solid var(--frame); background: color-mix(in srgb, var(--bg) 85%, black); }
+.yara-data .muted.small { padding: 0 1.25rem .75rem; margin: 0; }
 .prose table { width: 100%; border-collapse: collapse; border: 1px solid var(--frame); background: var(--panel); font-size: 14px; overflow-wrap: anywhere; }
 .prose thead:not(:has(th:not(:empty))) { display: none; }
 .prose th, .prose td { padding: .8rem 1rem; border-bottom: 1px solid var(--frame); text-align: left; vertical-align: top; }

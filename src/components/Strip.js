@@ -13,6 +13,7 @@ const LINKS = [
   ['forge', '/forge', 'wide'],
   ['contact', '/#contact'],
   ['you', '/you', 'wide'],
+  ['lab', '/lab', 'wide'],
 ];
 
 export default function Strip() {

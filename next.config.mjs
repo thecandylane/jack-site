@@ -30,8 +30,8 @@ const nextConfig = {
           { key: 'Permissions-Policy', value: 'camera=(), microphone=(), geolocation=()' },
           {
             key: 'Content-Security-Policy',
-            // connect-src: the terminal reads ref-radar's feed; /you's password check asks Have I Been Pwned. frame-src: ref-radar's views in posts and the terminal's panes. worker-src blob: the blog's code playgrounds.
-            value: "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; font-src 'self'; img-src 'self' data:; connect-src 'self' https://ref.lookit.space https://api.pwnedpasswords.com; frame-src https://ref.lookit.space; worker-src 'self' blob:",
+            // connect-src: the terminal reads ref-radar's feed; /you's password check asks Have I Been Pwned; the npm diff guard reads public registry metadata. wasm-unsafe-eval: the YARA-X engine. frame-src: ref-radar's views in posts and the terminal's panes. worker-src blob: the blog's code playgrounds.
+            value: "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' 'wasm-unsafe-eval'; style-src 'self' 'unsafe-inline'; font-src 'self'; img-src 'self' data:; connect-src 'self' https://ref.lookit.space https://api.pwnedpasswords.com https://registry.npmjs.org; frame-src https://ref.lookit.space; worker-src 'self' blob:",
           },
         ],
       },
