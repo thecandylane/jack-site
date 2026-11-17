@@ -10,6 +10,7 @@ const LINKS = [
   ['work', '/#work', 'wide'],
   ['projects', '/#projects', 'wide'],
   ['blog', '/blog'],
+  ['forge', '/forge', 'wide'],
   ['contact', '/#contact'],
   ['you', '/you', 'wide'],
 ];

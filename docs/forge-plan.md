@@ -5,7 +5,8 @@ a real-engine lane that shows an actual engine's internals, and the writing that
 the 2026 state of the art.
 
 Status: M1, M2, M5 and the first half of M6 shipped on branch `forge` (2026-11-17). M3, M4 and
-M7 remain. Work on a branch; `main` still auto-deploys through Coolify.
+M7 remain. Work on a branch; the site deploys to Cloudflare Workers with `npm run deploy`, and
+pushing `main` deploys nothing.
 
 | Milestone | State | Where |
 |---|---|---|

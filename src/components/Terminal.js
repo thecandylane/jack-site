@@ -14,6 +14,7 @@ const HELP = [
   ['feed', "the newest items in ref-radar's cyber feed"],
   ['ls [posts|projects]', 'list what is on the site'],
   ['cat <post>', 'open a blog post'],
+  ['forge', 'the JavaScript engine running on this site'],
   ['open <section|project>', 'go somewhere on the site'],
   ['whoami', 'what your browser tells every site it visits'],
   ['familiar', 'talk to the familiar, the agent CTF on this site'],
@@ -168,6 +169,7 @@ export default function Terminal({ posts }) {
           { t: 'That is the short version. The full list of what you carry everywhere:', c: 'muted' }, { t: '/you', href: '/you' });
         break;
       }
+      case 'forge': location.href = '/forge'; break;
       case 'familiar': setMode('familiar'); turns.current = []; print(...FAMILIAR_HELP.map((t) => ({ t, c: 'agent' }))); break;
       case 'split': case 'herdr': setSplit((s) => !s); if (!feed) loadFeed(); print({ t: split ? 'Panes closed.' : 'Panes open: terminal, radar, feed. Type split again to close.' }); break;
       case 'coolfolio': {
