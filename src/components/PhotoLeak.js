@@ -33,7 +33,7 @@ export default function PhotoLeak() {
         email, chat apps that send &quot;original quality&quot;, file shares and many forums do not. Pick a photo to see what
         it carries. It never leaves your browser.
       </p>
-      <input type="file" accept="image/jpeg,image/*" onChange={pick} className="pick" />
+      <input type="file" accept="image/jpeg,image/*" onChange={pick} className="pick" aria-label="Pick a photo to inspect" />
       {state && (
         <ul className="facts">
           {!m && <li><span>{state.name}</span><span className="fp-v">No EXIF found. Either it was stripped already, or it is a HEIC, PNG or WebP, which this check does not read.</span></li>}

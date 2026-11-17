@@ -79,7 +79,10 @@ export default function Fingerprint() {
   const [rows, setRows] = useState(null);
   const [digest, setDigest] = useState('');
   useEffect(() => {
-    read().then(async (r) => { setRows(r); setDigest(short(await sha(JSON.stringify(r.map((x) => x.value))))); });
+    // Wait for an idle moment: the canvas, WebGL and audio probes are slow on phones.
+    const go = () => read().then(async (r) => { setRows(r); setDigest(short(await sha(JSON.stringify(r.map((x) => x.value))))); });
+    const id = window.requestIdleCallback ? requestIdleCallback(go, { timeout: 1500 }) : setTimeout(go, 200);
+    return () => (window.requestIdleCallback ? cancelIdleCallback(id) : clearTimeout(id));
   }, []);
 
   if (!rows) return <p className="muted">measuring…</p>;

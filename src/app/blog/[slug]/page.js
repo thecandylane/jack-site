@@ -1,3 +1,4 @@
+import { pageMeta } from '@/lib/site';
 import { getPost, longDate, slugs } from '@/lib/posts';
 import Radar from '@/components/Radar';
 
@@ -9,11 +10,7 @@ export function generateStaticParams() {
 
 export async function generateMetadata({ params }) {
   const p = await getPost((await params).slug);
-  return {
-    title: `${p.title} · Jack Schliewe`,
-    description: p.lede,
-    openGraph: { title: p.title, description: p.lede, type: 'article', publishedTime: p.date },
-  };
+  return pageMeta({ title: p.title, description: p.lede, path: `/blog/${p.slug}`, type: 'article', publishedTime: p.date });
 }
 
 export default async function Post({ params }) {

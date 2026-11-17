@@ -49,7 +49,7 @@ export default function Strip() {
         <label htmlFor="q">Search&gt;</label>
         <input id="q" name="q" placeholder="who already built it? (ref-radar)" autoComplete="off" />
       </form>
-      <button type="button" onClick={() => { location.hash = 'terminal'; }} title="Open the terminal (or press ~)">~</button>
+      <button type="button" onClick={() => { location.hash = 'terminal'; }} title="Open the terminal (or press ~)" aria-label="Open the terminal" id="term-toggle">~</button>
       <button type="button" onClick={toggle} aria-pressed={p12} title="Switch phosphor: P7 green / P12 amber">
         {p12 ? 'p12' : 'p7'}
       </button>

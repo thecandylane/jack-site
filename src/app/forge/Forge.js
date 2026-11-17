@@ -35,6 +35,7 @@ export default function Forge() {
   const [verdict, setVerdict] = useState(null);
   const [busy, setBusy] = useState(false);
   const outRef = useRef(null);
+  const leave = useRef(false); // Escape, then Tab, moves focus out of the editor
 
   useEffect(() => {
     fetch('/api/forge').then((r) => r.json()).then((d) => setLabs(d.labs ?? [])).catch(() => {});
@@ -86,7 +87,8 @@ export default function Forge() {
   };
 
   const onKey = (e) => {
-    if (e.key !== 'Tab') return;
+    if (e.key === 'Escape') { leave.current = true; return; }
+    if (e.key !== 'Tab' || e.shiftKey || leave.current) { leave.current = false; return; }
     e.preventDefault();
     const el = e.currentTarget;
     const { selectionStart: a, selectionEnd: b } = el;
@@ -121,7 +123,7 @@ export default function Forge() {
         <button type="button" onClick={reset} aria-label="Reset the editor, output and heap">Reset</button>
       </div>
 
-      <label className="forge-label" htmlFor="forge-out">Output</label>
+      <h2 className="forge-label">Output</h2>
       <div id="forge-out" className="forge-out" aria-live="polite" ref={outRef}>
         {lines.map((l, i) => <p key={i} className={l.err ? 'forge-err' : undefined}>{l.t}</p>)}
       </div>
@@ -139,7 +141,7 @@ export default function Forge() {
         <div className="forge-cage-fill" style={{ width: `${Math.min(100, (used / cage) * 100)}%` }} />
       </div>
 
-      <label className="forge-label" htmlFor="forge-heap">Heap</label>
+      <h2 className="forge-label">Heap</h2>
       <table className="forge-heap" id="forge-heap">
         <thead><tr><th>offset</th><th>kind</th><th>size</th></tr></thead>
         <tbody>

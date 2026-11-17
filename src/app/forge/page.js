@@ -1,11 +1,13 @@
+import { pageMeta } from '@/lib/site';
 import Forge from './Forge';
 
 export const dynamic = 'force-static';
 
-export const metadata = {
-  title: 'The Forge · Jack Schliewe',
+export const metadata = pageMeta({
+  title: 'The Forge',
   description: 'A small JavaScript engine you can run in the browser, with its heap laid out word by word.',
-};
+  path: '/forge',
+});
 
 export default function Page() {
   return (

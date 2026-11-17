@@ -19,7 +19,7 @@ export const metadata = {
   description: 'Jack Schliewe builds AI software and tests its security. He makes ref-radar, prior art for coding agents, at ref.lookit.space.',
   authors: [{ name: 'Jack Schliewe' }],
   robots: { index: true, follow: true },
-  alternates: { types: { 'application/rss+xml': [{ url: '/blog/rss.xml', title: 'Jack Schliewe' }] } },
+  alternates: { canonical: '/', types: { 'application/rss+xml': [{ url: '/blog/rss.xml', title: 'Jack Schliewe' }] } },
   openGraph: {
     title: 'Jack Schliewe · AI developer and security engineer',
     description: 'Jack Schliewe builds AI software and tests its security. He makes ref-radar, prior art for coding agents, at ref.lookit.space.',

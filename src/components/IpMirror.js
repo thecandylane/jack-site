@@ -34,7 +34,7 @@ export default function IpMirror() {
   }, []);
 
   if (failed) return <p className="muted">The server could not be reached, so there is no IP to show.</p>;
-  if (!me) return <p className="muted">asking the server what it saw…</p>;
+  if (!me) return <p className="muted ip-wait">asking the server what it saw…</p>;
 
   const tz = Intl.DateTimeFormat().resolvedOptions().timeZone;
   const langRegion = (navigator.language.split('-')[1] ?? '').toUpperCase();

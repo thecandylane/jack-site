@@ -29,3 +29,11 @@ export const PROJECTS = [
     what: "Lookit is going to be a search engine for people and their agents, built on what communities actually recommend instead of ads, algorithms and influencers. Every verified member gets one pick per category, and every pick counts the same. Its first data comes from Biz-Radar, a database of every business in East Baton Rouge Parish built from the parish's open data, which will feed ref-radar too. It hasn't shipped yet.",
   },
 ];
+
+/** Metadata for a page: its own canonical URL and Open Graph text, plus the feed link the layout would otherwise lose. */
+export const pageMeta = ({ title, description, path, ...og }) => ({
+  title: `${title} · Jack Schliewe`,
+  description,
+  alternates: { canonical: path, types: { 'application/rss+xml': [{ url: '/blog/rss.xml', title: 'Jack Schliewe' }] } },
+  openGraph: { title, description, url: path, siteName: 'Jack Schliewe', ...og },
+});

@@ -1,9 +1,11 @@
+import { pageMeta } from '@/lib/site';
 import { allPosts } from '@/lib/posts';
 
-export const metadata = {
-  title: 'Blog · Jack Schliewe',
+export const metadata = pageMeta({
+  title: 'Blog',
   description: 'Teardowns, builds and field notes from Schliewe Systems. Each post links the refs it stands on, from ref-radar.',
-};
+  path: '/blog',
+});
 
 export default async function Blog() {
   const posts = await allPosts();

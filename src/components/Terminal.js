@@ -39,6 +39,7 @@ const editing = (el) => el && (el.isContentEditable || /^(input|textarea|select)
 
 export default function Terminal({ posts }) {
   const [open, setOpen] = useState(false);
+  const wasOpen = useRef(false);
   const [split, setSplit] = useState(false);
   const [lines, setLines] = useState([{ t: 'Type help, or try: ref sandbox for agent code' }]);
   const [input, setInput] = useState('');
@@ -62,7 +63,7 @@ export default function Terminal({ posts }) {
     hash();
     return () => { removeEventListener('keydown', key); removeEventListener('hashchange', hash); };
   }, []);
-  useEffect(() => { if (open) inputRef.current?.focus(); else if (location.hash === '#terminal') window.history.replaceState(null, '', location.pathname); }, [open]);
+  useEffect(() => { if (open) { wasOpen.current = true; inputRef.current?.focus(); } else if (wasOpen.current) { wasOpen.current = false; document.getElementById('term-toggle')?.focus(); } if (!open && location.hash === '#terminal') window.history.replaceState(null, '', location.pathname); }, [open]);
   useEffect(() => { outRef.current?.scrollTo(0, outRef.current.scrollHeight); }, [lines, open]);
 
   const loadFeed = useCallback(async () => {
@@ -211,7 +212,7 @@ export default function Terminal({ posts }) {
         <div className={`term-win${split ? ' split' : ''}`} role="dialog" aria-label="Terminal">
           <section className="pane">
             <p className="pane-t"><span>{mode === 'familiar' ? 'familiar · agent CTF' : 'jack@schliewe.systems: ~'}</span><button type="button" onClick={() => setOpen(false)}>esc</button></p>
-            <div className="term-out" ref={outRef} onClick={() => inputRef.current?.focus()}>
+            <div className="term-out" role="log" ref={outRef} onClick={() => inputRef.current?.focus()}>
               {lines.map((l, i) => (
                 <p key={i} className={l.c}>{l.href ? <a href={l.href}>{l.t}</a> : l.t}</p>
               ))}

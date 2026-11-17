@@ -1,3 +1,4 @@
+import { pageMeta } from '@/lib/site';
 import Fingerprint from '@/components/Fingerprint';
 import IpMirror from '@/components/IpMirror';
 import AdAuction from '@/components/AdAuction';
@@ -5,10 +6,11 @@ import Typing from '@/components/Typing';
 import PhotoLeak from '@/components/PhotoLeak';
 import Breach from '@/components/Breach';
 
-export const metadata = {
-  title: 'What you bring with you · Jack Schliewe',
+export const metadata = pageMeta({
+  title: 'What you bring with you',
   description: 'What your connection and your browser tell every site you visit. Nothing is stored.',
-};
+  path: '/you',
+});
 
 const RADAR = 'https://ref.lookit.space';
 

@@ -1,12 +1,14 @@
+import { pageMeta } from '@/lib/site';
 import QuickJS from './QuickJS';
 import './quickjs.css';
 
 export const dynamic = 'force-static';
 
-export const metadata = {
-  title: 'QuickJS in WASM · The Forge · Jack Schliewe',
+export const metadata = pageMeta({
+  title: 'QuickJS in WASM · The Forge',
   description: 'A real JavaScript engine, run in your browser, with its memory numbers shown.',
-};
+  path: '/forge/quickjs',
+});
 
 export default function Page() {
   return (

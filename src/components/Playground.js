@@ -51,7 +51,7 @@ export default function Playground({ code, tests = '', title = 'playground', lin
           { tag: [t.punctuation, t.bracket, t.operator], color: 'var(--muted)' },
         ]);
         host.current.textContent = '';
-        view.current = new EditorView({ doc: start, extensions: [basicSetup, EditorView.lineWrapping, javascript(), look, syntaxHighlighting(colors)], parent: host.current });
+        view.current = new EditorView({ doc: start, extensions: [basicSetup, EditorView.lineWrapping, EditorView.contentAttributes.of({ 'aria-label': title ?? 'Code editor' }), javascript(), look, syntaxHighlighting(colors)], parent: host.current });
         setReady(true);
       });
     return () => { gone = true; view.current?.destroy(); view.current = null; };
