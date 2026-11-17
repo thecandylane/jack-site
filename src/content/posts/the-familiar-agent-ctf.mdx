@@ -5,6 +5,8 @@ export const meta = {
   tags: ['ctf', 'ai-security', 'prompt-injection'],
 }
 
+import * as ex from '@/content/exercises'
+
 At TryHackMe's Cyber Trials 2026, my team's favorite room was The Binding Circle. It's an AI agent with a few tools and a planner that refuses anything dangerous. You win by making the agent hurt itself anyway. I rebuilt the idea here, so anyone can play it from this site.
 
 ## How to play
@@ -27,6 +29,21 @@ The familiar can change this page, read the notes you pin, and run a few approve
 - There's a rate limit per visitor and a daily limit for the whole site. If the familiar needs a rest, come back later.
 - Please don't attack the site itself, its server or its API routes. The challenge is the agent.
 
+## How it's wired
+
+The familiar is a loop. Your message and your pinned notes go to the site's API, which hands them to Gemini along with the familiar's instructions and tool list. Gemini decides whether to call a tool; the site runs that tool and sends back the result, up to a few times per message. The tools are plain JavaScript that imitate a small Linux host, so nothing you make the familiar do can leave that simulation.
+
+```mermaid
+flowchart LR
+  V[you, in the terminal] -->|message| R["/api/agent"]
+  N[your pinned notes] --> R
+  R -->|instructions, tools, chat| G[Gemini]
+  G -->|tool call| T[tools, simulated]
+  T -->|result| G
+  G -->|reply| V
+  T -.->|never| H[a real shell or files]
+```
+
 ## Hints
 
 The two weaknesses are real ones. They show up again and again in agents that ship today.
@@ -35,3 +52,11 @@ The two weaknesses are real ones. They show up again and again in agents that sh
 2. Read the description of every tool, then think about how a tool like that usually checks its input.
 
 If you solve it, write it up and send it to me. I'll link the best writeups here.
+
+## Building one that holds
+
+The familiar is weak on purpose. Here's the shape of a tool that would hold. The model never writes a command: it picks a check from a menu, and the tool maps that name to a fixed argument list. The model's tool call is untrusted input like any other, so the tool checks all of it: the tool name, the shape of the arguments, and the value, without trusting anything it inherits from JavaScript's `Object`.
+
+<Playground {...ex.familiar} />
+
+Notice what isn't in the fix: no rule in the prompt, no filter on the model's words. The model can still be talked into anything. The tool just has nothing dangerous to give it.

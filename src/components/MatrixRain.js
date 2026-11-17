@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useRef } from 'react';
+import { sweeps } from '@/lib/sweeps';
 
 // Phosphor characters falling behind every page. Pressing empty space drops a small log into the rain: each
 // character that reaches it leaves its stream and is flung off to the side, like water off a log. Characters are
@@ -70,21 +71,26 @@ export default function MatrixRain() {
       }
       for (const s of streams) {
         s.y += s.v;
-        // Each character that just reached the log leaves its stream and is flung off the nearer end. Characters
-        // already below the log when it dropped keep falling. If MAX_BITS is reached, a character falls through.
-        if (log && Math.abs(s.x - log.x) < LOG_W / 2) {
+        // Each character the log touches this frame leaves its stream and is flung off the nearer end, plus some of
+        // the log's own speed, so a swipe throws them. The test runs in the log's frame of reference over the whole
+        // frame's motion, so a fast swipe can't skip a character. If MAX_BITS is reached, a character falls through.
+        if (log && s.x > Math.min(log.px, log.x) - LOG_W / 2 && s.x < Math.max(log.px, log.x) + LOG_W / 2) {
           for (let k = 0; k < s.len && bits.length < MAX_BITS; k++) {
             const y = s.y - k * CELL;
-            if (!s.gone[k] && y >= log.y && y - s.v < log.y) {
-              s.gone[k] = 1;
-              const side = s.x === log.x ? (Math.random() < 0.5 ? -1 : 1) : Math.sign(s.x - log.x);
-              bits.push({ x: s.x, y: log.y - 2, vx: side * (1.5 + Math.random() * 2.5), vy: -(0.5 + Math.random() * 2), ch: s.chars[k % s.chars.length], a: alpha(s, k) });
-            }
+            if (s.gone[k] || !sweeps(s.x - log.px, y - s.v - log.py, s.x - log.x, y - log.y, LOG_W / 2, CELL / 2)) continue;
+            s.gone[k] = 1;
+            const side = s.x === log.x ? (Math.random() < 0.5 ? -1 : 1) : Math.sign(s.x - log.x);
+            const push = (v) => Math.max(-12, Math.min(12, v * 0.35));
+            bits.push({
+              x: s.x, y: Math.min(y, log.y - 2), ch: s.chars[k % s.chars.length], a: alpha(s, k),
+              vx: side * (1.5 + Math.random() * 2.5) + push(log.x - log.px), vy: -(0.5 + Math.random() * 2) + push(log.y - log.py),
+            });
           }
         }
         if (Math.random() < 0.04) s.chars[(Math.random() * s.chars.length) | 0] = pick();
         if (s.y - s.len * CELL > h) Object.assign(s, stream(s.x, true));
       }
+      if (log) { log.px = log.x; log.py = log.y; }
       for (const b of bits) { b.vy += GRAVITY; b.vx *= 0.98; b.x += b.vx; b.y += b.vy; }
       bits = bits.filter((b) => b.y < h + CELL && b.x > -CELL && b.x < w + CELL); // gone once it leaves the screen, like a stream
       draw();
@@ -97,7 +103,7 @@ export default function MatrixRain() {
     const down = (e) => {
       if (e.button !== 0 || e.target.closest?.(TEXT)) return;
       const [x, y] = at(e);
-      log = { x, y, held: true, at: performance.now(), fade: 1 };
+      log = { x, y, px: x, py: y, held: true, at: performance.now(), fade: 1 }; // px, py: where it was last frame
     };
     const move = (e) => { if (log?.held) [log.x, log.y] = at(e); };
     const up = () => { if (log) { log.held = false; log.at = performance.now(); } };

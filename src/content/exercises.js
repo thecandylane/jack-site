@@ -190,3 +190,142 @@ for (const [name, data] of Object.entries(samples)) console.log(name.padEnd(8), 
 `,
   tests: '',
 };
+
+export const familiar = {
+  title: 'tool.js · give the model a menu, not a command line',
+  code: String.raw`
+// A diagnostics tool built to hold: the model doesn't send a command,
+// it picks a check by name, and the tool maps the name to a fixed
+// argument list. The model's call is untrusted input, so check all of it.
+const CHECKS = {
+  uptime: ['uptime'],
+  disk: ['df', '-h'],
+  memory: ['free', '-m'],
+  processes: ['ps'],
+  user: ['whoami'],
+};
+
+// Returns the argv to run for a tool call, or null to refuse.
+// This version still trusts too much. Make every test pass.
+function checkCall(call) {
+  if (call.name !== 'run_diagnostic') return null;
+  return CHECKS[call.args.check] || null;
+}
+
+console.log(checkCall({ name: 'run_diagnostic', args: { check: 'disk' } }));
+`,
+  tests: String.raw`
+const call = (args) => checkCall({ name: 'run_diagnostic', args });
+test('uptime maps to its argv', () => eq(call({ check: 'uptime' }), ['uptime']));
+test('disk maps to df -h', () => eq(call({ check: 'disk' }), ['df', '-h']));
+test('an unknown check is refused', () => eq(call({ check: 'shell' }), null));
+test('a command string is refused', () => eq(call({ check: 'disk; cat /etc/passwd' }), null));
+test('a name inherited from Object is refused', () => eq(call({ check: 'constructor' }), null));
+test('__proto__ is refused', () => eq(call({ check: '__proto__' }), null));
+test('an extra argument is refused', () => eq(call({ check: 'disk', path: '/' }), null));
+test('missing arguments are refused', () => eq(checkCall({ name: 'run_diagnostic' }), null));
+test('a string instead of an object is refused', () => eq(call('disk'), null));
+test('another tool is refused', () => eq(checkCall({ name: 'read_file', args: { check: 'disk' } }), null));
+`,
+};
+
+export const fingerprintBits = {
+  title: 'bits.js · how many signals make you unique',
+  code: String.raw`
+// Each signal you leak splits everyone into groups. If 1 browser in 8
+// shares your value, that signal carries log2(8) = 3 bits about you.
+// About 33 bits pick one person out of 8 billion (2 ** 33 is 8.6 billion).
+
+// Write bits(share): the bits a value carries when a 'share' of all
+// browsers (between 0 and 1) have it. Then total() adds them up.
+// Adding assumes the signals are independent; real ones overlap a bit.
+function bits(share) {
+  return 0; // TODO
+}
+
+function total(signals) {
+  return signals.reduce((sum, s) => sum + bits(s.share), 0);
+}
+
+// Made-up shares, for the example only.
+const me = [
+  { name: 'time zone', share: 1 / 20 },
+  { name: 'language order', share: 1 / 30 },
+  { name: 'screen size', share: 1 / 40 },
+  { name: 'GPU model', share: 1 / 60 },
+  { name: 'installed fonts', share: 1 / 500 },
+  { name: 'canvas hash', share: 1 / 2000 },
+];
+for (const s of me) console.log(s.name.padEnd(16), bits(s.share).toFixed(1), 'bits');
+console.log('total'.padEnd(16), total(me).toFixed(1), 'bits of about 33');
+`,
+  tests: String.raw`
+const r = (x) => +x.toFixed(6);
+test('half of everyone is 1 bit', () => eq(r(bits(1 / 2)), 1));
+test('1 in 1,024 is 10 bits', () => eq(r(bits(1 / 1024)), 10));
+test('a value everyone has carries 0 bits', () => eq(r(bits(1)), 0));
+test('bits add up across signals', () => eq(r(total([{ share: 1 / 8 }, { share: 1 / 16 }])), 7));
+`,
+};
+
+export const typing = {
+  title: 'typing.js · your rhythm is a signature',
+  code: String.raw`
+// Keystroke dynamics. Dwell is how long each key is held (its keyup
+// minus its keydown). Flight is the gap from releasing one key to
+// pressing the next, in typing order. It goes negative when you roll
+// keys: pressing the next one before letting go of the last.
+// Times are in milliseconds, in the order the browser fired them.
+const events = [
+  { key: 't', type: 'down', t: 0 },
+  { key: 't', type: 'up', t: 95 },
+  { key: 'h', type: 'down', t: 160 },
+  { key: 'e', type: 'down', t: 230 }, // pressed before h was released
+  { key: 'h', type: 'up', t: 250 },
+  { key: 'e', type: 'up', t: 310 },
+];
+
+// Return { dwell, flight }: dwell per key in the order keys were
+// released, and flight for each press after the first, in press order.
+function rhythm(events) {
+  return { dwell: [], flight: [] }; // TODO
+}
+
+console.log(rhythm(events));
+`,
+  tests: String.raw`
+test('dwell is keyup minus keydown, in release order', () => eq(rhythm(events).dwell, [95, 90, 80]));
+test('flight is last release to next press', () => eq(rhythm(events).flight, [65, -20]));
+test('a single key has a dwell and no flight', () => eq(rhythm([{ key: 'a', type: 'down', t: 10 }, { key: 'a', type: 'up', t: 70 }]), { dwell: [60], flight: [] }));
+`,
+};
+
+export const pwned = {
+  title: 'pwned.js · check a password without sending it',
+  code: String.raw`
+// Have I Been Pwned's range API never sees your password or its full
+// hash. You send the first 5 hex characters of its SHA-1 and get back
+// every leaked hash that starts with them, as "SUFFIX:COUNT" lines.
+// With padding on, some lines are decoys with a count of 0.
+
+// Given your full hash (40 hex characters, upper case) and the
+// response text, return how many times your password was leaked.
+function timesLeaked(hash, response) {
+  return 0; // TODO
+}
+
+const hash = '5BAA61E4C9B93F3F0682250B6CF8331B7EE68FD8'; // SHA-1 of "password"
+const response = [
+  '1E2AAA439972480CEC7F16C795BBB429372:1',
+  '1E4C9B93F3F0682250B6CF8331B7EE68FD8:52256179',
+  '1E4C9B93F3F0682250B6CF8331B7EE68FD9:0',
+].join('\r\n');
+console.log('first 5 sent:', hash.slice(0, 5), '· leaked', timesLeaked(hash, response), 'times');
+`,
+  tests: String.raw`
+test('finds the matching suffix', () => eq(timesLeaked(hash, response), 52256179));
+test('a hash not in the response was never leaked', () => eq(timesLeaked('5BAA6' + '0'.repeat(35), response), 0));
+test('a padding decoy counts as 0', () => eq(timesLeaked('5BAA61E4C9B93F3F0682250B6CF8331B7EE68FD9', response), 0));
+test('a lower-case hash still matches', () => eq(timesLeaked(hash.toLowerCase(), response), 52256179));
+`,
+};
