@@ -107,6 +107,7 @@ const CERTS = [
 
 const CONTACT = [
   ['Email', 'jschli3@lsu.edu', 'mailto:jschli3@lsu.edu'],
+  ['Resume', 'one page, PDF', '/Jack_Schliewe_Resume.pdf'],
   ['GitHub', 'github.com/thecandylane', 'https://github.com/thecandylane'],
   ['LinkedIn', 'linkedin.com/in/thecandylane', 'https://www.linkedin.com/in/thecandylane/'],
   ['ref-radar', 'ref.lookit.space', RADAR],
