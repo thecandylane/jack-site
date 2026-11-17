@@ -5,9 +5,13 @@ export const meta = {
   tags: ['ctf', 'tryhackme', 'appsec', 'pwn', 'ai-security'],
 }
 
+import * as ex from '@/content/exercises'
+
 On November 3, my team played TryHackMe's Cyber Trials 2026, a jeopardy CTF covering AI security, web, binary exploitation and a full box. We played from brick, a cockpit I built for the event: one process, one SQLite file, eight seats and a live board. I finished as a Cyber Trials Completionist.
 
 This isn't a walkthrough. There are no flags or exploit steps here, because the rooms may still be live and the fun is in solving them. Instead, for each room, here's the bug, why it existed, and what would have stopped it. Those are the parts worth keeping.
+
+Each room also gets a diagram and a small exercise: the buggy code, editable, with tests that pass once you've fixed it. It runs in a sandbox in your browser and can't touch the page.
 
 ## The Forge: three ways memory goes wrong
 
@@ -17,17 +21,48 @@ The Forge was three binary exploitation challenges against small Linux programs 
 - **Borrowed Steel** had no such function, so we had to borrow code from the C library the program already loaded. That technique is called ret2libc.
 - **The Silenced Forge** added a seccomp filter that blocked running a shell at all. The way through was to use only the system calls the filter still allowed: open, read and write.
 
+All three come down to the same picture. A function's local buffer sits on the stack just below the values that decide where the program goes next:
+
+```mermaid
+packet
+title One stack frame, low addresses first
+0-15: "char buf[16]"
+16-23: "stack canary"
+24-31: "saved frame pointer"
+32-39: "return address"
+```
+
 **How to find it:** run `checksec` on the binary to see which protections are off. Then read how it takes input: `gets`, `scanf("%s")`, `strcpy`, or a `read` longer than its buffer. A fuzzer like AFL++, or just a very long input that crashes the program, confirms it. **To check the fix,** run `checksec` and the fuzzer again: the protections should show as on, and the same input should no longer crash it.
 
 **The fix:** use bounded reads, and compile with stack canaries, PIE and full RELRO. Seccomp helped in the third challenge, but it only limited what an attacker could do, not whether they got in. Defenses stack; none of them replaces reading input safely.
+
+**Try it:** this copy loop is the bug in miniature, on a 40-byte frame laid out like the diagram. Run it to watch a long input spill into the canary and return address, then fix it.
+
+<Playground {...ex.forge} />
 
 ## The Ashen Frontier: one blind command becomes a foothold
 
 The Ashen Frontier was a full box: get a user, then get root. Its web app had a status feature that took a hostname and checked it. It passed that input to a shell, so it could run other commands too. The app only reported whether the command succeeded, not its output, which made it a *blind* command injection. We turned that one bit of feedback into a working channel, got a foothold, moved to a real user over SSH, and reached root through a `sudo` rule that allowed a tool able to run other programs.
 
+```mermaid
+sequenceDiagram
+  participant B as Browser
+  participant A as Web app
+  participant S as /bin/sh
+  B->>A: hostname to check
+  A->>S: "ping -c 1 " + hostname
+  S-->>A: exit code only
+  A-->>B: up or down
+  Note over A,S: fix: argv list, no shell
+```
+
 **How to find it:** look for any feature that hands input to a system tool, like ping, nslookup or a file converter. In code, grep for `system(`, `exec(`, `shell=True` and backticks. When the app shows no output, time is the tell: if adding a short `sleep` to the input slows the response by that much, the input reached a shell. For the root step, `sudo -l` lists what a user may run as root, and GTFOBins says which of those can start a shell. **To check the fix,** repeat the timing test, which should show no delay, and confirm `sudo -l` lists nothing that GTFOBins knows.
 
 **The fix:** never build shell commands from user input; call the program directly with arguments. And review `sudo` rules against GTFOBins: plenty of everyday tools, like `find`, `vim` and `less`, can run a shell.
+
+**Try it:** the second layer is checking the input. Turn this blocklist into an allowlist.
+
+<Playground {...ex.ashen} />
 
 ## The War Camp: an upload chain
 
@@ -36,17 +71,46 @@ The War Camp was a ledger app with file uploads, and it fell to two bugs in a ro
 1. **XXE in an SVG upload.** SVG is XML, and the server parsed uploaded SVGs with external entities enabled. An image upload became a way to read files off the server, including a config file with a token in it.
 2. **Zip slip in a backup restore.** The restore feature extracted archives without checking entry paths, so a path like `../` could write outside the restore folder. Combined with a plugin directory that the app reloaded on request, a file write became code running inside the app.
 
+```mermaid
+flowchart TD
+  subgraph xxe[1 · XXE in an SVG upload]
+    U[SVG upload] --> X[XML parser, entities on] --> F[reads a server file] --> T[token from config]
+  end
+  subgraph zip[2 · zip slip in a restore]
+    R[backup restore, using the token] --> Z[entry leaves the folder] --> P[plugin folder reloaded] --> C[code runs in the app]
+  end
+```
+
 **How to find it:** list every place the server parses a file someone uploaded. SVG is XML, and so are DOCX and XLSX inside. For each XML parser, check whether external entities are on; OWASP's XXE Prevention Cheat Sheet names the setting for each language. For archives, find the extract call and check whether it compares each entry's resolved path with the target folder. A test archive holding an entry named `../marker.txt` shows it: if the file lands outside the folder, the extractor is vulnerable. **To check the fix,** upload the same archive and an SVG with a harmless external entity again: the server should refuse both.
 
 **The fix:** turn off external entities and DTDs in every XML parser (or never parse untrusted SVG on the server at all). Resolve every archive entry path and refuse any that leaves the target folder. Don't let a web request reload code from a writable directory.
+
+**Try it:** write the check the restore feature was missing.
+
+<Playground {...ex.warCamp} />
 
 ## The King's Seal: trusting the token to describe itself
 
 The King's Seal was a JWT challenge in three stages. The app published a description of how it verified tokens, and the verifier trusted the token's own header too much: which key to use, and what kind of key it was. Once the server lets the token choose its own key or algorithm, a forged token can pass as a real one, and from there we could impersonate a privileged user.
 
+```mermaid
+flowchart LR
+  subgraph broken[Broken]
+    T1[token header] -->|picks the alg and key| V1[verify]
+  end
+  subgraph fixed[Fixed]
+    C2[server config] -->|pins the alg and key| V2[verify]
+    T2[token header] -.->|ignored| V2
+  end
+```
+
 **How to find it:** decode a token (jwt.io or `jwt_tool`) and read its header. If it names a key (`jwk`, `jku` or `kid`), or the server accepts more than one algorithm, test whether the server trusts it: change the header and see whether the token still passes. In code, look for a verify call that doesn't pin its algorithms. **To check the fix,** send the same edited tokens again: every one should be rejected, and the verify call should name one algorithm and one key source.
 
 **The fix:** pin the algorithm and the key on the server, and never let the token's header choose either. Fetch keys only from your own trusted set (JWKS), never from a URL or key embedded in the token.
+
+**Try it:** a toy verifier with the same mistake. Make the server decide.
+
+<Playground {...ex.kingsSeal} />
 
 ## The Binding Circle: an AI agent that hurts itself
 
@@ -55,9 +119,22 @@ My team's favorite. The Binding Circle was an AI agent with a few tools and a pl
 1. **It couldn't tell its owner's instructions from ours.** Text that we controlled ended up in its context, and it followed it. That's indirect prompt injection.
 2. **A tool checked only the start of its input.** A diagnostics tool approved commands by their first word, so anything chained after an approved command ran too.
 
+```mermaid
+flowchart TD
+  O[owner's instructions] --> M[model context]
+  D[text we control] --> M
+  M --> P[planner]
+  P --> TL[diagnostics tool]
+  TL -->|checks only the first word| SH[shell]
+```
+
 **How to find it:** map every place text you don't control reaches the model, like web pages, files, emails and tool output. Plant a harmless instruction in one, such as asking the agent to say a canary word, and see whether it obeys. Then read each tool's validation: if it checks only a prefix or a first word, try a separator like `;`, `&&` or a newline after an allowed command. garak and promptfoo automate the prompt side. **To check the fix,** rerun the same canary and separators. The model may still be fooled, but the tool should refuse.
 
 **The fix:** treat everything a model reads as data, never as instructions, and enforce rules in the tools, not in the prompt. A tool should validate its whole input against a strict allowlist, because the model can always be talked into calling it.
+
+**Try it:** here's the tool's check. Make it hold the line no matter what the model sends.
+
+<Playground {...ex.bindingCircle} />
 
 I liked this room so much that I rebuilt it on this site. Press `~` and type `familiar` to play [the familiar](/blog/the-familiar-agent-ctf), which has the same two weaknesses.
 

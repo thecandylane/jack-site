@@ -3,8 +3,9 @@
 import { useEffect, useRef } from 'react';
 
 // Phosphor characters falling behind every page. Pressing empty space drops a small log into the rain: each
-// character that reaches it is flung off to the side, like water off a log. Nothing new is spawned; only the
-// streams' own characters move. Dragging moves the log; after you let go it stays a moment, then fades.
+// character that reaches it leaves its stream and is flung off to the side, like water off a log. Characters are
+// conserved: the log never creates or deletes one, and a flung character keeps its glyph and brightness. Dragging
+// moves the log; after you let go it stays a moment, then fades.
 // Reduced motion draws one still frame.
 const CELL = 18, PER_COL = 2, GLYPHS = 'ｱｲｳｴｵｶｷｸｹｺｻｼｽｾｿﾀﾁﾂﾃﾄﾅﾆﾇﾈﾉﾊﾋﾌﾍﾎﾏﾐﾑﾒﾓﾔﾕﾖﾗﾘﾙﾚﾛﾜﾝ0123456789ABCDEF<>/{}=$#';
 const LOG_W = 90, LOG_HOLD = 1400, MAX_BITS = 600, GRAVITY = 0.25;
@@ -25,7 +26,9 @@ export default function MatrixRain() {
       v: 1.2 + Math.random() * 2.6, // px per frame
       len: 8 + ((Math.random() * 22) | 0), // trail length in cells
       chars: Array.from({ length: 40 }, pick),
+      gone: new Uint8Array(30), // trail positions whose character the log has already taken
     });
+    const alpha = (s, k) => (k === 0 ? 0.32 : 0.13 * (1 - k / s.len)); // head bright, trail fading
     const size = () => {
       const dpr = Math.min(devicePixelRatio || 1, 2);
       w = canvas.clientWidth; h = canvas.clientHeight;
@@ -34,7 +37,6 @@ export default function MatrixRain() {
       const cols = Math.ceil(w / CELL);
       streams = Array.from({ length: cols * PER_COL }, (_, i) => stream((i % cols) * CELL + CELL / 2, false));
     };
-    const under = (x, y) => log && Math.abs(x - log.x) < LOG_W / 2 && y > log.y;
 
     const draw = () => {
       if (tick++ % 30 === 0) accent = getComputedStyle(canvas).color;
@@ -45,13 +47,13 @@ export default function MatrixRain() {
       for (const s of streams) {
         for (let k = 0; k < s.len; k++) {
           const y = s.y - k * CELL;
-          if (y < -CELL || y > h + CELL || under(s.x, y)) continue; // the log shadows what is below it
-          ctx.globalAlpha = k === 0 ? 0.32 : 0.13 * (1 - k / s.len);
+          if (s.gone[k] || y < -CELL || y > h + CELL) continue;
+          ctx.globalAlpha = alpha(s, k);
           ctx.fillText(s.chars[k % s.chars.length], s.x, y);
         }
       }
       for (const b of bits) {
-        ctx.globalAlpha = Math.min(0.32, b.life / 300);
+        ctx.globalAlpha = b.a;
         ctx.fillText(b.ch, b.x, b.y);
       }
       if (log) {
@@ -68,21 +70,23 @@ export default function MatrixRain() {
       }
       for (const s of streams) {
         s.y += s.v;
-        // Each of this stream's characters that just crossed the log is flung off the nearer end.
+        // Each character that just reached the log leaves its stream and is flung off the nearer end. Characters
+        // already below the log when it dropped keep falling. If MAX_BITS is reached, a character falls through.
         if (log && Math.abs(s.x - log.x) < LOG_W / 2) {
           for (let k = 0; k < s.len && bits.length < MAX_BITS; k++) {
             const y = s.y - k * CELL;
-            if (y >= log.y && y - s.v < log.y) {
+            if (!s.gone[k] && y >= log.y && y - s.v < log.y) {
+              s.gone[k] = 1;
               const side = s.x === log.x ? (Math.random() < 0.5 ? -1 : 1) : Math.sign(s.x - log.x);
-              bits.push({ x: s.x, y: log.y - 2, vx: side * (1.5 + Math.random() * 2.5), vy: -(0.5 + Math.random() * 2), ch: s.chars[k % s.chars.length], life: 100 + Math.random() * 60 });
+              bits.push({ x: s.x, y: log.y - 2, vx: side * (1.5 + Math.random() * 2.5), vy: -(0.5 + Math.random() * 2), ch: s.chars[k % s.chars.length], a: alpha(s, k) });
             }
           }
         }
         if (Math.random() < 0.04) s.chars[(Math.random() * s.chars.length) | 0] = pick();
         if (s.y - s.len * CELL > h) Object.assign(s, stream(s.x, true));
       }
-      for (const b of bits) { b.vy += GRAVITY; b.vx *= 0.98; b.x += b.vx; b.y += b.vy; b.life -= 1; }
-      bits = bits.filter((b) => b.life > 0 && b.y < h + CELL && b.x > -CELL && b.x < w + CELL);
+      for (const b of bits) { b.vy += GRAVITY; b.vx *= 0.98; b.x += b.vx; b.y += b.vy; }
+      bits = bits.filter((b) => b.y < h + CELL && b.x > -CELL && b.x < w + CELL); // gone once it leaves the screen, like a stream
       draw();
       raf = requestAnimationFrame(frame);
     };

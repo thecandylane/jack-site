@@ -25,7 +25,7 @@ Next.js 15 App Router with React 19, plain JavaScript (no TypeScript). This repo
 - `src/app/globals.css` — tokens (`--bg --fg --muted --accent --frame --panel --glow`, `.p12` amber), strip, blog, prose, ref card and hero styles
 - `src/app/page.js` — the home page, a server component built once per deploy (`force-static`): hero, then numbered sections led by ref-radar (01), work, projects, security, writing, contact. The copy lives in the data arrays at the top; keep claims to what the owner's resume (`~/Downloads/Jack_Schliewe_*Resume*.pdf`, newest first) and LinkedIn say, and never inflate them
 - `src/lib/radar.js` — ref-radar's live numbers and one real `search_refs` answer, fetched at build
-- `src/components/MatrixRain.js` — the falling phosphor characters behind every page. Pressing empty space drops a small log the streams break on, and nothing else; dragging moves it (one still frame under reduced motion)
+- `src/components/MatrixRain.js` — the falling phosphor characters behind every page. Pressing empty space drops a small log; each character that reaches it leaves its stream and is flung aside. Characters are conserved: the log never creates or deletes one. Dragging moves it (one still frame under reduced motion)
 - `public/llms.txt` — this site for agents, pointing at ref-radar's MCP server
 - `src/components/Terminal.js` — the terminal (`~` or a `#terminal` link): `ref`, `feed`, `ls`, `cat`, `open`, `whoami`, `split` (panes like a Herdr workspace), `coolfolio` (the 2024 portfolio's dodging cards, from `thecandylane/coolfolio`) and `familiar` (the agent CTF)
 - `src/app/api/ref/route.js` — proxies ref-radar's `/api/search`, which sends no CORS header
@@ -33,7 +33,9 @@ Next.js 15 App Router with React 19, plain JavaScript (no TypeScript). This repo
 - `src/app/you/page.js` — what a visitor brings everywhere, shown back to them and never stored. `IpMirror` asks `/api/whoami` what Cloudflare's `request.cf` and the request headers said, runs a WebRTC STUN check against `stun.cloudflare.com`, and flags VPN leaks. `Fingerprint` reads the browser and must never make a network request. `AdAuction` fills an OpenRTB 2.6 bid request with the visitor's values; `Typing` measures keystroke timing; `PhotoLeak` reads a JPEG's EXIF (`src/lib/exif.js`) and redraws a clean copy; `Breach` sends Have I Been Pwned only a 5-character SHA-1 prefix. Every outside request is named on the page
 - `src/app/blog/` — the index and `[slug]` post page (prerendered at build; `dynamicParams = false`)
 - `src/content/posts/*.mdx` — the posts. Each exports `meta = { title, lede, date, tags, refs }`; `refs` lights those refs in the post header's radar
-- `src/mdx-components.js` — heading ids for the CONTENTS sidebar, plus `<Ref/>` and `<Radar/>` for every post
+- `src/mdx-components.js` — heading ids for the CONTENTS sidebar, plus `<Ref/>`, `<Radar/>` and `<Playground/>` for every post
+- Code blocks are highlighted by Shiki and ```` ```mermaid ```` blocks drawn by Pele (`src/lib/rehype-pele.mjs`), both at build time with colors from `globals.css`; a diagram that doesn't parse fails the build
+- `src/components/Playground.js` + `src/content/exercises.js` — editable fix-the-bug exercises (`<Playground {...ex.name} />`). Code runs in a Web Worker with no network APIs and a 2-second limit (CSP `worker-src blob:`). `exercises.test.mjs` checks every starter fails and a reference fix passes; keep the fixes there, not in posts. Exercises stay defensive: the bug and its fix, never a working exploit
 - `src/components/` — `Strip`, `FlowText` (Pretext hero), `Ref` (a ref-radar card, fetched at build), `Radar` (ref-radar's embedded view)
 - `src/lib/` — `posts.js` (build-time fs reads), `text.js`, `flow.js` and their test
 

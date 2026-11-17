@@ -96,6 +96,33 @@ a { color: inherit; text-decoration: none; -webkit-tap-highlight-color: transpar
 .prose code { font-size: .88em; padding: .1em .6ch; border: 1px solid var(--frame); background: var(--panel); color: var(--accent); }
 .prose pre { padding: 1.25rem; overflow-x: auto; border: 1px solid var(--frame); background: color-mix(in srgb, var(--bg) 70%, black); }
 .prose pre code { padding: 0; border: 0; background: none; color: var(--fg); }
+/* Shiki (code blocks) and Pele (```mermaid diagrams) are drawn at build time and colored from these tokens. */
+.prose pre.shiki { --shiki-foreground: var(--fg); --shiki-background: color-mix(in srgb, var(--bg) 70%, black);
+  --shiki-token-keyword: var(--accent); --shiki-token-string: var(--key); --shiki-token-string-expression: var(--key);
+  --shiki-token-constant: var(--key); --shiki-token-comment: var(--muted); --shiki-token-function: var(--fg);
+  --shiki-token-parameter: var(--fg); --shiki-token-punctuation: var(--muted); --shiki-token-link: var(--accent); line-height: 1.6; }
+.prose pre.shiki span { font-style: normal; }
+.diagram { margin: 2rem 0; padding: 1.25rem; border: 1px solid var(--frame); background: var(--panel); overflow-x: auto; text-align: center;
+  --pele-bg: var(--panel); --pele-fg: var(--fg); --pele-muted: var(--muted); --pele-line: var(--accent); --pele-surface: var(--bg);
+  --pele-surface-alt: var(--panel); --pele-border: var(--frame); --pele-accent: var(--key); --pele-font: var(--mono); --pele-radius: 2px; }
+.diagram svg { max-width: 100%; height: auto; }
+/* <Playground/>: an editable exercise that runs in a Web Worker. */
+.play { margin: 2rem 0; border: 1px solid var(--frame); background: color-mix(in srgb, var(--bg) 70%, black); }
+.play figcaption { display: flex; justify-content: space-between; align-items: center; gap: 1ch; padding: .5rem .75rem .5rem 1.25rem;
+  border-bottom: 1px solid var(--frame); background: var(--panel); font-size: 12px; color: var(--muted); }
+.play-btns { display: flex; gap: .5ch; }
+.play button { font: inherit; font-size: 12px; white-space: nowrap; padding: .25em 1.2ch; border: 1px solid var(--frame); background: transparent; color: var(--fg); cursor: pointer; }
+.play button.go { border-color: var(--accent); color: var(--accent); }
+.play button:hover:not(:disabled) { background: color-mix(in srgb, var(--accent) 12%, transparent); }
+.play button:disabled { opacity: .4; cursor: default; }
+.play-ed { overflow-x: auto; }
+.play-ed > pre { margin: 0; border: 0; background: none; font-size: 13.5px; line-height: 1.6; }
+.play-out { padding: .75rem 1.25rem; border-top: 1px solid var(--frame); font: 13px/1.6 var(--mono); }
+.play-out p { margin: 0; white-space: pre-wrap; overflow-wrap: anywhere; }
+.play-out .pass { color: var(--accent); margin-bottom: .25rem; }
+.play-out .fail { color: var(--key); margin-bottom: .25rem; }
+.play-out .ok { color: var(--muted); }
+.play-out .no, .play-out .err { color: var(--key); }
 .prose table { width: 100%; border-collapse: collapse; border: 1px solid var(--frame); background: var(--panel); font-size: 14px; overflow-wrap: anywhere; }
 .prose thead:not(:has(th:not(:empty))) { display: none; }
 .prose th, .prose td { padding: .8rem 1rem; border-bottom: 1px solid var(--frame); text-align: left; vertical-align: top; }
