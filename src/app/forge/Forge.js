@@ -1,76 +1,114 @@
 'use client';
 
-import { useRef, useState, useEffect } from 'react';
-import { createForge } from '@/lib/forge/index';
-import { parse } from '@/lib/forge/parser';
+import { useEffect, useRef, useState } from 'react';
 import './forge.css';
 
-const HEAP = 1 << 20;
-const SEED = `var xs = [1, 2, 3];
-var o = { name: "forge", n: xs.length };
-print(o.name);
-print(o.n + 40);
-`;
+// The judge runs on the server (src/app/api/forge/route.js): the VM is an interpreter, so the whole
+// cage, both bugs and the host table live in the Worker. This island only sends source and draws
+// what came back — the flag is never in this bundle.
+
+const SEED = {
+  pollution: `// merge(target, source) copies keys. exec(opts) reads opts.shell.
+// read(view) returns what the host handle behind it holds.
+var opts = {};
+var view = exec(opts);
+print(read(view));
+`,
+  bounds: `// xs is seeded for you, with a canary allocated right after it.
+// The panel lists block offsets; elements start at elements + 16, and i*4 is the stride.
+xs.length = 4;
+xs[0] = 1;
+`,
+  escape: `// open() gives you a view on handle 1. Make it name another handle.
+var xs = [1, 2, 3, 4];
+var v = open();
+print(read(v));
+`,
+};
 
 const hex = (n) => '0x' + n.toString(16).padStart(5, '0');
 
 export default function Forge() {
-  const forgeRef = useRef(null);
-  const outRef = useRef(null);
-  const [src, setSrc] = useState(SEED);
+  const [labs, setLabs] = useState([]);
+  const [labId, setLabId] = useState('pollution');
+  const [src, setSrc] = useState(SEED.pollution);
   const [lines, setLines] = useState([]);
   const [rows, setRows] = useState([]);
   const [used, setUsed] = useState(0);
+  const [cage, setCage] = useState(1 << 16);
+  const [verdict, setVerdict] = useState(null);
+  const [busy, setBusy] = useState(false);
+  const outRef = useRef(null);
 
   useEffect(() => {
-    if (outRef.current) outRef.current.scrollTop = outRef.current.scrollHeight;
+    fetch('/api/forge').then((r) => r.json()).then((d) => setLabs(d.labs ?? [])).catch(() => {});
+  }, []);
+
+  useEffect(() => {
+    outRef.current?.scrollTo(0, outRef.current.scrollHeight);
   }, [lines]);
 
-  const refresh = (f) => {
-    setRows(
-      f.objects().slice(0, 60).map((o) => ({
-        offset: o.offset,
-        size: o.size,
-        kind: f.maps.get(o.mapId)?.kind ?? 'map ' + o.mapId,
-      })),
-    );
-    setUsed(f.snapshot().length);
+  const brief = labs.find((l) => l.id === labId)?.brief ?? '';
+
+  const pick = (id) => {
+    setLabId(id);
+    setSrc(SEED[id] ?? '');
+    setLines([]);
+    setRows([]);
+    setVerdict(null);
+    setUsed(0);
   };
 
-  const run = () => {
-    const out = [];
-    try {
-      forgeRef.current ??= createForge({ parse, heapBytes: HEAP });
-      const f = forgeRef.current;
-      const r = f.run(src);
-      for (const l of r.log ?? []) out.push({ t: String(l) });
-      if (!r.ok) out.push({ t: String(r.error?.message ?? r.error), err: true });
-      refresh(f);
-    } catch (e) {
-      out.push({ t: String(e?.message ?? e), err: true });
+  const run = async () => {
+    setBusy(true);
+    setVerdict(null);
+    const res = await fetch('/api/forge', {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ lab: labId, source: src }),
+    }).then((r) => r.json()).catch(() => ({ error: 'The forge did not answer.' }));
+    setBusy(false);
+    if (res.error && !res.ok) {
+      setLines((prev) => [...prev, { t: res.error, err: true }].slice(-200));
+      return;
     }
-    setLines((prev) => [...prev, ...out].slice(-200));
+    const next = (res.log ?? []).map((t) => ({ t }));
+    if (!res.ok) next.push({ t: res.error ?? 'stopped', err: true });
+    setLines((prev) => [...prev, ...next].slice(-200));
+    setRows(res.objects ?? []);
+    setUsed(res.used ?? 0);
+    setCage(res.heapBytes ?? 1 << 16);
+    setVerdict({ solved: res.solved, why: res.why, flag: res.flag });
   };
 
   const reset = () => {
-    forgeRef.current = null;
-    setSrc(SEED);
+    setSrc(SEED[labId] ?? '');
     setLines([]);
     setRows([]);
+    setVerdict(null);
     setUsed(0);
   };
 
   const onKey = (e) => {
     if (e.key !== 'Tab') return;
     e.preventDefault();
-    const { selectionStart: a, selectionEnd: b, value } = e.target;
-    const ta = e.target;
-    setSrc(value.slice(0, a) + '  ' + value.slice(b));
-    requestAnimationFrame(() => ta.setSelectionRange(a + 2, a + 2));
+    const el = e.currentTarget;
+    const { selectionStart: a, selectionEnd: b } = el;
+    const next = `${src.slice(0, a)}  ${src.slice(b)}`;
+    setSrc(next);
+    requestAnimationFrame(() => el.setSelectionRange(a + 2, a + 2));
   };
 
   return (
     <div className="forge">
+      <label className="forge-label" htmlFor="forge-lab">Lab</label>
+      <select id="forge-lab" className="forge-lab" value={labId} onChange={(e) => pick(e.target.value)}>
+        {labs.length === 0 && <option value="pollution">pollution</option>}
+        {labs.map((l) => <option key={l.id} value={l.id}>{l.title}</option>)}
+      </select>
+
+      {brief && <p className="forge-brief" id="forge-brief">{brief}</p>}
+
       <label className="forge-label" htmlFor="forge-src">Source</label>
       <textarea
         id="forge-src"
@@ -79,47 +117,39 @@ export default function Forge() {
         onChange={(e) => setSrc(e.target.value)}
         onKeyDown={onKey}
         spellCheck={false}
-        autoCapitalize="off"
-        autoCorrect="off"
-        rows={12}
+        aria-describedby={brief ? 'forge-brief' : undefined}
       />
+
       <div className="forge-actions">
-        <button type="button" onClick={run} aria-label="Run the program">Run</button>
+        <button type="button" onClick={run} disabled={busy} aria-label="Run the program">{busy ? 'Running…' : 'Run'}</button>
         <button type="button" onClick={reset} aria-label="Reset the editor, output and heap">Reset</button>
       </div>
 
-      <h2 className="forge-label" id="forge-out-h">Output</h2>
-      <pre className="forge-out" ref={outRef} aria-live="polite" aria-labelledby="forge-out-h" tabIndex={0}>
-        {lines.map((l, i) => (
-          <div key={i} className={l.err ? 'forge-err' : undefined}>{l.t}</div>
-        ))}
-      </pre>
-
-      <h2 className="forge-label" id="forge-cage-h">Cage</h2>
-      <div
-        className="forge-cage"
-        role="meter"
-        aria-labelledby="forge-cage-h"
-        aria-valuemin={0}
-        aria-valuemax={HEAP}
-        aria-valuenow={used}
-      >
-        <div className="forge-cage-fill" style={{ width: (used / HEAP) * 100 + '%' }} />
+      <label className="forge-label" htmlFor="forge-out">Output</label>
+      <div id="forge-out" className="forge-out" aria-live="polite" ref={outRef}>
+        {lines.map((l, i) => <p key={i} className={l.err ? 'forge-err' : undefined}>{l.t}</p>)}
       </div>
-      <p className="forge-muted">{used.toLocaleString()} of {HEAP.toLocaleString()} bytes</p>
 
-      <h2 className="forge-label" id="forge-heap-h">Heap</h2>
-      <table className="forge-heap" aria-labelledby="forge-heap-h">
-        <thead>
-          <tr><th scope="col">offset</th><th scope="col">kind</th><th scope="col">size</th></tr>
-        </thead>
+      {verdict && (
+        <p className={verdict.solved ? 'forge-ok' : 'forge-why'}>
+          {verdict.solved ? `solved. ${verdict.flag ?? verdict.why}` : verdict.why}
+        </p>
+      )}
+
+      <p className="forge-muted">
+        {used.toLocaleString()} of {cage.toLocaleString()} bytes
+      </p>
+      <div className="forge-cage" role="img" aria-label={`${used} of ${cage} bytes used`}>
+        <div className="forge-cage-fill" style={{ width: `${Math.min(100, (used / cage) * 100)}%` }} />
+      </div>
+
+      <label className="forge-label" htmlFor="forge-heap">Heap</label>
+      <table className="forge-heap" id="forge-heap">
+        <thead><tr><th>offset</th><th>kind</th><th>size</th></tr></thead>
         <tbody>
-          {rows.map((r) => (
-            <tr key={r.offset}><td>{hex(r.offset)}</td><td>{r.kind}</td><td>{r.size}</td></tr>
-          ))}
+          {rows.map((o) => <tr key={o.offset}><td>{hex(o.offset)}</td><td>{o.kind}</td><td>{o.size}</td></tr>)}
         </tbody>
       </table>
-      {rows.length === 0 && <p className="forge-muted">Run a program to fill the heap.</p>}
     </div>
   );
 }

@@ -12,8 +12,9 @@ pushing `main` deploys nothing.
 |---|---|---|
 | M1 VM core | done | `src/lib/forge/` — values, heap, maps, interp; 13 tests |
 | M2 Lab A | done | `builtins.js` (BUG-2), `host.js`, `labs/pollution.js`; 5 tests |
-| M3 Lab B | not started | the bug is planted and tested; the lab and checker are missing |
-| M4 Lab C | not started | `allocView` and `read` exist; the escape lab is missing |
+| M3 Lab B | done | `labs/bounds.js`; solver verified against the live API |
+| M4 Lab C | done | `labs/escape.js`; handle 3 read through a retargeted view |
+| Scoring | done | `/api/forge` runs the VM in the Worker; the flag never reaches the client |
 | M5 `/forge` UI | done | `src/app/forge/`; verified in a browser |
 | M6 QuickJS lane | done | `/forge/quickjs`; verified in a browser, interrupt at 2 s |
 | M7 content | not started | posts, ref-radar suggestions |

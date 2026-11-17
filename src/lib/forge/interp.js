@@ -39,6 +39,7 @@ export class Interpreter {
     this.log = [];
     this.fns = [];
     this.builtinWords = new Map();
+    this.globals = new Map();
     this.boot();
   }
 
@@ -338,9 +339,15 @@ export class Interpreter {
     }
   }
 
+  /** A lab's word, visible to every run in this forge under a fixed name. */
+  bindGlobal(name, word) {
+    this.globals.set(name, word);
+  }
+
   globalEnv() {
     const env = new Env(null);
     for (const [name, word] of this.builtinWords) env.vars.set(name, word);
+    for (const [name, word] of this.globals) env.vars.set(name, word);
     return env;
   }
 

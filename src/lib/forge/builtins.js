@@ -27,6 +27,9 @@ export function installHostBuiltins(vm, host) {
     return vm.undef;
   });
 
+  // A view on handle 1 and nothing more. The escape lab's whole job is to make it name 3.
+  vm.defineBuiltin('open', () => vm.allocView(1));
+
   vm.defineBuiltin('read', (args) => {
     const view = args[0];
     if (!isPtr(view)) return vm.undef;

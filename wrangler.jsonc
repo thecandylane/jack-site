@@ -19,6 +19,8 @@
   // (developers.cloudflare.com/workers/runtime-apis/bindings/rate-limit). period must be 10 or 60.
   "ratelimits": [
     { "name": "AGENT_PER_IP", "namespace_id": "2101", "simple": { "limit": 4, "period": 60 } },
-    { "name": "AGENT_ALL", "namespace_id": "2102", "simple": { "limit": 30, "period": 60 } }
+    { "name": "AGENT_ALL", "namespace_id": "2102", "simple": { "limit": 30, "period": 60 } },
+    // The Forge (/api/forge) runs the site's own VM, so a run is cheap; 30 a minute keeps a loop honest.
+    { "name": "FORGE_PER_IP", "namespace_id": "2103", "simple": { "limit": 30, "period": 60 } }
   ]
 }

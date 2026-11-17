@@ -7,22 +7,29 @@ import { Interpreter } from './interp.js';
 import { Host } from './host.js';
 import { installHostBuiltins } from './builtins.js';
 import { POLLUTION_LAB } from './labs/pollution.js';
+import { BOUNDS_LAB } from './labs/bounds.js';
+import { ESCAPE_LAB } from './labs/escape.js';
 import { isSmi, isPtr, smiValue, ptrOffset } from './values.js';
+
+export const LABS = [POLLUTION_LAB, BOUNDS_LAB, ESCAPE_LAB];
+export const labById = (id) => LABS.find((lab) => lab.id === id) ?? null;
 
 /**
  * @param {object} options
  * @param {number} [options.heapBytes] cage size, 1 MiB by default
  * @param {(src: string) => object} options.parse  the parser; required only for run(src)
  * @param {number} [options.steps] instruction ceiling for one run
+ * @param {string} [options.flag] the host's flag value
+ * @param {string|object} [options.lab] a lab id, or the lab itself; its start() seeds the cage
  */
-export function createForge({ heapBytes = 1 << 20, parse = null, steps, flag } = {}) {
+export function createForge({ heapBytes = 1 << 20, parse = null, steps, flag, lab = null } = {}) {
   const heap = new Heap(heapBytes);
   const maps = new Maps();
   const vm = new Interpreter(heap, maps, steps ? { steps } : {});
   const host = new Host(flag);
   installHostBuiltins(vm, host);
 
-  return {
+  const api = {
     heap,
     maps,
     vm,
@@ -59,9 +66,17 @@ export function createForge({ heapBytes = 1 << 20, parse = null, steps, flag } =
       return heap.objects();
     },
 
-    /** Labs register against this VM and check from heap and host state. */
+    /** Bytes the allocator has handed out, for the cage bar. */
+    used() {
+      return heap.top;
+    },
+
     labs() {
-      return [POLLUTION_LAB];
+      return LABS;
     },
   };
+
+  const selected = typeof lab === 'string' ? labById(lab) : lab;
+  if (selected) selected.start(api);
+  return api;
 }
