@@ -53,6 +53,7 @@ const fixes = {
   shellcodeFlag: (c) => c.replace('  return file.byteArrayLength >= 256;', `  const exec = /PAGE_EXECUTE|PROT_EXEC|CreateRemoteThread|memfd_create/.test(file.text);
   const testData = /(^|\\/)(tests?|testdata|fixtures|vectors)\\//.test(file.path);
   return file.byteArrayLength >= 256 && exec && !testData;`),
+  branchOffset: (c) => c.replace(/return \(\(word & 0x80000000[\s\S]*?0x01\);/, 'return ((word >> 31) << 12) | (((word >>> 7) & 1) << 11) | (((word >>> 25) & 0x3f) << 5) | (((word >>> 8) & 0xf) << 1);'),
   basketOwner: (c) => c.replace('if (!basket) return', 'if (!basket || basket.userId !== session.userId) return'),
   safeName: (c) => c.replace('  return name;', "  return [...new TextEncoder().encode(name)].map((b) => (b >= 0x20 && b <= 0x7e && b !== 0x5c ? String.fromCharCode(b) : '\\\\x' + b.toString(16).padStart(2, '0'))).join('');"),
 };

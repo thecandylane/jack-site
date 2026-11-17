@@ -394,3 +394,38 @@ test("another user's basket is 404, with no data", () => eq(getBasket({ userId: 
 test('counting through the ids only ever finds your own', () => eq([1, 2, 3, 4].filter((id) => getBasket({ userId: 2 }, id).status === 200), [2]));
 `,
 };
+
+export const branchOffset = {
+  title: 'branch.js · put the offset back together',
+  code: String.raw`
+// A B-type word keeps its 13-bit branch offset in four pieces:
+//
+//   word bit 31      -> offset bit 12 (the sign)
+//   word bits 30-25  -> offset bits 10-5
+//   word bits 11-8   -> offset bits 4-1
+//   word bit 7       -> offset bit 11
+//
+// Offset bit 0 is never stored: it is always 0. The offset is signed,
+// so when bit 12 is set the branch goes backward.
+
+// This is the line from my 2023 C++ version, moved to JavaScript.
+// One piece lands in the wrong place, and a backward branch comes
+// out as a large positive number. Fix both.
+function branchOffset(word) {
+  return ((word & 0x80000000) >>> 19) | ((word & 0x7e000000) >>> 20) |
+    ((word >>> 7) & 0x1e) | ((word >>> 7) & 0x01);
+}
+
+// beq a0, a1, +8 and beq a0, a1, -4
+console.log(branchOffset(0x00b50463), branchOffset(0xfeb50ee3));
+`,
+  tests: String.raw`
+test('beq a0, a1, +8', () => eq(branchOffset(0x00b50463), 8));
+test('bne a0, a1, +2048 uses word bit 7', () => eq(branchOffset(0x00b510e3), 2048));
+test('bgeu s2, s3, +4094 is the longest forward branch', () => eq(branchOffset(0x7f397fe3), 4094));
+test('beq a0, a1, -4 goes backward', () => eq(branchOffset(0xfeb50ee3), -4));
+test('bne t0, t1, -8 goes backward', () => eq(branchOffset(0xfe629ce3), -8));
+test('blt a0, zero, -4096 is the longest backward branch', () => eq(branchOffset(0x80054063), -4096));
+test('an offset is never odd', () => eq(branchOffset(0x00b50463 | 0x80) & 1, 0));
+`,
+};

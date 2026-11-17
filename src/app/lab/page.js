@@ -2,10 +2,11 @@ import { pageMeta } from '@/lib/site';
 import NpmDiff from '@/components/NpmDiff';
 import YaraPlayground from '@/components/YaraPlayground';
 import AgentCheck from '@/components/AgentCheck';
+import RiscvDisasm from '@/components/RiscvDisasm';
 
 export const metadata = pageMeta({
   title: 'Lab',
-  description: 'Small security tools that run in your browser: an agent file checker, an npm release checker and a YARA-X rule playground.',
+  description: 'Small security tools that run in your browser: an agent file checker, an npm release checker, a YARA-X rule playground and a RISC-V disassembler.',
   path: '/lab',
 });
 
@@ -44,6 +45,15 @@ export default function Lab() {
           in repos. Edit them, scan the samples, or scan a file of your own; it never leaves your browser.
         </p>
         <YaraPlayground />
+      </section>
+      <section className="fp">
+        <h2 className="sec-h">RISC-V disassembler</h2>
+        <p className="lede">
+          Turns RV32I machine code back into assembly: paste 32-bit hex words or open a <code>.bin</code> file, and each
+          line shows the address, the word, its format and the instruction. A JavaScript port of a C++ program from
+          2023. From <a href="/blog/reading-risc-v-by-hand">Reading RISC-V by hand</a>.
+        </p>
+        <RiscvDisasm />
       </section>
     </main>
   );
