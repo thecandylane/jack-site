@@ -1,0 +1,86 @@
+export const meta = {
+  title: 'Writing an engine to break it',
+  lede: 'A checker that reads your exploit source is a quiz. To make a bug real, I had to write the machine it lives in.',
+  date: '2026-11-17',
+  tags: ['javascript', 'exploitation', 'design', 'ctf'],
+  refs: ['gh:bellard/quickjs', 'gh:dwisiswant0/ppfuzz'],
+}
+
+Most "exploitation" exercises are a filter. You send a string, something compares it, you get a flag. The comparison is the whole challenge, and the bug is a story told around it.
+
+I did not want that. I wanted the bug to exist in the code, reachable by an ordinary program, and I wanted the checker to look at memory afterwards rather than at what you typed. That meant writing an engine.
+
+## The layout
+
+The Forge's memory model fits on one page, which is the only reason it is teachable.
+
+| Offset | Field | Meaning |
+|---|---|---|
+| +0 | `mapId` | index into a host-side map table |
+| +4 | `size` | bytes, including this header |
+| +8 | `mark` | sweep mark |
+| +12 | `elem` | pointer word to an elements block, or zero |
+
+Slots are four bytes. A value is a 32-bit word: low bit zero means a Smi carrying `value << 1`, low bit one means a pointer holding a cage offset. Pointers are eight-byte aligned, so the tag costs nothing. Every reference is an offset into one `Uint8Array`, which means there is no address space to leak — that boundary is the model's whole point.
+
+## Why doubles are not in slots
+
+A double needs eight bytes. A slot has four. So a `double` property does not hold a number; it holds a pointer to an eight-byte HeapNumber elsewhere in the cage.
+
+That indirection looks like a workaround until you look at what it does to a store. When an array of Smis starts receiving doubles, its element representation has to change: the block is reallocated with eight-byte elements, every value is copied, and the array's map is swapped. Between the load of the old block and the store into the new one, there is a window. V8 shipped a bug in exactly that window this year — the second bug in the [previous post](/blog/three-bugs-one-model) — and the HeapNumber split is why the window exists at all.
+
+## The bug I left in
+
+In the Forge, assigning an array's `length` writes the length slot and does not resize the elements block. Every later index then trusts the new length and walks forward past the block, through whatever the bump allocator put next.
+
+```js
+xs.length = 64;      // the slot moves; the block does not
+xs[15] = 1;          // 15 is past the block, inside a neighbouring object
+```
+
+The index is not secret. The heap panel lists every live block with its offset, so the reader computes where the target's property slot sits and chooses the index that lands on it. One lab asks you to rewrite a seeded canary's property; the next asks you to use the same primitive on something more interesting.
+
+## The escape
+
+The host is a table of values outside the cage: the flag, a shell path, a file, a secret. Guest code reaches it only through a view object, whose first slot holds a handle index. `open()` hands out a view on handle 1. Handle 3 is never handed out by anything.
+
+So the last lab is the length bug aimed at the view's index slot. Allocate the view after the array and the forward walk reaches it; allocate it before and it does not. That is the whole lesson: allocation order decides what a bug can reach.
+
+## Who judges
+
+The first version ran in the browser. That is a problem, and not a small one: a flag shipped to the browser is in the bundle, and a client that decides whether you solved something can be edited.
+
+The fix came from the engine itself. Workers ban `eval`, but nothing here evaluates strings — the parser produces an AST and the interpreter walks it. So the scored run moved into the Worker. The flag lives in the environment, the checkers read the heap and the host log, and the client only sends source and draws the reply.
+
+| Client-side, before | Worker-scored, now |
+|---|---|
+| flag in the bundle | flag in `env`, never shipped |
+| any solve is a display decision | solve requires the read log |
+| devtools defeats it | devtools shows nothing |
+
+The rate limit is 30 runs a minute per visitor, the cage is 64 KiB, and a run stops at 400,000 steps. A program that loops forever gets an error, not a bill.
+
+<details className="hdrs">
+<summary>The escape, spelled out</summary>
+
+Run `var xs = [1,2,3,4]; var v = open();` once and read the panel. The elements block sits just before the array object; the view sits after it. An element `i` is at `elements + 16 + i*4`, and the view's index slot is at `view + 20`.
+
+With the numbers this engine currently produces, that is index 15:
+
+```js
+var xs = [1, 2, 3, 4];
+var v = open();
+xs.length = 512;
+xs[15] = 3;
+print(read(v));      // native:0x7f3a2c10
+```
+
+The write is four bytes wide and lands exactly on the index slot. Nothing checks that the view still names what it did when `open()` returned it, because nothing can: the index is ordinary writable memory, and that is precisely the failure real engines spend their sandbox budget preventing.
+
+</details>
+
+## What it still doesn't have
+
+No JIT, so no compiler bugs. No pointer compression, so the cage is small. No GC pressure worth the name. And the final step of a real chain — turning cage access into native execution — has nowhere to happen, because there is no native code.
+
+The model is honest about that on the page. What it does have is the part that matters for learning the shape: bugs in the engine, state-based judging, and a boundary you can point at.

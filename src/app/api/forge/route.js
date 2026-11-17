@@ -39,7 +39,9 @@ export async function POST(request) {
     return json({ error: 'The forge is hot. Try again in a minute.' }, 429);
   }
 
-  const flag = env.FORGE_FLAG || '';
+  // One secret per lab, falling back to the shared one: FORGE_FLAG_POLLUTION, FORGE_FLAG_BOUNDS,
+  // FORGE_FLAG_ESCAPE, then FORGE_FLAG. A lab with no flag still scores; it returns null.
+  const flag = env[`FORGE_FLAG_${lab.id.toUpperCase()}`] || env.FORGE_FLAG || '';
   const forge = createForge({ heapBytes: HEAP_BYTES, steps: MAX_STEPS, parse, flag, lab });
   const out = forge.run(source);
   const verdict = lab.check(forge);

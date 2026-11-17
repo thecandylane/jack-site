@@ -61,7 +61,8 @@ Next.js 15 App Router with React 19, plain JavaScript (no TypeScript). This repo
 - `GEMINI_API_KEY` — an AI Studio API key. A Google AI Pro subscription does not cover the API (Gemini API docs, google-ai-plans).
 - `CTF_FLAG` — the familiar's flag. Without it or the key, `/api/agent` answers 503 and the rest of the site works.
 - `CTF_MODEL` (default `gemini-3.5-flash-lite`) and `CTF_DAILY` (model calls a day, per Worker isolate, default 400) are optional.
-- Rate limits are the `AGENT_PER_IP` (4 a minute) and `AGENT_ALL` (30 a minute) bindings in `wrangler.jsonc`, counted per Cloudflare location.
+- `FORGE_FLAG` — the Forge's shared flag. `FORGE_FLAG_POLLUTION`, `FORGE_FLAG_BOUNDS` and `FORGE_FLAG_ESCAPE` override it per lab (`/api/forge` resolves `FORGE_FLAG_<LAB>` first, then the shared one). A lab with neither still scores; it just returns no flag.
+- Rate limits are the `AGENT_PER_IP` (4 a minute), `AGENT_ALL` (30 a minute) and `FORGE_PER_IP` (30 a minute) bindings in `wrangler.jsonc`, counted per Cloudflare location.
 
 ## Private brain
 - The `brain` MCP server is the owner's knowledge base for every project. Tools: search_private, get_private, remember, link, outdate.
