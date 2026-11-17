@@ -1,0 +1,27 @@
+.qjs-h { font-family: var(--t); color: var(--accent); }
+.qjs-box { margin-top: 1.5rem; }
+.qjs-ed {
+  width: 100%; min-height: 12rem; padding: .75rem; box-sizing: border-box;
+  font-family: var(--mono); color: var(--fg);
+  background: var(--panel); border: 1px solid var(--frame); resize: vertical;
+}
+.qjs-bar { display: flex; gap: .75rem; margin: .75rem 0; }
+.qjs-bar button {
+  font-family: var(--t); color: var(--fg); background: var(--panel);
+  border: 1px solid var(--frame); padding: .4rem 1rem; cursor: pointer;
+}
+.qjs-bar button:hover:not(:disabled) { color: var(--accent); border-color: var(--accent); }
+.qjs-bar button:disabled { color: var(--muted); cursor: default; }
+.qjs-out pre {
+  font-family: var(--mono); color: var(--fg); background: var(--panel);
+  border: 1px solid var(--frame); padding: .75rem; overflow-x: auto; white-space: pre-wrap;
+}
+.qjs-status { font-family: var(--t); color: var(--muted); }
+.qjs-ok { color: var(--accent); }
+.qjs-interrupted, .qjs-error { color: var(--fg); }
+.qjs-sub { font-family: var(--t); color: var(--accent); }
+.qjs-note { color: var(--muted); }
+.qjs-stats { display: grid; grid-template-columns: max-content 1fr; gap: .25rem 1.5rem; font-family: var(--mono); }
+.qjs-stats dt { color: var(--muted); }
+.qjs-stats dd { margin: 0; color: var(--fg); }
+.qjs-mem { color: var(--muted); }
