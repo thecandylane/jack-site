@@ -4,8 +4,18 @@ One artifact, four lanes: a micro JavaScript VM we write, three labs that exploi
 a real-engine lane that shows an actual engine's internals, and the writing that ties them to
 the 2026 state of the art.
 
-Status: approved direction (2026-11-17). Nothing built yet. Work on a branch; `main` still
-auto-deploys through Coolify.
+Status: M1, M2, M5 and the first half of M6 shipped on branch `forge` (2026-11-17). M3, M4 and
+M7 remain. Work on a branch; `main` still auto-deploys through Coolify.
+
+| Milestone | State | Where |
+|---|---|---|
+| M1 VM core | done | `src/lib/forge/` — values, heap, maps, interp; 13 tests |
+| M2 Lab A | done | `builtins.js` (BUG-2), `host.js`, `labs/pollution.js`; 5 tests |
+| M3 Lab B | not started | the bug is planted and tested; the lab and checker are missing |
+| M4 Lab C | not started | `allocView` and `read` exist; the escape lab is missing |
+| M5 `/forge` UI | done | `src/app/forge/`; verified in a browser |
+| M6 QuickJS lane | done | `/forge/quickjs`; verified in a browser, interrupt at 2 s |
+| M7 content | not started | posts, ref-radar suggestions |
 
 ---
 
