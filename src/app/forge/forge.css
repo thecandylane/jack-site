@@ -18,3 +18,8 @@
 @media (prefers-reduced-motion: reduce) {
   .forge-actions button, .forge-cage-fill { transition: none; }
 }
+.forge-lab { font-family: var(--mono); background: var(--panel); color: var(--fg); border: 1px solid var(--frame); padding: 0.3rem 0.5rem; }
+.forge-brief { color: var(--muted); font-size: 0.9rem; line-height: 1.5; margin: 0 0 0.5rem; white-space: pre-line; }
+.forge-ok { color: var(--accent); margin: 0.5rem 0; }
+
+.forge-why { color: var(--muted); margin: 0.5rem 0; }
