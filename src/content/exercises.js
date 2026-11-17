@@ -359,3 +359,38 @@ test('a test vector is not flagged, even next to mprotect', () => eq(f('tests/ve
 test('a fixture folder counts as test data too', () => eq(f('crypto/fixtures/blob.h', 900, 'VirtualProtect(p, n, PAGE_EXECUTE_READ, &old)'), false));
 `,
 };
+
+export const basketOwner = {
+  title: 'basket.js · logged in is not the same as allowed',
+  code: String.raw`
+// Baskets have small sequential ids, and each belongs to one user.
+const BASKETS = [
+  { id: 1, userId: 1, items: ['apple juice', 'apple juice'] },
+  { id: 2, userId: 2, items: ['raspberry juice'] },
+  { id: 3, userId: 7, items: ['sticker pack'] },
+];
+
+// session is who the server says is calling ({ userId }), or null.
+// This handler checks that someone is logged in and stops there, so
+// any customer can read any basket by counting. Fix it: a caller gets
+// their own basket and nobody else's. Answer 404 for someone else's
+// basket, the same as for one that doesn't exist.
+function getBasket(session, basketId) {
+  if (!session) return { status: 401 };
+  const basket = BASKETS.find((b) => b.id === Number(basketId));
+  if (!basket) return { status: 404 };
+  return { status: 200, basket };
+}
+
+console.log(JSON.stringify(getBasket({ userId: 7 }, 3)));
+console.log(JSON.stringify(getBasket({ userId: 7 }, 1)));
+`,
+  tests: String.raw`
+test('no session gets 401', () => eq(getBasket(null, 1), { status: 401 }));
+test('the owner reads their own basket', () => eq(getBasket({ userId: 7 }, 3), { status: 200, basket: BASKETS[2] }));
+test('an id from the URL arrives as a string', () => eq(getBasket({ userId: 2 }, '2').status, 200));
+test('a missing basket is 404', () => eq(getBasket({ userId: 7 }, 99), { status: 404 }));
+test("another user's basket is 404, with no data", () => eq(getBasket({ userId: 7 }, 1), { status: 404 }));
+test('counting through the ids only ever finds your own', () => eq([1, 2, 3, 4].filter((id) => getBasket({ userId: 2 }, id).status === 200), [2]));
+`,
+};
