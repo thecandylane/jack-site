@@ -20,6 +20,7 @@
     "@next/mdx": "^15.5.29",
     "@opennextjs/cloudflare": "^1.20.17",
     "@shikijs/rehype": "4.6.0",
+    "@virustotal/yara-x": "1.22.1",
     "codemirror": "6.0.2",
     "hast-util-from-html": "2.0.3",
     "next": "15.5",
