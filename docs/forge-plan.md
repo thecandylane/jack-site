@@ -70,13 +70,17 @@ public/forge/    wasm + emscripten glue for lane 3 (lazy)
 Public API — the contract every slice codes against:
 
 ```js
-createForge({ heapBytes = 1 << 20 })
-  .run(src)            // -> { ok, value, steps, error, log }
+createForge({ heapBytes = 1 << 20, parse, steps })
+  .exec(ast)           // -> { ok, value, steps, error, log }; no parser needed
+  .run(src)            // -> same shape, compiled through the injected parse()
   .snapshot()          // -> Uint8Array copy of the cage (for the inspector)
-  .inspect(word)       // -> { tag: 'smi' | 'ptr', value, mapId?, size? }
-  .objects()           // -> [{ offset, mapId, size, name }] live heap walk
+  .inspect(word)       // -> { tag: 'smi' | 'ptr', value, mapId?, kind, size? }
+  .objects()           // -> [{ offset, mapId, size, mark }] live heap walk
   .labs()              // -> [{ id, title, brief, start, check }]
 ```
+
+`parse` is injected rather than imported so this module never depends on the parser's file
+landing first: the page passes `parse` from `src/lib/forge/parser.js`, tests pass an AST.
 
 Every lab matches that shape; `check` receives the live forge and returns
 `{ solved, why }` from **heap state**, never from the guest's source text.
@@ -151,6 +155,42 @@ expr       := literals (num, str, true/false/null/undefined) | ident | array | o
 No `eval`, no `with`, no `Proxy`, no getters/setters as guest syntax (the VM itself uses a
 host-side accessor hook where a lab needs one), no `async`.
 
+### AST contract (parser out, interpreter in)
+
+Plain objects with a `type` string; no classes, no positions (a parser may add `line`/`col`
+without breaking anything). `interp.js` is already written against exactly these:
+
+```
+Program   { body: Stmt[] }
+VarDecl   { kind: 'let'|'const'|'var', decls: [{ id: string, init: Expr|null }] }
+FuncDecl  { id: string, params: string[], body: Block }
+Block     { body: Stmt[] }
+ExprStmt  { expr: Expr }
+If        { test: Expr, cons: Stmt, alt: Stmt|null }
+While     { test: Expr, body: Stmt }
+For       { init: Stmt|null, test: Expr|null, update: Expr|null, body: Stmt }
+Return    { arg: Expr|null }
+Throw     { arg: Expr }
+Try       { block: Block, param: string|null, handler: Block }
+Num       { value: number }
+Str       { value: string }
+Bool      { value: boolean }
+Null      {}
+Undefined {}
+Ident     { name: string }
+Array     { elements: Expr[] }
+Object    { props: [{ key: string, value: Expr }] }      // key is a bare string, never computed
+Member    { object: Expr, property: Expr, computed: boolean }
+          // computed=false: property is an Ident node; interp reads .property.name
+Call      { callee: Expr, args: Expr[] }
+New       { callee: Expr, args: Expr[] }
+Unary     { op: '-'|'!'|'typeof', arg: Expr }
+Binary    { op: '+'|'-'|'*'|'/'|'%'|'<'|'>'|'<='|'>='|'==='|'!==', left, right }
+Logical   { op: '&&'|'||', left, right }
+Assign    { op: '='|'+='|'-=', target: Ident|Member, value: Expr }
+Conditional { test: Expr, cons: Expr, alt: Expr }
+```
+
 Acceptance:
 - `npm test` covers: tag round-trip for every Smi edge (-2^30, 2^30-1), double storage via
   HeapNumber, parser precedence table, closure capture, prototype-chain lookup order, and
@@ -177,13 +217,17 @@ Gadget: `host.exec(opts)` reads `opts.shell` and `opts.env` through the chain; a
 Checker: the flag handle was opened by `host.exec`'s native path, proven by a host-side call
 counter. Writing `flag()` in the editor without reaching the native path does nothing.
 
-### Lab B — map migration (`migration.js`)
+### Lab B — the length that outlives its block (`migration.js`)
 
-Bug: array element store loads `elem` before a representation change that reallocates the
-block, then stores 8 bytes through the stale pointer. Real OOB write into the next allocation.
+Bug: assigning `arr.length` writes the length slot and never resizes the elements block, so
+every later index walks whatever the allocator put next. The first fix attempt — resizing on
+the way to a Double representation — is already correct; the length path is not.
 
-Teaching target: the next allocation is a `view` object whose handle index you overwrite.
-Mirrors CVE-2026-79236 (stale `PropertyArray` across `CheckMaps` with `kTryMigrateInstance`).
+Teaching target: a neighbour `view` object sits after the elements block. The guest overwrites
+its handle index by choosing an index, then reads a handle it never named.
+
+Why this one: it is the primitive CVE-2026-79236 ends in — controlled read and write inside the
+cage — without pretending our allocator reproduces a stale `PropertyArray`.
 
 Checker: the live heap shows a modified handle index on an object the guest never referenced
 by name.
