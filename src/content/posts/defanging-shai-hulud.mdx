@@ -18,7 +18,8 @@ Most people think of malware as something you have to run. A modern dev repo run
 - **Package managers run install scripts.** One `npm install` in the wrong folder runs whatever `postinstall` says.
 - **Git runs hooks and filters.** A `.gitattributes` filter or a hook runs code on checkout, commit or diff.
 - **Editors run tasks.** A `.vscode` folder or a `.code-workspace` file can define tasks and settings that run when you open the folder.
-- **Coding agents read instructions.** `CLAUDE.md`, `.mcp.json`, `claude_desktop_config.json` and plain Markdown are read by agents as instructions. An agent asked to "help me read this repo" can be told to do something else entirely. That is exactly the door Shai-Hulud used.
+- **Coding agents run hooks.** A repo's `.claude/settings.json` can define hooks: commands Claude Code runs at moments like the start of a session. Later Shai-Hulud waves committed exactly that to the repos they infected, along with a VS Code task set to run when the folder opens, so opening an infected repo in either tool ran the worm again. No `npm install` needed.
+- **Coding agents read instructions.** `CLAUDE.md`, `.mcp.json`, `claude_desktop_config.json` and plain Markdown are read by agents as instructions. An agent asked to "help me read this repo" can be told to do something else entirely.
 - **Shells read dotfiles.** `.envrc`, `.bashrc` and friends run the moment a tool sources them.
 
 ```mermaid
@@ -26,7 +27,8 @@ flowchart LR
   R[(cloned repo)] --> N[npm install runs postinstall]
   R --> G[git runs hooks and filters]
   R --> E[editor runs tasks]
-  R --> A[agent reads CLAUDE.md and .mcp.json]
+  R --> H[agent runs .claude hooks]
+  R --> A[agent reads CLAUDE.md]
   R --> S[shell sources .envrc]
 ```
 
