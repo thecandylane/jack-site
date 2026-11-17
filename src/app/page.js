@@ -32,7 +32,7 @@ const TOOLS = [
 
 const WORK = [
   {
-    role: 'Full-Stack AI Security Engineer', org: 'FarmMind', when: 'April 2026 to present', href: 'https://farmmind.org',
+    role: 'AI and Cyber Engineer', org: 'FarmMind', when: 'April 2026 to present', href: 'https://farmmind.org',
     what: 'A Baton Rouge company making farming and agriculture a more forgiving industry. Platform features, uptime and user protection.',
     points: [
       'Led fully offline speech-to-speech and document translation on on-device speech-to-text, text-to-speech and translation models (ONNX, sherpa-onnx). Credited publicly by FarmMind.',
@@ -57,7 +57,7 @@ const WORK = [
     ],
   },
   {
-    role: 'Lead architect and full-stack engineer', org: 'Baton Rouge Community College, GuideOverride', when: 'January 2026 to August 2026',
+    role: 'Lead architect and full-stack engineer', org: 'Baton Rouge Community College, GuideOverride', when: 'January 2026 to August 2026 · LSU course project',
     what: "A system of record for BRCC's course override requests, built in Django and React with the college's administrators and deans. "
       + 'Led its architecture; still working with BRCC on their assisted workspace product.',
     points: [
@@ -90,7 +90,7 @@ const SECURITY = [
 ];
 
 const EDUCATION = [
-  ['Louisiana State University', "Bachelor's in computer science, cybersecurity concentration, graduating December 2026. Board of Supervisors Scholarship, S&B Engineers and Constructors Scholarship, President's Honor Roll. Co-founded and led the Web Application Development Club, 2024 to 2025. Member of the Security Society."],
+  ['Louisiana State University', "Bachelor of Science in computer science, cybersecurity concentration, College of Engineering, graduating December 2026. Board of Supervisors Scholarship, S&B Engineers and Constructors Scholarship, President's Honor Roll. Co-founded and led the Web Application Development Club, 2024 to 2025. Member of the Security Society."],
   ['Coursework', 'Computer networks, operating systems, cryptography, reverse engineering and software exploitation, and AI and LLM development.'],
   ['Baton Rouge Community College', 'Computer science with a cybersecurity concentration, 2023 to 2024.'],
   ['Flatiron School', 'Software engineering bootcamp in React, JavaScript, Flask and Python, January to May 2023.'],

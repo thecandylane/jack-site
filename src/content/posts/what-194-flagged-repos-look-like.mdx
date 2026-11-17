@@ -54,11 +54,11 @@ That's why "has a `CLAUDE.md`" can't be the signal. 59 of the 194 flagged repos 
 
 About 68 of the 194 flags are wrong: the repos are harmless. Most of the mistakes come from two rules.
 
-**Shellcode bytes.** The rule that looks for raw machine-code byte arrays flagged 39 repos, and 28 of them were harmless: cryptography test vectors, firmware images, font tables, and detection tools' own test data. The 194 include VirusTotal's own YARA-X and the rizin reverse-engineering framework, both flagged on what looks like their test data. Bytes alone don't run. Shellcode needs memory it's allowed to execute, so a better rule wants both the byte array and a call that makes memory executable or starts code in another process, and trusts a file under `tests/` or `fixtures/` less:
+**Shellcode bytes.** The rule that looks for raw machine-code byte arrays flagged 39 repos, and 28 of them were harmless: cryptography test vectors, firmware images, font tables, and detection tools' own test data. The 194 also include VirusTotal's own YARA-X and the rizin reverse-engineering framework. When I went to fix the rule, neither turned out to be this rule's doing: YARA-X is flagged for a line in one of its own YARA rules, and rizin's flag is a stale record from an older scan. Bytes alone don't run. Shellcode needs memory it's allowed to execute, so a better rule wants both the byte array and a call that makes memory executable or starts code in another process, and trusts a file under `tests/` or `fixtures/` less:
 
 <Playground {...ex.shellcodeFlag} />
 
-**Agent files.** As above, presence alone flags dozens of ordinary projects. It needs its own neutral label, separate from "dangerous code", with the trap label kept for files that actually try to make an agent do something.
+**Agent files.** I first blamed these for dozens of the wrong flags. Checking the rules showed that was wrong: no rule fires on an agent file just for being there, and a test now pins that. The 59 repos that ship them were flagged for something else.
 
 **The trap labels themselves.** Eight repos carry ref-radar's "agent trap" or "compromised" label. On a review of the manifests that wire those files in, all eight look harmless: installers that download a prebuilt binary, plugin hooks that show a status line, a scanner script that carries worm indicators as data, a script nothing calls, and a recorded test fixture. The flagged files are held back from reads, so the review couldn't confirm it, and that's a gap too: the owner needs a way to see a held-back file to clear or confirm the label.
 
