@@ -53,6 +53,9 @@ export class Interpreter {
     this.MAP_ARRAY_DBL = this.maps.define({ kind: KIND.ARRAY, elemRep: 'double' });
     this.MAP_OBJECT = this.maps.define({ kind: KIND.OBJECT });
     this.MAP_ELEMS = this.maps.define({ kind: KIND.ELEMS });
+    // A view is the guest's handle on something outside the cage: slot 1 is the handle
+    // index, slot 2 a length. Corrupting slot 1 is the sandbox escape.
+    this.MAP_VIEW = this.maps.define({ kind: KIND.VIEW, props: [{ key: 'index' }, { key: 'length' }] });
 
     this.objectProto = this.allocObject(this.MAP_OBJECT, 0);
     this.functionProto = this.allocObject(this.MAP_OBJECT, this.objectProto);
@@ -136,6 +139,15 @@ export class Interpreter {
     return ptr(off);
   }
 
+  /** A guest-visible handle on a host object. The index lives in a slot the guest can reach. */
+  allocView(handleIndex) {
+    const off = this.heap.alloc(HEADER + 3 * 4, this.MAP_VIEW);
+    this.heap.writeU32(off + slotOffset(PROTO_SLOT), ptr(this.objectProto));
+    this.heap.writeU32(off + slotOffset(1), smi(handleIndex));
+    this.heap.writeU32(off + slotOffset(2), smi(0));
+    return ptr(off);
+  }
+
   func(astNode, env) {
     const id = this.fns.length;
     this.fns.push({ node: astNode, env });
@@ -158,6 +170,10 @@ export class Interpreter {
       const off = ptrOffset(cur);
       if (!this.heap.alive(off)) throw this.fail(`read of '${key}' through a dead pointer`);
       const map = this.maps.get(this.heap.mapIdAt(off));
+      // An own data property named __proto__ shadows the accessor, exactly as JSON.parse's
+      // DefineOwnProperty does. That shadowing is what makes the merge payload readable.
+      const own = this.maps.indexOf(map.id, key);
+      if (own >= 0) return this.heap.readU32(off + slotOffset(own));
       if (key === '__proto__') {
         const proto = this.heap.readU32(off + slotOffset(PROTO_SLOT));
         return isPtr(proto) ? proto : this.nullWord;
@@ -169,8 +185,6 @@ export class Interpreter {
         return this.heap.readU32(off + slotOffset(1));
       }
       if (map.kind === KIND.FUNC && key === 'length') return this.num(0);
-      const slot = this.maps.indexOf(map.id, key);
-      if (slot >= 0) return this.heap.readU32(off + slotOffset(slot));
       const proto = this.heap.readU32(off + slotOffset(PROTO_SLOT));
       if (!isPtr(proto)) break;
       cur = proto;
@@ -182,23 +196,23 @@ export class Interpreter {
     if (!isPtr(objWord)) throw this.fail(`cannot set '${key}' on ${this.typeName(objWord)}`);
     const off = ptrOffset(objWord);
     if (!this.heap.alive(off)) throw this.fail(`write of '${key}' through a dead pointer`);
+    const mapId = this.heap.mapIdAt(off);
+    const map = this.maps.get(mapId);
+    const own = this.maps.indexOf(mapId, key);
+    if (own >= 0) {
+      this.heap.writeU32(off + slotOffset(own), value);
+      return value;
+    }
     if (key === '__proto__') {
       this.heap.writeU32(off + slotOffset(PROTO_SLOT), isPtr(value) || value === this.nullWord ? value : 0);
       return value;
     }
-    const mapId = this.heap.mapIdAt(off);
-    const map = this.maps.get(mapId);
     if (map.kind === KIND.ARRAY && key === 'length') {
       // BUG-1: the length slot moves, the elements block keeps the size it was allocated
       // with. Every read and write past `oldLength` then walks the cage into whatever was
       // allocated next. Real engines have shipped the same shape as a corrupted JSArray
       // length, and it is the primitive CVE-2026-79236 ends in: controlled cage memory.
       this.heap.writeU32(off + slotOffset(1), value);
-      return value;
-    }
-    const existing = this.maps.indexOf(mapId, key);
-    if (existing >= 0) {
-      this.heap.writeU32(off + slotOffset(existing), value);
       return value;
     }
     const grown = this.maps.withProp(mapId, key, 'tagged');

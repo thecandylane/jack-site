@@ -4,6 +4,9 @@
 import { Heap } from './heap.js';
 import { Maps } from './maps.js';
 import { Interpreter } from './interp.js';
+import { Host } from './host.js';
+import { installHostBuiltins } from './builtins.js';
+import { POLLUTION_LAB } from './labs/pollution.js';
 import { isSmi, isPtr, smiValue, ptrOffset } from './values.js';
 
 /**
@@ -12,15 +15,18 @@ import { isSmi, isPtr, smiValue, ptrOffset } from './values.js';
  * @param {(src: string) => object} options.parse  the parser; required only for run(src)
  * @param {number} [options.steps] instruction ceiling for one run
  */
-export function createForge({ heapBytes = 1 << 20, parse = null, steps } = {}) {
+export function createForge({ heapBytes = 1 << 20, parse = null, steps, flag } = {}) {
   const heap = new Heap(heapBytes);
   const maps = new Maps();
   const vm = new Interpreter(heap, maps, steps ? { steps } : {});
+  const host = new Host(flag);
+  installHostBuiltins(vm, host);
 
   return {
     heap,
     maps,
     vm,
+    host,
 
     /** Run an AST the caller already has. Tests and labs use this; the parser is not needed. */
     exec(ast) {
@@ -53,9 +59,9 @@ export function createForge({ heapBytes = 1 << 20, parse = null, steps } = {}) {
       return heap.objects();
     },
 
-    /** Labs register against this VM; M2 fills the list. */
+    /** Labs register against this VM and check from heap and host state. */
     labs() {
-      return [];
+      return [POLLUTION_LAB];
     },
   };
 }
