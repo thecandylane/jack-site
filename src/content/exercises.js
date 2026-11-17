@@ -329,3 +329,33 @@ test('a padding decoy counts as 0', () => eq(timesLeaked('5BAA61E4C9B93F3F068225
 test('a lower-case hash still matches', () => eq(timesLeaked(hash.toLowerCase(), response), 52256179));
 `,
 };
+
+export const shellcodeFlag = {
+  title: 'flag.js · a byte array is not an exploit',
+  code: String.raw`
+// ref-radar flagged 39 repos for "raw shellcode bytes", and 28 were
+// harmless: test vectors, firmware, fonts. Bytes alone don't run.
+// Shellcode needs memory it can execute, so a useful rule wants both:
+// a long byte array, and a call that makes memory executable or runs
+// code in another process, in the same file. And it should trust a
+// file under tests/ or fixtures/ less.
+
+// This version flags any long byte array. Make every test pass.
+function flag(file) {
+  return file.byteArrayLength >= 256;
+}
+
+console.log(flag({ path: 'src/loader.c', byteArrayLength: 512, text: 'VirtualAlloc(...PAGE_EXECUTE_READWRITE)' }));
+console.log(flag({ path: 'fonts/glyphs.c', byteArrayLength: 4096, text: 'static const unsigned char glyphs[]' }));
+`,
+  tests: String.raw`
+const f = (path, n, text) => flag({ path, byteArrayLength: n, text });
+test('bytes plus VirtualAlloc with execute is flagged', () => eq(f('src/loader.c', 512, 'VirtualAlloc(0, n, MEM_COMMIT, PAGE_EXECUTE_READWRITE)'), true));
+test('bytes plus mprotect PROT_EXEC is flagged', () => eq(f('src/run.c', 300, 'mprotect(p, n, PROT_READ | PROT_EXEC)'), true));
+test('bytes plus CreateRemoteThread is flagged', () => eq(f('inject.cpp', 1024, 'CreateRemoteThread(h, 0, 0, addr, 0, 0, 0)'), true));
+test('a font table is not flagged', () => eq(f('fonts/glyphs.c', 4096, 'static const unsigned char glyphs[]'), false));
+test('a short array with exec memory is not flagged', () => eq(f('src/tiny.c', 32, 'mprotect(p, n, PROT_EXEC)'), false));
+test('a test vector is not flagged, even next to mprotect', () => eq(f('tests/vectors/aes.c', 512, 'mprotect(p, n, PROT_EXEC)'), false));
+test('a fixture folder counts as test data too', () => eq(f('crypto/fixtures/blob.h', 900, 'VirtualProtect(p, n, PAGE_EXECUTE_READ, &old)'), false));
+`,
+};
