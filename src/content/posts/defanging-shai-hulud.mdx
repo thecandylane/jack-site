@@ -5,6 +5,8 @@ export const meta = {
   tags: ['malware', 'supply-chain', 'ai-security', 'bash'],
 }
 
+import * as ex from '@/content/exercises'
+
 This summer, the source of the Shai-Hulud worm showed up on GitHub. Shai-Hulud spread through npm packages and developer machines, and it was one of the first to reach into AI coding assistants: it hooked into the routines those tools run when they start, so it never needed anyone to execute it directly. I wanted a copy to study, and to keep. Repos like that get taken down, and in a few years the next worm will hook the next generation of tools the same way.
 
 The problem is that a repo like this is dangerous to *open*, not just to run. So before I read a line of it, I wrote `defang-specimen.sh`, a single bash script that turns the repo into a copy nothing can run by accident.
@@ -18,6 +20,15 @@ Most people think of malware as something you have to run. A modern dev repo run
 - **Editors run tasks.** A `.vscode` folder or a `.code-workspace` file can define tasks and settings that run when you open the folder.
 - **Coding agents read instructions.** `CLAUDE.md`, `.mcp.json`, `claude_desktop_config.json` and plain Markdown are read by agents as instructions. An agent asked to "help me read this repo" can be told to do something else entirely. That is exactly the door Shai-Hulud used.
 - **Shells read dotfiles.** `.envrc`, `.bashrc` and friends run the moment a tool sources them.
+
+```mermaid
+flowchart LR
+  R[(cloned repo)] --> N[npm install runs postinstall]
+  R --> G[git runs hooks and filters]
+  R --> E[editor runs tasks]
+  R --> A[agent reads CLAUDE.md and .mcp.json]
+  R --> S[shell sources .envrc]
+```
 
 So the goal was a copy where every one of those doors is shut, and where I can still read every byte.
 
@@ -37,6 +48,23 @@ The script is about 1,500 lines, and it runs as a pipeline of phases over a copy
 - **Markdown flagged** as possible agent instructions.
 - **Unicode flagged.** Non-ASCII file names are reported, and names are normalized to catch two files that look identical but aren't.
 
+In order, the run looks like this:
+
+```mermaid
+flowchart TD
+  S[source repo at a pinned commit] --> G{"git setup clean?"}
+  G -->|filters, hooks or hooksPath| X[refuse]
+  G -->|clean| C[copy]
+  C --> R[rename manifests, configs, source, archives and tool folders]
+  R --> N[neutralize symlinks, strip exec bits]
+  N --> F[flag shebangs, opaque blobs, Markdown and Unicode]
+  F --> O[manifest, README, reproducible .tgz and two hashes]
+```
+
+The opaque-blob check is the least obvious one, and it fits in a dozen lines. Shannon entropy measures how random a file's bytes look; packed or encrypted payloads score near the maximum.
+
+<Playground {...ex.entropy} />
+
 ## The rules the script holds itself to
 
 A defanger with a bug is worse than none, because you trust it. So the script states its invariants at the top and treats any violation as a bug:
@@ -47,6 +75,10 @@ A defanger with a bug is worse than none, because you trust it. So the script st
 4. No `eval`, no `source`, no unquoted expansion, and `printf '%s\n'` only.
 5. Every destructive path is guarded with `${var:?}`, and every temp file lives under `mktemp -d`, removed on exit.
 6. It refuses to run as root.
+
+Rule 2 is easy to get wrong, so here it is as an exercise. Make `safeName` escape a name the way the script does before it logs one.
+
+<Playground {...ex.safeName} />
 
 Before it touches anything, it checks the repo's own git setup: it refuses any `.gitattributes` filter, any hook beyond git's samples, and any `core.hooksPath`.
 
