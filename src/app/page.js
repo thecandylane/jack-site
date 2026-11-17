@@ -50,7 +50,7 @@ const WORK = [
     points: [
       'Host and service logs shipped with Grafana Alloy into Loki, alert rules based on MITRE ATT&CK, metrics in Prometheus and Grafana.',
       'Every host hardened: SSH hardening, LUKS full-disk encryption, nftables and UFW, Fail2ban.',
-      'brick, a pentest range and team cockpit: scope files and audit logs around agent-driven Strix runs, with nuclei templates and Atomic Red Team in the arsenal. Eight seats played TryHackMe\'s Cyber Trials 2026 from it.',
+      'brick, a pentest range and team cockpit: agent-driven Strix runs against lab targets inside a container network, each logged with its target, model, cost and findings, with nuclei templates and Atomic Red Team in the arsenal. Eight seats played TryHackMe\'s Cyber Trials 2026 from it.',
       'Security overhaul, November 2026: key-only SSH, two-factor on the edge dashboard, tunnel credentials rotated, device approval on the mesh, and DNS and this site moved to Cloudflare.',
       'Sites built and hosted for local clients, such as L. Ellis Designs, a store for custom buttons on Next.js, Stripe and Payload CMS.',
       'In progress: client sites moving to k3s with Flux on OVH, and an isolated malware-analysis lab with no credentials and no route to the rest of the network.',
