@@ -2,11 +2,12 @@
 
 import { useEffect, useRef } from 'react';
 
-// Phosphor characters falling behind every page. Pressing empty space drops a small log into the rain: the streams
-// break on it and nothing falls below it. Dragging moves it; after you let go it stays a moment, then fades.
+// Phosphor characters falling behind every page. Pressing empty space drops a small log into the rain: each
+// character that reaches it is flung off to the side, like water off a log. Nothing new is spawned; only the
+// streams' own characters move. Dragging moves the log; after you let go it stays a moment, then fades.
 // Reduced motion draws one still frame.
 const CELL = 18, PER_COL = 2, GLYPHS = 'ｱｲｳｴｵｶｷｸｹｺｻｼｽｾｿﾀﾁﾂﾃﾄﾅﾆﾇﾈﾉﾊﾋﾌﾍﾎﾏﾐﾑﾒﾓﾔﾕﾖﾗﾘﾙﾚﾛﾜﾝ0123456789ABCDEF<>/{}=$#';
-const LOG_W = 90, LOG_HOLD = 1400;
+const LOG_W = 90, LOG_HOLD = 1400, MAX_BITS = 600, GRAVITY = 0.25;
 const pick = () => GLYPHS[(Math.random() * GLYPHS.length) | 0];
 
 export default function MatrixRain() {
@@ -15,7 +16,7 @@ export default function MatrixRain() {
   useEffect(() => {
     const canvas = ref.current, ctx = canvas.getContext('2d');
     const still = matchMedia('(prefers-reduced-motion: reduce)').matches;
-    let w = 0, h = 0, raf = 0, streams = [], log = null, accent = '#5dff8a', tick = 0;
+    let w = 0, h = 0, raf = 0, streams = [], bits = [], log = null, accent = '#5dff8a', tick = 0;
     const family = getComputedStyle(canvas).fontFamily || 'monospace'; // canvas fonts can't read CSS variables
 
     const stream = (x, fresh) => ({
@@ -49,6 +50,10 @@ export default function MatrixRain() {
           ctx.fillText(s.chars[k % s.chars.length], s.x, y);
         }
       }
+      for (const b of bits) {
+        ctx.globalAlpha = Math.min(0.32, b.life / 300);
+        ctx.fillText(b.ch, b.x, b.y);
+      }
       if (log) {
         ctx.globalAlpha = 0.45 * log.fade;
         ctx.fillRect(log.x - LOG_W / 2, log.y - 1.5, LOG_W, 3);
@@ -63,9 +68,21 @@ export default function MatrixRain() {
       }
       for (const s of streams) {
         s.y += s.v;
+        // Each of this stream's characters that just crossed the log is flung off the nearer end.
+        if (log && Math.abs(s.x - log.x) < LOG_W / 2) {
+          for (let k = 0; k < s.len && bits.length < MAX_BITS; k++) {
+            const y = s.y - k * CELL;
+            if (y >= log.y && y - s.v < log.y) {
+              const side = s.x === log.x ? (Math.random() < 0.5 ? -1 : 1) : Math.sign(s.x - log.x);
+              bits.push({ x: s.x, y: log.y - 2, vx: side * (1.5 + Math.random() * 2.5), vy: -(0.5 + Math.random() * 2), ch: s.chars[k % s.chars.length], life: 100 + Math.random() * 60 });
+            }
+          }
+        }
         if (Math.random() < 0.04) s.chars[(Math.random() * s.chars.length) | 0] = pick();
         if (s.y - s.len * CELL > h) Object.assign(s, stream(s.x, true));
       }
+      for (const b of bits) { b.vy += GRAVITY; b.vx *= 0.98; b.x += b.vx; b.y += b.vy; b.life -= 1; }
+      bits = bits.filter((b) => b.life > 0 && b.y < h + CELL && b.x > -CELL && b.x < w + CELL);
       draw();
       raf = requestAnimationFrame(frame);
     };
