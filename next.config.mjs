@@ -20,8 +20,8 @@ const nextConfig = {
           { key: 'Permissions-Policy', value: 'camera=(), microphone=(), geolocation=()' },
           {
             key: 'Content-Security-Policy',
-            // connect-src: the terminal reads ref-radar's feed. frame-src: ref-radar's views in posts and the terminal's panes.
-            value: "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; font-src 'self'; img-src 'self' data:; connect-src 'self' https://ref.lookit.space; frame-src https://ref.lookit.space",
+            // connect-src: the terminal reads ref-radar's feed; /you's password check asks Have I Been Pwned. frame-src: ref-radar's views in posts and the terminal's panes.
+            value: "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; font-src 'self'; img-src 'self' data:; connect-src 'self' https://ref.lookit.space https://api.pwnedpasswords.com; frame-src https://ref.lookit.space",
           },
         ],
       },

@@ -4,8 +4,8 @@ import { useEffect, useState } from 'react';
 
 // What a visitor's browser hands to every site it visits, read here in the browser and never sent anywhere:
 // this component makes no network request. Each signal says what it reveals and what blunts it.
-const sha = async (s) => [...new Uint8Array(await crypto.subtle.digest('SHA-256', new TextEncoder().encode(s)))].map((b) => b.toString(16).padStart(2, '0')).join('');
-const short = (h) => h.slice(0, 16);
+export const sha = async (s) => [...new Uint8Array(await crypto.subtle.digest('SHA-256', new TextEncoder().encode(s)))].map((b) => b.toString(16).padStart(2, '0')).join('');
+export const short = (h) => h.slice(0, 16);
 
 function canvasPrint() {
   const c = document.createElement('canvas'); c.width = 280; c.height = 60;
@@ -47,7 +47,7 @@ function fonts() {
 
 const mq = (q) => matchMedia(q).matches;
 
-async function read() {
+export async function read() {
   const n = navigator, ua = n.userAgentData;
   const hints = ua?.getHighEntropyValues ? await ua.getHighEntropyValues(['platformVersion', 'architecture', 'bitness', 'model', 'fullVersionList']).catch(() => null) : null;
   const layout = n.keyboard?.getLayoutMap ? await n.keyboard.getLayoutMap().then((m) => ['KeyQ', 'KeyW', 'KeyY', 'KeyZ'].map((k) => m.get(k)).join('')).catch(() => null) : null;
@@ -91,6 +91,11 @@ export default function Fingerprint() {
         <div><dt>Your fingerprint</dt><dd className="small-dd">{digest}</dd></div>
         <div><dt>Sent to this server</dt><dd>0 bytes</dd></div>
       </dl>
+      <p className="lede">
+        Try this: open this page in a private window and compare the fingerprint. If it is the same, a site can tell it
+        is you with no cookie and no login. A browser that adds noise (Brave, Firefox with resistFingerprinting, Tor)
+        shows a new one each time.
+      </p>
       {groups.map((g) => (
         <section key={g} className="fp">
           <h2 className="sec-h">{g}</h2>

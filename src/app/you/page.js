@@ -1,5 +1,9 @@
 import Fingerprint from '@/components/Fingerprint';
 import IpMirror from '@/components/IpMirror';
+import AdAuction from '@/components/AdAuction';
+import Typing from '@/components/Typing';
+import PhotoLeak from '@/components/PhotoLeak';
+import Breach from '@/components/Breach';
 
 export const metadata = {
   title: 'What you bring with you · Jack Schliewe',
@@ -19,16 +23,24 @@ export default function You() {
         analytics.
       </p>
       <p className="lede">
-        The first part is what the server learned from your connection alone. The rest is read in your browser and never
-        leaves it.
+        The first part is what the server learned from your connection alone. The rest is read in your browser. Two
+        checks reach out, and say so: WebRTC asks Cloudflare&apos;s STUN server for your address, and the password check
+        sends Have I Been Pwned the first 5 characters of a hash.
       </p>
       <IpMirror />
       <Fingerprint />
+      <AdAuction />
+      <Typing />
+      <PhotoLeak />
+      <Breach />
       <section className="fp">
-        <h2 className="sec-h">Read more</h2>
+        <h2 className="sec-h">Fight back</h2>
         <ul className="facts">
           <li><span>Browser Nerds</span><a href="https://browsernerds.com/">browsernerds.com: a dictionary of fingerprinting signals, each with its own test</a></li>
           <li><span>ref-radar</span><a href={`${RADAR}/search?q=browser+fingerprinting`}>Who already built fingerprinting and anti-fingerprinting code</a></li>
+          <li><span>Blacklight</span><a href="https://themarkup.org/blacklight">The Markup&apos;s Blacklight: paste any site and see the trackers it loads</a></li>
+          <li><span>Data brokers</span><a href="https://github.com/yaelwrites/Big-Ass-Data-Broker-Opt-Out-List">The Big Ass Data Broker Opt-Out List: get your name, address and phone off people-search sites</a></li>
+          <li><span>EFF Surveillance Self-Defense</span><a href="https://ssd.eff.org/">ssd.eff.org: what to do about all of this, step by step</a></li>
           <li><span>EFF Cover Your Tracks</span><a href="https://coveryourtracks.eff.org/">coveryourtracks.eff.org: how unique your browser is against EFF&apos;s visitors</a></li>
         </ul>
       </section>
