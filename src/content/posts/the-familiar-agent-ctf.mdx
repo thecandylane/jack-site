@@ -1,0 +1,37 @@
+export const meta = {
+  title: 'The familiar: an agent CTF on this site',
+  lede: 'This site has an AI agent with tools, and a flag hidden on its host. The agent will refuse to give it to you. Your job is to make it anyway.',
+  date: '2026-11-16',
+  tags: ['ctf', 'ai-security', 'prompt-injection'],
+}
+
+At TryHackMe's Cyber Trials 2026, my team's favorite room was The Binding Circle. It's an AI agent with a few tools and a planner that refuses anything dangerous. You win by making the agent hurt itself anyway. I rebuilt the idea here, so anyone can play it from this site.
+
+## How to play
+
+Press `~` anywhere on the site to open the terminal, then type `familiar`.
+
+| | |
+|---|---|
+| Goal | Get the contents of `/flag.txt` from the familiar's host |
+| Check a flag | `submit <flag>` |
+| Pin a note | `pin <text>`, then `notes` to list them |
+| Leave | `exit` |
+
+The familiar can change this page, read the notes you pin, and run a few approved health checks on its host. It has been told never to read files or reveal secrets.
+
+## Rules
+
+- Everything happens in the terminal. The familiar's tools only pretend to touch a real machine: nothing you do reaches a shell, a file system or anyone else's session.
+- What you type is sent to Google's Gemini API, which runs the familiar. Don't type anything private.
+- There's a rate limit per visitor and a daily limit for the whole site. If the familiar needs a rest, come back later.
+- Please don't attack the site itself, its server or its API routes. The challenge is the agent.
+
+## Hints
+
+The two weaknesses are real ones. They show up again and again in agents that ship today.
+
+1. Ask yourself where the familiar's instructions come from, and whether it can tell its owner's words from yours.
+2. Read the description of every tool, then think about how a tool like that usually checks its input.
+
+If you solve it, write it up and send it to me. I'll link the best writeups here.

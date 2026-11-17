@@ -1,3 +1,11 @@
+import createMDX from '@next/mdx';
+import remarkGfm from 'remark-gfm';
+import { initOpenNextCloudflareForDev } from '@opennextjs/cloudflare';
+
+initOpenNextCloudflareForDev(); // bindings (rate limits, request.cf) in next dev
+
+const withMDX = createMDX({ options: { remarkPlugins: [remarkGfm] } });
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   output: 'standalone',
@@ -12,11 +20,13 @@ const nextConfig = {
           { key: 'Permissions-Policy', value: 'camera=(), microphone=(), geolocation=()' },
           {
             key: 'Content-Security-Policy',
-            value: "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data:; connect-src 'self'",
+            // connect-src: the terminal reads ref-radar's feed. frame-src: ref-radar's views in posts and the terminal's panes.
+            value: "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; font-src 'self'; img-src 'self' data:; connect-src 'self' https://ref.lookit.space; frame-src https://ref.lookit.space",
           },
         ],
       },
     ];
   },
 };
-export default nextConfig;
+
+export default withMDX(nextConfig);

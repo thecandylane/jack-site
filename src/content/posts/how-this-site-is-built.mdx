@@ -1,0 +1,36 @@
+export const meta = {
+  title: 'How this site is built',
+  lede: 'Posts are MDX files in git. The intro paragraph wraps around a radar you can drag. Every repo a post mentions is a live card from ref-radar.',
+  date: '2026-11-16',
+  tags: ['meta', 'nextjs', 'mdx', 'ref-radar'],
+  refs: ['gh:vercel/next.js', 'gh:mdx-js/mdx', 'gh:shuding/nextra'],
+}
+
+This site and [ref-radar](https://ref.lookit.space/) look like one system on purpose. They share the bar at the top, the `Search>` box, which searches ref-radar, and two phosphor colors. Click `[p7]` in the bar to switch to amber.
+
+| | |
+|---|---|
+| Framework | Next.js 15, every blog page built ahead of time |
+| Posts | MDX files in the repo, published with `git push` |
+| Type | TempleOS's 8x8 font for headings, JetBrains Mono for text |
+| Refs | Cards and the radar come from ref.lookit.space |
+
+## Posts are files
+
+Each post is one `.mdx` file. It exports its own title, date, tags and the refs it cites. There's no database and no admin panel to secure. The contents list on the left comes from the post's headings.
+
+<Ref id="gh:mdx-js/mdx" />
+
+## Citing prior art
+
+I search ref-radar before I build anything. A post cites a ref by its id, and the card shows what the project does, its license, and whether you can reuse its code:
+
+```mdx
+<Ref id="gh:shuding/nextra" />
+```
+
+<Ref id="gh:shuding/nextra" />
+
+## The paragraph that moves
+
+[Pretext](https://github.com/chenglou/pretext) lays out the home page's intro. It measures text without asking the browser for layout, which makes it fast enough to rerun on every pointer move. Each line gets its own width, so the text opens around the radar wherever you drag it.

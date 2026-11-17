@@ -1,985 +1,239 @@
-'use client';
+import FlowText from '@/components/FlowText';
+import { allPosts } from '@/lib/posts';
+import { radarFacts, SAMPLE } from '@/lib/radar';
+import { PROJECTS } from '@/lib/site';
 
-import { useState, useEffect, useRef } from 'react';
+export const dynamic = 'force-static'; // built once per deploy: reads src/content and ref-radar at build
 
-const SECTIONS = ['home', 'approach', 'services', 'projects', 'expertise', 'contact'];
+const RADAR = 'https://ref.lookit.space';
 
-function useScrollReveal() {
-  const ref = useRef(null);
-  const [visible, setVisible] = useState(false);
-  useEffect(() => {
-    const el = ref.current;
-    if (!el) return;
-    const obs = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          setVisible(true);
-          obs.unobserve(el);
-        }
-      },
-      { threshold: 0.15 }
-    );
-    obs.observe(el);
-    return () => obs.disconnect();
-  }, []);
-  return [ref, visible];
-}
+// The copy below follows the owner's own LinkedIn wording. Keep it in full sentences, first person.
+// Laid out by Pretext around the draggable radar disc (FlowText).
+const INTRO = "My recent specialty is improving agent and human collaboration while developing secure software. "
+  + "I work at FarmMind, I build ref-radar on the side, and I graduate in December with a bachelor's in cybersecurity.";
 
-function RevealSection({ children, className = '', delay = 0 }) {
-  const [ref, visible] = useScrollReveal();
+const ABOUT = [
+  "I've worked on custom 3D printer and PC builds, Klipper and GPU overclocking, custom MIDI software in Max/MSP and Pure Data, "
+  + "Pisound and MODEP pedals, guitar internals and externals, industrial Fanuc robots and Allen-Bradley PLCs (clean builds, "
+  + "retrofitting, mastering, iRVision and safety assurance), secure systems for state government, lab and server networks and "
+  + "their security, custom software builds and DevOps, custom hardware consulting, lacrosse sticks, bicycles, cars, and "
+  + "(I'll try) almost anything else with strings or wires.",
+  "I was a speaker at LSU's AI 2026 presentation for GuideOverride. I regularly volunteer with SQL Saturday Baton Rouge, "
+  + "and I was fortunate enough to help out at an Anthropic SMB event here in Baton Rouge.",
+];
+
+const TOOLS = [
+  ['search_refs', 'It finds refs by capability and language, with filters like lang:go or stars:>1k.'],
+  ['get_ref', 'It says why a ref is worth reading, where to start, and whether the license lets you copy it.'],
+  ['get_context', 'It returns the start-here files and their outlines at a pinned commit, in one call.'],
+  ['search_code', "It searches the refs' code by text or symbol, and groups the results by ref."],
+];
+
+const WORK = [
+  {
+    role: 'Full-Stack AI Security Engineer', org: 'FarmMind', when: 'April 2026 to present', href: 'https://farmmind.org',
+    what: "FarmMind is a Baton Rouge company focused on making farming and agriculture a more forgiving industry. "
+      + "I work on platform features and improvements, on keeping the platform up and running, and on protecting our users.",
+    points: [
+      'I helped build the on-device speech-to-text, text-to-speech and translation suite with ONNX and sherpa-onnx.',
+      'I helped build field auto-draw with MobileSAM, inside the iOS and web apps.',
+      'I worked on cross-platform notifications, device and account monitoring, and Stripe and FirstPromoter billing.',
+      'I helped build the harness for Farmer AL, our in-app agent, and AnyFarms, our LiveKit tool for remote in-app support.',
+      "I improved the Flutter app's local caching and its GIS state and event handling, and I simplified code along the way.",
+      'I run internal pentests with ZAP, Burp Suite, Invicti and Wapiti, review our infrastructure, and improve our GitHub, GCP and CI/CD workflows.',
+      'I travel to conferences and sponsored events to promote and support FarmMind.',
+    ],
+  },
+  {
+    role: 'Full-Stack Software Engineer', org: 'Baton Rouge Community College, GuideOverride', when: 'January 2026 to August 2026',
+    what: "Our team built a system-of-record engine for BRCC's override request system. We used Django and React, and we built it "
+      + "entirely from the college's existing data. I still work with BRCC on their assisted workspace product.",
+    points: [],
+  },
+  {
+    role: 'Developer (side project)', org: 'Local Influence', when: 'May 2026 to present', href: 'https://localinfluence.ai',
+    what: 'On the side, I work with Jack Minnich and Michael Vocke on LocalInfluence.ai, a marketplace that connects local businesses with influencers.',
+    points: [],
+  },
+  {
+    role: 'Automation Engineer (contract)', org: 'Turner Automation LLC', when: 'December 2025 to January 2026',
+    what: 'I helped Advanced Molding Solutions retrofit a Fanuc M-10iD and a Denso VM-series robot, using Studio 5000 Logix and Allen-Bradley controllers.',
+    points: [],
+  },
+];
+
+const PRIOR = "Before this, I was a student worker at the Attorney General's Office in Baton Rouge, and a server and bartender at Modesto.";
+
+
+const SECURITY = [
+  ['Cyber Trials Completionist', 'TryHackMe issued this certificate in November 2026. The credential ID is THM-CHWJAKRCAD.'],
+  ['Web and API testing', "I test FarmMind's own apps with ZAP, Burp Suite, Invicti and Wapiti."],
+  ['Exploitation and reversing', 'I practice stack overflows, format strings and binary analysis in LSU coursework and CTFs.'],
+  ['Agent security', 'My own harnesses isolate credentials, sandbox agent rooms, and block image exfiltration when they render markdown.'],
+];
+
+const CONTACT = [
+  ['Email', 'jschli3@lsu.edu', 'mailto:jschli3@lsu.edu'],
+  ['Phone', '225-572-3924', 'tel:+12255723924'],
+  ['GitHub', 'github.com/thecandylane', 'https://github.com/thecandylane'],
+  ['LinkedIn', 'linkedin.com/in/jack-schliewe', 'https://linkedin.com/in/jack-schliewe'],
+  ['ref-radar', 'ref.lookit.space', RADAR],
+];
+
+const n = (x) => x.toLocaleString('en-US');
+
+function Section({ id, num, title, children }) {
   return (
-    <div
-      ref={ref}
-      className={className}
-      style={{
-        opacity: visible ? 1 : 0,
-        transform: visible ? 'translateY(0)' : 'translateY(40px)',
-        transition: `opacity 0.8s ease ${delay}s, transform 0.8s ease ${delay}s`,
-      }}
-    >
+    <section id={id} className="sec reveal">
+      <h2 className="sec-h"><span className="muted">{num} /</span> {title}</h2>
       {children}
-    </div>
+    </section>
   );
 }
 
-function Nav() {
-  const [scrolled, setScrolled] = useState(false);
-  useEffect(() => {
-    const handler = () => setScrolled(window.scrollY > 50);
-    window.addEventListener('scroll', handler, { passive: true });
-    return () => window.removeEventListener('scroll', handler);
-  }, []);
-
-  return (
-    <nav style={{
-      position: 'fixed', top: 0, left: 0, right: 0, zIndex: 100,
-      background: scrolled ? 'rgba(10,10,10,0.92)' : 'rgba(10,10,10,0.6)',
-      backdropFilter: 'blur(20px)',
-      borderBottom: `1px solid rgba(200,155,80,${scrolled ? 0.15 : 0.05})`,
-      padding: '0 clamp(1rem, 4vw, 3rem)',
-      transition: 'all 0.3s ease',
-    }}>
-      <div style={{
-        maxWidth: 1400, margin: '0 auto',
-        display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-        height: 64,
-      }}>
-        <a href="#home" style={{
-          fontFamily: "var(--font-jetbrains), 'Fira Code', monospace",
-          fontSize: '0.85rem', fontWeight: 700, letterSpacing: '0.15em',
-          color: '#c89b50', textDecoration: 'none', textTransform: 'uppercase',
-        }}>
-          JS<span style={{ color: '#fff' }}>://</span>SCHLIEWE
-        </a>
-        <div style={{ display: 'flex', gap: '2rem', alignItems: 'center' }}>
-          {SECTIONS.filter(s => s !== 'home').map(s => (
-            <a key={s} href={`#${s}`}
-              className="nav-link"
-              style={{
-                fontFamily: "var(--font-jetbrains), monospace",
-                fontSize: '0.7rem', letterSpacing: '0.12em', textTransform: 'uppercase',
-                color: 'rgba(255,255,255,0.5)',
-                textDecoration: 'none',
-                transition: 'color 0.3s',
-                display: 'none',
-              }}
-              onMouseEnter={e => e.currentTarget.style.color = '#c89b50'}
-              onMouseLeave={e => e.currentTarget.style.color = 'rgba(255,255,255,0.5)'}
-            >
-              {s}
-            </a>
-          ))}
-          <a href="#contact" style={{
-            fontFamily: "var(--font-jetbrains), monospace",
-            fontSize: '0.7rem', letterSpacing: '0.1em',
-            padding: '10px 20px',
-            minHeight: 44,
-            display: 'inline-flex', alignItems: 'center',
-            border: '1px solid #c89b50',
-            color: '#c89b50',
-            textDecoration: 'none',
-            transition: 'all 0.3s',
-          }}
-          onMouseEnter={e => {
-            e.currentTarget.style.background = '#c89b50';
-            e.currentTarget.style.color = '#0a0a0a';
-          }}
-          onMouseLeave={e => {
-            e.currentTarget.style.background = 'transparent';
-            e.currentTarget.style.color = '#c89b50';
-          }}
-          >WORK WITH ME</a>
-        </div>
-      </div>
-    </nav>
-  );
+/** The hero's terminal lines: commands type themselves in turn, and each answer appears after its command. */
+function BootLog({ lines }) {
+  let at = 0.2;
+  const rows = lines.map(([kind, text, mark]) => {
+    const d = at;
+    at += kind === 'cmd' ? text.length * 0.018 + 0.15 : 0.2;
+    return (
+      <p key={text} className={kind} style={{ '--n': text.length + 2, '--d': `${d.toFixed(2)}s` }}>
+        {kind === 'cmd' ? <span><b>$ </b>{text}</span> : <>{text}{mark && <em> {mark}</em>}</>}
+      </p>
+    );
+  });
+  return { rows, end: `${at.toFixed(2)}s` };
 }
 
-function Hero() {
-  const [loaded, setLoaded] = useState(false);
-  useEffect(() => { setTimeout(() => setLoaded(true), 100); }, []);
+export default async function Home() {
+  const [facts, posts] = await Promise.all([radarFacts(), allPosts()]);
+  const boot = BootLog({
+    lines: [
+      ['cmd', 'whoami'],
+      ['out', 'Jack Schliewe · AI developer & security engineer · Baton Rouge, LA'],
+      ...(facts ? [
+        ['cmd', 'ref search "who already built this?"'],
+        ['out', `${n(facts.refs)} refs · ${n(facts.topics)} topics · catalog built ${facts.built}`, '[OK]'],
+      ] : []),
+    ],
+  });
 
   return (
-    <section id="home" style={{
-      minHeight: '100vh',
-      display: 'flex', flexDirection: 'column', justifyContent: 'center',
-      padding: 'clamp(2rem, 8vw, 6rem) clamp(1rem, 4vw, 3rem)',
-      position: 'relative', overflow: 'hidden',
-    }}>
-      <div style={{
-        position: 'absolute', inset: 0, opacity: 0.03,
-        backgroundImage: `
-          linear-gradient(rgba(200,155,80,1) 1px, transparent 1px),
-          linear-gradient(90deg, rgba(200,155,80,1) 1px, transparent 1px)
-        `,
-        backgroundSize: '60px 60px',
-      }} />
-
-      <div style={{
-        position: 'absolute', top: 0, right: '15%', width: 1, height: '100%',
-        background: 'linear-gradient(to bottom, transparent, rgba(200,155,80,0.3), transparent)',
-        transform: 'rotate(15deg)', transformOrigin: 'top center',
-      }} />
-
-      <div style={{ maxWidth: 1400, margin: '0 auto', width: '100%', position: 'relative' }}>
-        <div style={{
-          opacity: loaded ? 1 : 0,
-          transform: loaded ? 'translateX(0)' : 'translateX(-20px)',
-          transition: 'all 0.6s ease 0.2s',
-          fontFamily: "var(--font-jetbrains), monospace",
-          fontSize: '0.7rem', letterSpacing: '0.2em', color: '#c89b50',
-          marginBottom: '2rem', textTransform: 'uppercase',
-          display: 'flex', alignItems: 'center', gap: '1rem',
-        }}>
-          <span style={{
-            width: 8, height: 8, borderRadius: '50%',
-            background: '#4ade80',
-            boxShadow: '0 0 12px rgba(74,222,128,0.5)',
-            display: 'inline-block',
-            animation: 'pulse 2s infinite',
-          }} />
-          Baton Rouge, Louisiana
+    <main className="home">
+      <header className="hero">
+        <div className="hero-in" style={{ '--boot': boot.end }}>
+          <div className="bootlog">{boot.rows}</div>
+          <h1>I build custom, secure hardware and software.</h1>
+          <FlowText text={INTRO} />
+          <p className="hint muted">Drag the radar. Click the grid. Press ~ for the terminal.</p>
+          <nav className="cta" aria-label="Start here">
+            <a href={RADAR}>Open ref-radar</a>
+            <a href="#work">Work</a>
+            <a href="#projects">Projects</a>
+            <a href="#terminal">Terminal</a>
+            <a href="/blog">Blog</a>
+            <a href="#contact">Contact</a>
+          </nav>
         </div>
+      </header>
 
-        <h1 style={{
-          fontFamily: "var(--font-playfair), Georgia, serif",
-          fontSize: 'clamp(2.5rem, 7vw, 6rem)',
-          fontWeight: 400, lineHeight: 1.05,
-          color: '#fff', margin: 0,
-          opacity: loaded ? 1 : 0,
-          transform: loaded ? 'translateY(0)' : 'translateY(30px)',
-          transition: 'all 0.8s ease 0.4s',
-        }}>
-          Software to silicon.<br />
-          <span style={{ color: '#c89b50', fontStyle: 'italic' }}>Full stack.</span>
-        </h1>
-
-        <p style={{
-          fontFamily: "var(--font-dm-sans), 'Helvetica Neue', sans-serif",
-          fontSize: 'clamp(1rem, 2vw, 1.3rem)',
-          lineHeight: 1.7, color: 'rgba(255,255,255,0.55)',
-          maxWidth: 620, marginTop: '2rem',
-          opacity: loaded ? 1 : 0,
-          transform: loaded ? 'translateY(0)' : 'translateY(20px)',
-          transition: 'all 0.8s ease 0.7s',
-        }}>
-          Software development, hardware repair, network infrastructure,
-          AI integration, and cybersecurity. Based in Baton Rouge.
+      <Section id="ref-radar" num="01" title="ref-radar">
+        <p className="big">Prior art for coding agents.</p>
+        <p className="lead">
+          Context7 tells your agent how to call a library. ref-radar tells it who already built the thing,
+          where to start reading, and whether it can reuse the code. I built it, I run it, and I add to it every day.
         </p>
-
-        <div style={{
-          display: 'flex', gap: 'clamp(1rem, 3vw, 3rem)',
-          marginTop: '3.5rem', flexWrap: 'wrap',
-          opacity: loaded ? 1 : 0,
-          transition: 'opacity 1s ease 1s',
-        }}>
-          {[
-            'AI & Machine Learning',
-            'Data Engineering',
-            'Full-Stack Development',
-            'Infrastructure',
-            'Cybersecurity',
-            'Systems & Hardware',
-          ].map((label, i) => (
-            <div key={i} style={{
-              borderLeft: '1px solid rgba(200,155,80,0.3)',
-              paddingLeft: '1.5rem',
-            }}>
-              <div style={{
-                fontFamily: "var(--font-jetbrains), monospace",
-                fontSize: '0.65rem', letterSpacing: '0.1em',
-                color: 'rgba(255,255,255,0.4)',
-                textTransform: 'uppercase',
-              }}>{label}</div>
-            </div>
-          ))}
+        {facts && (
+          <dl className="stats">
+            <div><dt>Refs</dt><dd>{n(facts.refs)}</dd></div>
+            <div><dt>Repos</dt><dd>{n(facts.repos)}</dd></div>
+            <div><dt>Papers</dt><dd>{n(facts.papers)}</dd></div>
+            <div><dt>Topics</dt><dd>{n(facts.topics)}</dd></div>
+          </dl>
+        )}
+        {facts && <p className="muted small built">The catalog was built on {facts.built}. These numbers refresh each time this site deploys.</p>}
+        <div className="term">
+          <p className="term-bar"><span>Claude Code</span><span className="muted">No install and no account.</span></p>
+          <pre><code><span className="muted">$ </span>claude mcp add --transport http ref-radar {RADAR}/mcp</code></pre>
+          <p className="muted small">For Codex, Gemini CLI, Cursor or any other MCP client, point it at <code>{RADAR}/mcp</code>. The catalog is also plain files: <a href={`${RADAR}/llms.txt`}>llms.txt</a> and <a href={`${RADAR}/catalog.json`}>catalog.json</a>.</p>
         </div>
-      </div>
-
-      <div style={{
-        position: 'absolute', bottom: '2rem', left: '50%',
-        transform: 'translateX(-50%)',
-        display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 8,
-        opacity: loaded ? 0.4 : 0, transition: 'opacity 1.5s ease 1.5s',
-      }}>
-        <div style={{
-          fontFamily: "var(--font-jetbrains), monospace",
-          fontSize: '0.6rem', letterSpacing: '0.15em', color: '#fff',
-          textTransform: 'uppercase',
-        }}>Scroll</div>
-        <div style={{
-          width: 1, height: 40,
-          background: 'linear-gradient(to bottom, #c89b50, transparent)',
-        }} />
-      </div>
-
-      <style>{`
-        @keyframes pulse {
-          0%, 100% { opacity: 1; }
-          50% { opacity: 0.5; }
-        }
-      `}</style>
-    </section>
-  );
-}
-
-function NarrativeSection() {
-  const pillars = [
-    {
-      num: '01',
-      tag: 'BREADTH',
-      title: 'Full Coverage',
-      body: 'Software, hardware, networking, and industrial controls. Application development through physical infrastructure and PLC programming.',
-      accent: '#ef4444',
-    },
-    {
-      num: '02',
-      tag: 'RELIABILITY',
-      title: 'Production Tested',
-      body: 'Live platforms generating revenue. Self-hosted infrastructure with monitoring, automated backups, and continuous uptime. Everything ships to production.',
-      accent: '#3b82f6',
-    },
-    {
-      num: '03',
-      tag: 'DEFENSE',
-      title: 'Security First',
-      body: 'Encryption, access control, hardened configurations, and threat modeling integrated into every build from the start.',
-      accent: '#c89b50',
-    },
-  ];
-
-  return (
-    <section id="approach" style={{
-      padding: 'clamp(4rem, 10vw, 8rem) clamp(1rem, 4vw, 3rem)',
-      position: 'relative',
-    }}>
-      <div style={{ maxWidth: 1400, margin: '0 auto' }}>
-        <RevealSection>
-          <div style={{
-            fontFamily: "var(--font-jetbrains), monospace",
-            fontSize: '0.7rem', letterSpacing: '0.2em', color: '#c89b50',
-            textTransform: 'uppercase', marginBottom: '1rem',
-          }}>Approach</div>
-          <h2 style={{
-            fontFamily: "var(--font-playfair), serif",
-            fontSize: 'clamp(1.8rem, 4vw, 3rem)',
-            fontWeight: 400, color: '#fff', margin: 0,
-            maxWidth: 700,
-          }}>
-            How Schliewe Systems<br />
-            <span style={{ fontStyle: 'italic', color: '#c89b50' }}>operates.</span>
-          </h2>
-        </RevealSection>
-
-        <div style={{ marginTop: '4rem' }}>
-          {pillars.map((s, i) => (
-            <RevealSection key={i} delay={i * 0.15}>
-              <div style={{
-                display: 'grid',
-                gridTemplateColumns: 'clamp(40px, 6vw, 60px) 1fr',
-                gap: 'clamp(1rem, 3vw, 3rem)',
-                paddingBottom: '3rem',
-                marginBottom: '3rem',
-                borderBottom: i < pillars.length - 1 ? '1px solid rgba(255,255,255,0.06)' : 'none',
-              }}>
-                <div>
-                  <div style={{
-                    fontFamily: "var(--font-jetbrains), monospace",
-                    fontSize: '0.7rem', color: 'rgba(255,255,255,0.3)',
-                    letterSpacing: '0.05em',
-                  }}>{s.num}</div>
-                  <div style={{
-                    width: 32, height: 2, background: s.accent,
-                    marginTop: 12, borderRadius: 1,
-                  }} />
-                </div>
-                <div>
-                  <div style={{
-                    fontFamily: "var(--font-jetbrains), monospace",
-                    fontSize: '0.6rem', letterSpacing: '0.15em',
-                    color: s.accent, marginBottom: 8, textTransform: 'uppercase',
-                  }}>{s.tag}</div>
-                  <h3 style={{
-                    fontFamily: "var(--font-playfair), serif",
-                    fontSize: 'clamp(1.2rem, 2.5vw, 1.6rem)',
-                    fontWeight: 600, color: '#fff', margin: '0 0 1rem 0',
-                  }}>{s.title}</h3>
-                  <p style={{
-                    fontFamily: "var(--font-dm-sans), sans-serif",
-                    fontSize: '0.95rem', lineHeight: 1.8,
-                    color: 'rgba(255,255,255,0.5)', margin: 0,
-                    maxWidth: 600,
-                  }}>{s.body}</p>
-                </div>
-              </div>
-            </RevealSection>
-          ))}
-        </div>
-      </div>
-    </section>
-  );
-}
-
-function ServicesSection() {
-  const [hovered, setHovered] = useState(null);
-  const services = [
-    {
-      num: '01',
-      title: 'Software Development',
-      subtitle: 'Full-Stack Engineering & E-Commerce',
-      items: [
-        'Next.js / React production applications',
-        'E-commerce platforms (Stripe, Square, Payload CMS)',
-        'Python backends (Flask, Django)',
-        'Mobile development (React Native, Flutter)',
-        'Database architecture & API design',
-      ],
-      icon: '⚡',
-    },
-    {
-      num: '02',
-      title: 'AI & Automation',
-      subtitle: 'Agents, Verification & Safety',
-      items: [
-        'AI agent architecture & document processing',
-        'RAG pipelines (LlamaIndex, LangChain)',
-        'Local model inference (Ollama, GPU passthrough)',
-        'LLM API integration (OpenAI, Anthropic)',
-        'NLP pipeline design & data extraction',
-      ],
-      icon: '◆',
-    },
-    {
-      num: '03',
-      title: 'Hardware & Repair',
-      subtitle: 'Diagnostics, Repair & Custom Builds',
-      items: [
-        'Computer diagnostics & repair',
-        'Component-level board repair & soldering',
-        'Custom PC builds & upgrades',
-        'Firmware & embedded systems',
-        'Industrial controls & PLC programming',
-      ],
-      icon: '⬡',
-    },
-    {
-      num: '04',
-      title: 'Networks & Infrastructure',
-      subtitle: 'Setup, Security & Administration',
-      items: [
-        'Self-hosted infrastructure (Proxmox VE, Docker Compose)',
-        'CI/CD platforms (Coolify, automated git-push deploys)',
-        'Monitoring & observability (Prometheus, Grafana)',
-        'Security hardening (LUKS, Fail2ban, UFW, WireGuard)',
-        'Cloud infrastructure (AWS, Azure, Linux administration)',
-      ],
-      icon: '⬢',
-    },
-    {
-      num: '05',
-      title: 'Training & Consulting',
-      subtitle: 'Education, Workshops & Strategy',
-      items: [
-        'AI-assisted development workshops',
-        'Modern web development training',
-        'Cybersecurity awareness & best practices',
-        'Technical consulting for non-technical teams',
-        'Technology strategy & vendor evaluation',
-      ],
-      icon: '△',
-    },
-  ];
-
-  return (
-    <section id="services" style={{
-      padding: 'clamp(4rem, 10vw, 8rem) clamp(1rem, 4vw, 3rem)',
-      background: 'linear-gradient(180deg, rgba(200,155,80,0.03) 0%, transparent 100%)',
-    }}>
-      <div style={{ maxWidth: 1400, margin: '0 auto' }}>
-        <RevealSection>
-          <div style={{
-            fontFamily: "var(--font-jetbrains), monospace",
-            fontSize: '0.7rem', letterSpacing: '0.2em', color: '#c89b50',
-            textTransform: 'uppercase', marginBottom: '1rem',
-          }}>Services</div>
-          <h2 style={{
-            fontFamily: "var(--font-playfair), serif",
-            fontSize: 'clamp(1.8rem, 4vw, 3rem)',
-            fontWeight: 400, color: '#fff', margin: '0 0 4rem 0',
-          }}>
-            What Schliewe Systems<br />
-            <span style={{ fontStyle: 'italic', color: '#c89b50' }}>delivers.</span>
-          </h2>
-        </RevealSection>
-
-        <div style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 280px), 1fr))',
-          gap: '1.5rem',
-        }}>
-          {services.map((s, i) => (
-            <RevealSection key={i} delay={i * 0.12}>
-              <div
-                onMouseEnter={() => setHovered(i)}
-                onMouseLeave={() => setHovered(null)}
-                style={{
-                  background: hovered === i
-                    ? 'rgba(200,155,80,0.06)'
-                    : 'rgba(255,255,255,0.02)',
-                  border: `1px solid ${hovered === i ? 'rgba(200,155,80,0.3)' : 'rgba(255,255,255,0.06)'}`,
-                  padding: 'clamp(1.5rem, 3vw, 2.5rem)',
-                  transition: 'all 0.4s ease',
-                  cursor: 'default',
-                  height: '100%',
-                }}
-              >
-                <div style={{
-                  display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start',
-                  marginBottom: '1.5rem',
-                }}>
-                  <span style={{
-                    fontFamily: "var(--font-jetbrains), monospace",
-                    fontSize: '0.65rem', color: 'rgba(255,255,255,0.35)',
-                    letterSpacing: '0.1em',
-                  }}>{s.num}</span>
-                  <span style={{ fontSize: '1.2rem', opacity: 0.6 }}>{s.icon}</span>
-                </div>
-                <h3 style={{
-                  fontFamily: "var(--font-playfair), serif",
-                  fontSize: '1.3rem', fontWeight: 600,
-                  color: '#fff', margin: '0 0 0.3rem 0',
-                }}>{s.title}</h3>
-                <div style={{
-                  fontFamily: "var(--font-jetbrains), monospace",
-                  fontSize: '0.65rem', letterSpacing: '0.1em',
-                  color: '#c89b50', marginBottom: '1.5rem',
-                  textTransform: 'uppercase',
-                }}>{s.subtitle}</div>
-                <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
-                  {s.items.map((item, j) => (
-                    <li key={j} style={{
-                      fontFamily: "var(--font-dm-sans), sans-serif",
-                      fontSize: '0.85rem', color: 'rgba(255,255,255,0.45)',
-                      padding: '0.45rem 0',
-                      borderTop: '1px solid rgba(255,255,255,0.04)',
-                      display: 'flex', alignItems: 'center', gap: '0.75rem',
-                    }}>
-                      <span style={{
-                        width: 4, height: 4, borderRadius: '50%',
-                        background: 'rgba(200,155,80,0.4)',
-                        flexShrink: 0,
-                      }} />
-                      {item}
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            </RevealSection>
-          ))}
-        </div>
-      </div>
-    </section>
-  );
-}
-
-function ProjectsSection() {
-  const [hovered, setHovered] = useState(null);
-  const projects = [
-    {
-      tag: 'AI + EDUCATION',
-      title: 'BRCC Course Override System',
-      desc: 'Custom AI agent that automates document processing, course equivalency lookup, and intelligent form routing for a community college. NLP pipelines extract structured data from unstructured student documents — replacing a fully manual workflow with same-day turnaround.',
-      tech: ['Next.js', 'Python', 'LangChain', 'AI Agents'],
-      status: 'In Development',
-      statusColor: '#4ade80',
-    },
-    {
-      tag: 'AI INFRASTRUCTURE',
-      title: 'Local AI Inference Infrastructure',
-      desc: 'Private LLM serving on local NVIDIA GPU hardware with Ollama. Multiple models deployed across Proxmox VMs with GPU passthrough. All inference stays on-premises — no external API calls, no data leaving the network.',
-      tech: ['Ollama', 'NVIDIA GPU', 'Proxmox VE', 'Python'],
-      status: 'Current',
-      statusColor: '#4ade80',
-    },
-    {
-      tag: 'AI HACKATHON',
-      title: 'ImJustABill',
-      desc: 'Retrieval-augmented generation application that indexes legislative PDF documents for natural language search. LlamaIndex handles parsing, vector indexing, and semantic retrieval. Streamlit frontend for document upload and query.',
-      tech: ['Python', 'LlamaIndex', 'Streamlit', 'RAG'],
-      status: 'Complete',
-      statusColor: '#3b82f6',
-      link: 'https://github.com/thecandylane/ImJustABill',
-    },
-    {
-      tag: 'INFRASTRUCTURE & DATA',
-      title: 'Schliewe Systems — Self-Hosted Production Infrastructure',
-      desc: 'The production platform behind this site and every client project. Multi-VM infrastructure on Proxmox VE with Docker Compose, PostgreSQL databases, Prometheus monitoring, and Grafana dashboards. Automated CI/CD via Coolify. Hardened with LUKS encryption, Fail2ban, UFW, and DNS-over-HTTPS.',
-      tech: ['Proxmox VE', 'Docker', 'PostgreSQL', 'Python'],
-      status: 'Current',
-      statusColor: '#4ade80',
-      link: 'https://schliewesystems.com',
-    },
-    {
-      tag: 'EDTECH PLATFORM',
-      title: 'Socratic Analytics',
-      desc: 'Proprietary tutoring and analytics platform with question banks, adaptive pacing algorithms, timing controls, and performance dashboards. PostgreSQL-backed with real-time student progress tracking.',
-      tech: ['Django', 'Python', 'PostgreSQL', 'Analytics'],
-      status: 'Live',
-      statusColor: '#c89b50',
-      link: 'https://socraticanalyticsllc.com',
-    },
-    {
-      tag: 'E-COMMERCE',
-      title: 'L. Ellis Designs',
-      desc: 'Production e-commerce platform for a local Baton Rouge business. Next.js frontend with Payload CMS dashboard, product catalog with categories, custom order flow, and Stripe payment management. Live and generating revenue.',
-      tech: ['Next.js', 'Payload CMS', 'Stripe', 'Vercel'],
-      status: 'Live',
-      statusColor: '#c89b50',
-      link: 'https://lellisdesigns.com',
-    },
-    {
-      tag: 'LOW-LEVEL SYSTEMS',
-      title: 'RISC-V Disassembler',
-      desc: 'RISC-V instruction set disassembler in C++, translating binary machine code back to human-readable assembly. Computer architecture, instruction encoding, and low-level systems programming.',
-      tech: ['C++', 'RISC-V', 'Assembly', 'Systems'],
-      status: 'Complete',
-      statusColor: '#3b82f6',
-      link: 'https://github.com/thecandylane/RISC-V_Disassembler',
-    },
-  ];
-
-  return (
-    <section id="projects" style={{
-      padding: 'clamp(4rem, 10vw, 8rem) clamp(1rem, 4vw, 3rem)',
-    }}>
-      <div style={{ maxWidth: 1400, margin: '0 auto' }}>
-        <RevealSection>
-          <div style={{
-            fontFamily: "var(--font-jetbrains), monospace",
-            fontSize: '0.7rem', letterSpacing: '0.2em', color: '#c89b50',
-            textTransform: 'uppercase', marginBottom: '1rem',
-          }}>Selected Work</div>
-          <h2 style={{
-            fontFamily: "var(--font-playfair), serif",
-            fontSize: 'clamp(1.8rem, 4vw, 3rem)',
-            fontWeight: 400, color: '#fff', margin: '0 0 4rem 0',
-          }}>
-            Projects that <span style={{ fontStyle: 'italic', color: '#c89b50' }}>speak for themselves.</span>
-          </h2>
-        </RevealSection>
-
-        <div style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 400px), 1fr))',
-          gap: '1.5rem',
-        }}>
-          {projects.map((p, i) => {
-            const Wrapper = p.link ? 'a' : 'div';
-            const wrapperProps = p.link ? { href: p.link, target: '_blank', rel: 'noopener noreferrer' } : {};
-            return (
-              <RevealSection key={i} delay={i * 0.08}>
-                <Wrapper
-                  {...wrapperProps}
-                  onMouseEnter={() => setHovered(i)}
-                  onMouseLeave={() => setHovered(null)}
-                  style={{
-                    display: 'flex', flexDirection: 'column',
-                    background: hovered === i ? 'rgba(200,155,80,0.04)' : 'rgba(255,255,255,0.015)',
-                    border: `1px solid ${hovered === i ? 'rgba(200,155,80,0.25)' : 'rgba(255,255,255,0.06)'}`,
-                    padding: 'clamp(1.5rem, 2.5vw, 2rem)',
-                    height: '100%',
-                    transition: 'all 0.3s',
-                    textDecoration: 'none',
-                    cursor: p.link ? 'pointer' : 'default',
-                  }}
-                >
-                  <div style={{
-                    display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-                    marginBottom: '1rem',
-                  }}>
-                    <span style={{
-                      fontFamily: "var(--font-jetbrains), monospace",
-                      fontSize: '0.6rem', letterSpacing: '0.15em',
-                      color: '#c89b50', textTransform: 'uppercase',
-                    }}>{p.tag}</span>
-                    <span style={{
-                      fontFamily: "var(--font-jetbrains), monospace",
-                      fontSize: '0.6rem', letterSpacing: '0.05em',
-                      color: p.statusColor,
-                      display: 'flex', alignItems: 'center', gap: 6,
-                    }}>
-                      <span style={{
-                        width: 5, height: 5, borderRadius: '50%',
-                        background: p.statusColor,
-                      }} />
-                      {p.status}
-                    </span>
-                  </div>
-                  <h3 style={{
-                    fontFamily: "var(--font-playfair), serif",
-                    fontSize: '1.25rem', fontWeight: 600,
-                    color: '#fff', margin: '0 0 0.75rem 0',
-                  }}>{p.title}</h3>
-                  <p style={{
-                    fontFamily: "var(--font-dm-sans), sans-serif",
-                    fontSize: '0.85rem', lineHeight: 1.75,
-                    color: 'rgba(255,255,255,0.45)',
-                    margin: '0 0 1.25rem 0', flex: 1,
-                  }}>{p.desc}</p>
-                  <div style={{
-                    display: 'flex', flexWrap: 'wrap', gap: '0.5rem',
-                    borderTop: '1px solid rgba(255,255,255,0.06)',
-                    paddingTop: '1rem',
-                    alignItems: 'center',
-                  }}>
-                    {p.tech.map((t, j) => (
-                      <span key={j} style={{
-                        fontFamily: "var(--font-jetbrains), monospace",
-                        fontSize: '0.6rem', letterSpacing: '0.05em',
-                        padding: '4px 10px',
-                        background: 'rgba(200,155,80,0.08)',
-                        border: '1px solid rgba(200,155,80,0.15)',
-                        color: 'rgba(255,255,255,0.5)',
-                      }}>{t}</span>
-                    ))}
-                    {p.link && (
-                      <span style={{
-                        marginLeft: 'auto',
-                        fontFamily: "var(--font-jetbrains), monospace",
-                        fontSize: '0.6rem', color: '#c89b50',
-                        opacity: hovered === i ? 1 : 0,
-                        transition: 'opacity 0.3s',
-                      }}>→ VIEW</span>
-                    )}
-                  </div>
-                </Wrapper>
-              </RevealSection>
-            );
-          })}
-        </div>
-      </div>
-    </section>
-  );
-}
-
-function ExpertiseSection() {
-  const domains = [
-    {
-      category: 'Languages',
-      items: [
-        { name: 'TypeScript / JavaScript', level: 'Primary' },
-        { name: 'Python', level: 'Primary' },
-        { name: 'C / C++', level: 'Proficient' },
-        { name: 'SQL', level: 'Proficient' },
-        { name: 'Java', level: 'Working' },
-        { name: 'C# / .NET', level: 'Working' },
-        { name: 'Assembly / RISC-V', level: 'Academic' },
-      ],
-    },
-    {
-      category: 'Frontend',
-      items: [
-        { name: 'React / Next.js', level: 'Primary' },
-        { name: 'Tailwind CSS', level: 'Primary' },
-        { name: 'React Native', level: 'Proficient' },
-        { name: 'Angular', level: 'Working' },
-        { name: 'Flutter / Swift', level: 'Working' },
-      ],
-    },
-    {
-      category: 'Backend & Infrastructure',
-      items: [
-        { name: 'Node.js', level: 'Primary' },
-        { name: 'Flask / Django', level: 'Primary' },
-        { name: 'MongoDB / PostgreSQL', level: 'Proficient' },
-        { name: 'AWS / Azure / Firebase', level: 'Proficient' },
-        { name: 'Docker / Linux / SSH', level: 'Proficient' },
-        { name: 'Proxmox VE', level: 'Proficient' },
-        { name: 'Docker Compose', level: 'Proficient' },
-        { name: 'Coolify CI/CD', level: 'Proficient' },
-        { name: 'WireGuard', level: 'Proficient' },
-      ],
-    },
-    {
-      category: 'Data & Databases',
-      items: [
-        { name: 'PostgreSQL', level: 'Primary' },
-        { name: 'MongoDB', level: 'Proficient' },
-        { name: 'SQL', level: 'Proficient' },
-        { name: 'Database Migration & ETL', level: 'Proficient' },
-        { name: 'Prometheus (time-series)', level: 'Proficient' },
-        { name: 'Grafana (visualization)', level: 'Proficient' },
-      ],
-    },
-    {
-      category: 'AI & Machine Learning',
-      items: [
-        { name: 'LangChain / LlamaIndex', level: 'Active' },
-        { name: 'OpenAI / Claude APIs', level: 'Active' },
-        { name: 'RAG Pipelines', level: 'Active' },
-        { name: 'AI Agent Architecture', level: 'Active' },
-        { name: 'Local Inference / Ollama', level: 'Active' },
-        { name: 'NLP', level: 'Active' },
-        { name: 'TensorFlow / PyTorch', level: 'Working' },
-        { name: 'YOLO / OpenCV', level: 'Working' },
-        { name: 'pandas / NumPy', level: 'Proficient' },
-      ],
-    },
-    {
-      category: 'Hardware & Industrial',
-      items: [
-        { name: 'Allen-Bradley PLCs', level: 'Professional' },
-        { name: 'Studio 5000 Logix', level: 'Professional' },
-        { name: 'Fanuc Robotics', level: 'Professional' },
-        { name: 'Computer Repair & Diagnostics', level: 'Professional' },
-        { name: 'Soldering & Board Repair', level: 'Proficient' },
-        { name: 'Raspberry Pi / Embedded', level: 'Proficient' },
-        { name: 'Klipper Firmware / 3D Print', level: 'Hobbyist' },
-      ],
-    },
-    {
-      category: 'Networking & Systems',
-      items: [
-        { name: 'Linux Administration', level: 'Proficient' },
-        { name: 'Windows Server / Active Directory', level: 'Proficient' },
-        { name: 'Network Configuration & Setup', level: 'Proficient' },
-        { name: 'SSH / Remote Administration', level: 'Proficient' },
-        { name: 'Troubleshooting & Diagnostics', level: 'Professional' },
-      ],
-    },
-    {
-      category: 'Security',
-      items: [
-        { name: 'TestOut Security Pro', level: 'Certified' },
-        { name: 'IBM Cloud Core', level: 'Certified' },
-        { name: 'Network Security', level: 'Proficient' },
-        { name: 'Applied Cryptography', level: 'Academic' },
-        { name: 'Mobile Security', level: 'Academic' },
-      ],
-    },
-  ];
-
-  const levelColor = (level) => {
-    const map = {
-      Primary: '#c89b50', Active: '#c89b50', Professional: '#c89b50', Certified: '#c89b50',
-      Proficient: 'rgba(200,155,80,0.6)', Hobbyist: 'rgba(200,155,80,0.6)',
-      Working: 'rgba(255,255,255,0.3)', Academic: 'rgba(255,255,255,0.3)',
-    };
-    return map[level] || 'rgba(255,255,255,0.3)';
-  };
-
-  return (
-    <section id="expertise" style={{
-      padding: 'clamp(4rem, 10vw, 8rem) clamp(1rem, 4vw, 3rem)',
-      background: 'linear-gradient(180deg, transparent 0%, rgba(200,155,80,0.02) 50%, transparent 100%)',
-    }}>
-      <div style={{ maxWidth: 1400, margin: '0 auto' }}>
-        <RevealSection>
-          <div style={{
-            fontFamily: "var(--font-jetbrains), monospace",
-            fontSize: '0.7rem', letterSpacing: '0.2em', color: '#c89b50',
-            textTransform: 'uppercase', marginBottom: '1rem',
-          }}>Technical Depth</div>
-          <h2 style={{
-            fontFamily: "var(--font-playfair), serif",
-            fontSize: 'clamp(1.8rem, 4vw, 3rem)',
-            fontWeight: 400, color: '#fff', margin: '0 0 1rem 0',
-          }}>
-            The full <span style={{ fontStyle: 'italic', color: '#c89b50' }}>toolkit.</span>
-          </h2>
-          <p style={{
-            fontFamily: "var(--font-dm-sans), sans-serif",
-            fontSize: '0.95rem', lineHeight: 1.7,
-            color: 'rgba(255,255,255,0.45)', maxWidth: 600,
-            margin: '0 0 3rem 0',
-          }}>
-            Primary means daily production use. Working means actively building proficiency.
-          </p>
-        </RevealSection>
-
-        <div style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 280px), 1fr))',
-          gap: '1.5rem',
-        }}>
-          {domains.map((d, i) => (
-            <RevealSection key={i} delay={i * 0.08}>
-              <div style={{
-                borderTop: '2px solid rgba(200,155,80,0.3)',
-                paddingTop: '1.25rem',
-              }}>
-                <h4 style={{
-                  fontFamily: "var(--font-jetbrains), monospace",
-                  fontSize: '0.7rem', letterSpacing: '0.12em',
-                  color: 'rgba(255,255,255,0.6)', textTransform: 'uppercase',
-                  margin: '0 0 1rem 0',
-                }}>{d.category}</h4>
-                {d.items.map((item, j) => (
-                  <div key={j} style={{
-                    display: 'flex', justifyContent: 'space-between',
-                    alignItems: 'center',
-                    padding: '0.45rem 0',
-                    borderBottom: '1px solid rgba(255,255,255,0.03)',
-                  }}>
-                    <span style={{
-                      fontFamily: "var(--font-dm-sans), sans-serif",
-                      fontSize: '0.85rem', color: 'rgba(255,255,255,0.55)',
-                    }}>{item.name}</span>
-                    <span style={{
-                      fontFamily: "var(--font-jetbrains), monospace",
-                      fontSize: '0.55rem', letterSpacing: '0.08em',
-                      color: levelColor(item.level),
-                      textTransform: 'uppercase',
-                      padding: '2px 8px',
-                      border: `1px solid ${levelColor(item.level)}33`,
-                    }}>{item.level}</span>
-                  </div>
-                ))}
-              </div>
-            </RevealSection>
-          ))}
-        </div>
-      </div>
-    </section>
-  );
-}
-
-function ContactSection() {
-  return (
-    <section id="contact" style={{
-      padding: 'clamp(4rem, 10vw, 8rem) clamp(1rem, 4vw, 3rem)',
-      borderTop: '1px solid rgba(200,155,80,0.1)',
-    }}>
-      <div style={{ maxWidth: 1400, margin: '0 auto' }}>
-        <RevealSection>
-          <div style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 400px), 1fr))',
-            gap: 'clamp(2rem, 6vw, 4rem)',
-          }}>
-            <div>
-              <div style={{
-                fontFamily: "var(--font-jetbrains), monospace",
-                fontSize: '0.7rem', letterSpacing: '0.2em', color: '#c89b50',
-                textTransform: 'uppercase', marginBottom: '1rem',
-              }}>Get In Touch</div>
-              <h2 style={{
-                fontFamily: "var(--font-playfair), serif",
-                fontSize: 'clamp(1.8rem, 4vw, 2.8rem)',
-                fontWeight: 400, color: '#fff', margin: '0 0 1.5rem 0',
-              }}>
-                Start a<br />
-                <span style={{ fontStyle: 'italic', color: '#c89b50' }}>conversation.</span>
-              </h2>
-              <p style={{
-                fontFamily: "var(--font-dm-sans), sans-serif",
-                fontSize: '0.95rem', lineHeight: 1.8,
-                color: 'rgba(255,255,255,0.45)', maxWidth: 480,
-                margin: 0,
-              }}>
-                Software, hardware, networking, AI, security, and training.
-                Based in Baton Rouge, serving businesses, teams, and
-                individuals across Louisiana.
-              </p>
-            </div>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-              {[
-                { label: 'Email', value: 'jschli3@lsu.edu', href: 'mailto:jschli3@lsu.edu' },
-                { label: 'Phone', value: '225-572-3924', href: 'tel:2255723924' },
-                { label: 'Website', value: 'schliewesystems.com', href: 'https://schliewesystems.com' },
-                { label: 'GitHub', value: 'github.com/thecandylane', href: 'https://github.com/thecandylane' },
-                { label: 'LinkedIn', value: 'linkedin.com/in/jack-schliewe', href: 'https://linkedin.com/in/jack-schliewe' },
-              ].map((c, i) => (
-                <a key={i} href={c.href} target="_blank" rel="noopener noreferrer"
-                  style={{
-                    display: 'flex', flexDirection: 'column',
-                    textDecoration: 'none',
-                    padding: '1rem 1.25rem',
-                    background: 'rgba(255,255,255,0.02)',
-                    border: '1px solid rgba(255,255,255,0.06)',
-                    transition: 'all 0.3s',
-                  }}
-                  onMouseEnter={e => {
-                    e.currentTarget.style.borderColor = 'rgba(200,155,80,0.3)';
-                    e.currentTarget.style.background = 'rgba(200,155,80,0.04)';
-                  }}
-                  onMouseLeave={e => {
-                    e.currentTarget.style.borderColor = 'rgba(255,255,255,0.06)';
-                    e.currentTarget.style.background = 'rgba(255,255,255,0.02)';
-                  }}
-                >
-                  <span style={{
-                    fontFamily: "var(--font-jetbrains), monospace",
-                    fontSize: '0.6rem', letterSpacing: '0.15em',
-                    color: '#c89b50', textTransform: 'uppercase',
-                    marginBottom: 4,
-                  }}>{c.label}</span>
-                  <span style={{
-                    fontFamily: "var(--font-dm-sans), sans-serif",
-                    fontSize: '0.95rem', color: 'rgba(255,255,255,0.7)',
-                  }}>{c.value}</span>
-                </a>
+        {facts?.hits.length > 0 && (
+          <div className="term">
+            <p className="term-bar"><span>search_refs</span><span className="muted">A real answer from the last build.</span></p>
+            <pre><code>
+              <span className="muted">&gt; </span>{SAMPLE}{'\n'}
+              {facts.hits.map((r) => (
+                <span key={r.id}>{'\n'}<a href={`${RADAR}/ref/${r.id.replace(':', '/')}/`}>{r.id}</a>{'  '}<span className={`reuse-${r.reuse}`}>{r.reuse}</span> <span className="muted">{[r.lang, r.license, r.maturity].filter(Boolean).join(' · ')}</span>{'\n'}<span className="muted">  {r.why}</span>{'\n'}</span>
               ))}
-            </div>
+            </code></pre>
           </div>
-        </RevealSection>
+        )}
+        <ol className="tools">
+          {TOOLS.map(([tool, does]) => <li key={tool}><code>{tool}</code><span>{does}</span></li>)}
+        </ol>
+        <nav className="cta" aria-label="ref-radar">
+          <a href={RADAR}>Open ref-radar</a>
+          <a href={`${RADAR}/add`}>Suggest a ref</a>
+          <a href="https://github.com/thecandylane/ref-radar-data">Nightly export</a>
+        </nav>
+      </Section>
 
-        <div style={{
-          marginTop: '6rem', paddingTop: '2rem',
-          borderTop: '1px solid rgba(255,255,255,0.04)',
-          display: 'flex', justifyContent: 'space-between',
-          flexWrap: 'wrap', gap: '1rem',
-        }}>
-          <span style={{
-            fontFamily: "var(--font-jetbrains), monospace",
-            fontSize: '0.65rem', letterSpacing: '0.1em',
-            color: 'rgba(255,255,255,0.35)',
-          }}>
-            © 2026 JACK SCHLIEWE — BATON ROUGE, LA
-          </span>
-          <span style={{
-            fontFamily: "var(--font-jetbrains), monospace",
-            fontSize: '0.65rem', letterSpacing: '0.1em',
-            color: 'rgba(255,255,255,0.35)',
-          }}>
-            BUILT WITH NEXT.JS
-          </span>
+      <Section id="work" num="02" title="Work">
+        <ul className="jobs">
+          {WORK.map((j) => (
+            <li key={j.org}>
+              <h3>{j.role} <span className="muted">@</span> {j.href ? <a className="org" href={j.href}>{j.org}</a> : <span className="org">{j.org}</span>}</h3>
+              <p className="when muted">{j.when}</p>
+              <p className="what">{j.what}</p>
+              {j.points.length > 0 && <ul>{j.points.map((p) => <li key={p}>{p}</li>)}</ul>}
+            </li>
+          ))}
+        </ul>
+        <p className="muted small">{PRIOR}</p>
+      </Section>
+
+      <Section id="projects" num="03" title="Projects">
+        <div className="cards">
+          {PROJECTS.map((p) => (
+            <article key={p.name} className="card">
+              <p className="muted small">{p.kind}</p>
+              <h3>{p.name}</h3>
+              <p>{p.what}</p>
+              <p className="muted small">{p.stack}</p>
+              {p.href && <a className="go" href={p.href}>{p.go} →</a>}
+            </article>
+          ))}
         </div>
-      </div>
-    </section>
-  );
-}
+      </Section>
 
-export default function Home() {
-  return (
-    <main>
-      <Nav />
-      <Hero />
-      <NarrativeSection />
-      <ServicesSection />
-      <ProjectsSection />
-      <ExpertiseSection />
-      <ContactSection />
+      <Section id="about" num="04" title="About">
+        <div className="about">{ABOUT.map((p) => <p key={p}>{p}</p>)}</div>
+      </Section>
+
+      <Section id="security" num="05" title="Security">
+        <ul className="facts">
+          {SECURITY.map(([k, v]) => <li key={k}><span>{k}</span><span className="muted">{v}</span></li>)}
+        </ul>
+      </Section>
+
+      <Section id="writing" num="06" title="Writing">
+        <ul className="posts">
+          {posts.slice(0, 5).map((p) => (
+            <li key={p.slug}><a href={`/blog/${p.slug}`}><time className="muted">{p.date}</time><span>{p.title}</span></a></li>
+          ))}
+        </ul>
+        <nav className="cta"><a href="/blog">All posts</a></nav>
+      </Section>
+
+      <Section id="contact" num="07" title="Contact">
+        <p className="lead">Email is the best way to reach me.</p>
+        <ul className="facts">
+          {CONTACT.map(([k, v, href]) => <li key={k}><span>{k}</span><a href={href}>{v}</a></li>)}
+        </ul>
+      </Section>
+
+      <footer className="foot muted small">© 2026 Jack Schliewe · Baton Rouge, LA</footer>
     </main>
   );
 }

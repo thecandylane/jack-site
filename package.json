@@ -5,11 +5,23 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "start": "next start"
+    "start": "next start",
+    "test": "node --test src/lib/",
+    "preview": "opennextjs-cloudflare build && opennextjs-cloudflare preview",
+    "deploy": "opennextjs-cloudflare build && opennextjs-cloudflare deploy"
   },
   "dependencies": {
-    "next": "^15.1.0",
+    "@chenglou/pretext": "^1.0.0",
+    "@mdx-js/loader": "^3.1.1",
+    "@mdx-js/react": "^3.1.1",
+    "@next/mdx": "^15.5.29",
+    "@opennextjs/cloudflare": "^1.20.17",
+    "next": "15.5",
     "react": "^19.0.0",
-    "react-dom": "^19.0.0"
+    "react-dom": "^19.0.0",
+    "remark-gfm": "^4.0.1"
+  },
+  "devDependencies": {
+    "wrangler": "^4.163.0"
   }
 }

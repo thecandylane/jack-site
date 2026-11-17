@@ -1,0 +1,24 @@
+// schliewesystems.com on Cloudflare Workers through the OpenNext adapter (https://opennext.js.org/cloudflare/get-started).
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "schliewesystems",
+  "main": ".open-next/worker.js",
+  "compatibility_date": "2026-11-01",
+  "compatibility_flags": ["nodejs_compat", "global_fetch_strictly_public"],
+  "assets": { "directory": ".open-next/assets", "binding": "ASSETS" },
+  "services": [{ "binding": "WORKER_SELF_REFERENCE", "service": "schliewesystems" }],
+  "workers_dev": true,
+  // The apex and www as Workers custom domains (developers.cloudflare.com/workers/configuration/routing/custom-domains);
+  // the wildcard and pangolin stay DNS-only A records to the Pangolin VPS.
+  "routes": [
+    { "pattern": "schliewesystems.com", "custom_domain": true },
+    { "pattern": "www.schliewesystems.com", "custom_domain": true }
+  ],
+  "observability": { "enabled": true },
+  // The familiar (/api/agent). Cloudflare counts each location separately and only approximately
+  // (developers.cloudflare.com/workers/runtime-apis/bindings/rate-limit). period must be 10 or 60.
+  "ratelimits": [
+    { "name": "AGENT_PER_IP", "namespace_id": "2101", "simple": { "limit": 4, "period": 60 } },
+    { "name": "AGENT_ALL", "namespace_id": "2102", "simple": { "limit": 30, "period": 60 } }
+  ]
+}
