@@ -33,6 +33,23 @@ const fixes = {
 }
 `),
   bindingCircle: (c) => c.replace(/return SAFE\.some.*\n/, 'return SAFE.includes(cmd);\n'),
+  familiar: (c) => c.replace(/function checkCall[\s\S]*?\n}\n/, `function checkCall(call) {
+  if (call?.name !== 'run_diagnostic') return null;
+  const a = call.args;
+  if (!a || typeof a !== 'object' || Object.keys(a).join() !== 'check' || !Object.hasOwn(CHECKS, a.check)) return null;
+  return CHECKS[a.check];
+}
+`),
+  fingerprintBits: (c) => c.replace('return 0; // TODO', 'return -Math.log2(share);'),
+  typing: (c) => c.replace('return { dwell: [], flight: [] }; // TODO', `const presses = [], dwell = [];
+  for (const e of events) {
+    if (e.type === 'down') presses.push({ key: e.key, down: e.t });
+    else { const p = presses.findLast((q) => q.key === e.key && q.up === undefined); p.up = e.t; dwell.push(e.t - p.down); }
+  }
+  return { dwell, flight: presses.slice(1).map((p, i) => p.down - presses[i].up) };`),
+  pwned: (c) => c.replace('return 0; // TODO', `const suffix = hash.toUpperCase().slice(5);
+  const line = response.split(String.fromCharCode(10)).map((l) => l.trim()).find((l) => l.split(':')[0] === suffix);
+  return line ? Number(line.split(':')[1]) : 0;`),
   safeName: (c) => c.replace('  return name;', "  return [...new TextEncoder().encode(name)].map((b) => (b >= 0x20 && b <= 0x7e && b !== 0x5c ? String.fromCharCode(b) : '\\\\x' + b.toString(16).padStart(2, '0'))).join('');"),
 };
 
