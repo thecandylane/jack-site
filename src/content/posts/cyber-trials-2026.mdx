@@ -5,7 +5,7 @@ export const meta = {
   tags: ['ctf', 'tryhackme', 'appsec', 'pwn', 'ai-security'],
 }
 
-On November 13, my team played TryHackMe's Cyber Trials 2026, a jeopardy CTF covering AI security, web, binary exploitation and a full box. We played from brick, a cockpit I built for the night: one process, one SQLite file, eight seats and a live board. I finished as a Cyber Trials Completionist.
+On November 3, my team played TryHackMe's Cyber Trials 2026, a jeopardy CTF covering AI security, web, binary exploitation and a full box. We played from brick, a cockpit I built for the event: one process, one SQLite file, eight seats and a live board. I finished as a Cyber Trials Completionist.
 
 This isn't a walkthrough. There are no flags or exploit steps here, because the rooms may still be live and the fun is in solving them. Instead, for each room, here's the bug, why it existed, and what would have stopped it. Those are the parts worth keeping.
 
@@ -61,6 +61,6 @@ My team's favorite. The Binding Circle was an AI agent with a few tools and a pl
 
 I liked this room so much that I rebuilt it on this site. Press `~` and type `familiar` to play [the familiar](/blog/the-familiar-agent-ctf), which has the same two weaknesses.
 
-## What the night taught
+## What the rooms taught
 
 Every room was a trust boundary in the wrong place: a buffer that trusted its input's length, a shell that trusted a hostname, a parser that trusted an image, an extractor that trusted a path, a verifier that trusted a token, and an agent that trusted whatever it read. The tools differ, but the habit that prevents all six is the same: decide where untrusted input enters, and check it there, completely.
