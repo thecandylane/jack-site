@@ -95,10 +95,6 @@ export default function QuickJS() {
           {out.mem && (
             <>
               <h2 className="qjs-sub">Stats</h2>
-              <p className="qjs-note">
-                Bytecode dump: not available. quickjs-emscripten does not expose one, so you see the evaluated value
-                above and the engine&apos;s own memory report below.
-              </p>
               <dl className="qjs-stats">
                 <dt>memory_used_size</dt><dd>{out.mem.memory_used_size} bytes</dd>
                 <dt>malloc_count</dt><dd>{out.mem.malloc_count}</dd>

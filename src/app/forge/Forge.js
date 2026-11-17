@@ -3,23 +3,19 @@
 import { useEffect, useRef, useState } from 'react';
 import './forge.css';
 
-// The judge runs on the server (src/app/api/forge/route.js): the VM is an interpreter, so the whole
-// cage, both bugs and the host table live in the Worker. This island only sends source and draws
-// what came back — the flag is never in this bundle.
+// Sends source to /api/forge, where the engine and the flags live, and draws what comes back.
 
 const SEED = {
-  pollution: `// merge(target, source) copies keys. exec(opts) reads opts.shell.
-// read(view) returns what the host handle behind it holds.
+  pollution: `// merge(target, source) · exec(opts) reads opts.shell · read(view)
 var opts = {};
 var view = exec(opts);
 print(read(view));
 `,
-  bounds: `// xs is seeded for you, with a canary allocated right after it.
-// The panel lists block offsets; elements start at elements + 16, and i*4 is the stride.
+  bounds: `// xs is ready, with a canary right after it
 xs.length = 4;
 xs[0] = 1;
 `,
-  escape: `// open() gives you a view on handle 1. Make it name another handle.
+  escape: `// open() returns a view on handle 1
 var xs = [1, 2, 3, 4];
 var v = open();
 print(read(v));

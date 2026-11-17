@@ -8,6 +8,7 @@
     "start": "next start",
     "test": "node --test src/lib/ src/content/",
     "preview": "opennextjs-cloudflare build && opennextjs-cloudflare preview",
+    "predeploy": "npm install --no-audit --no-fund",
     "deploy": "opennextjs-cloudflare build && opennextjs-cloudflare deploy"
   },
   "dependencies": {

@@ -13,18 +13,11 @@ export default function Page() {
       <p className="back">$ forge</p>
       <h1 className="you-h">The Forge</h1>
       <p className="lede">
-        A JavaScript engine small enough to read: 4-byte tagged words, a 16-byte object header, doubles kept in their
-        own HeapNumbers, and one flat cage of 65,536 bytes. The judge runs on the server — your program is parsed and
-        walked by this engine in the Worker, and the flag comes back only when the lab&apos;s checker finds the evidence
-        in the heap or the host log. Nothing a program does can reach this page, the network, or a real command.
+        A JavaScript engine small enough to read, with three bugs left in on purpose. Pick a lab, write a program
+        that reaches the bug, and the server hands back a flag. Nothing you run leaves the engine.
       </p>
       <p className="lede">
-        Three labs, each a bug left in the engine on purpose: a merge without a <code>__proto__</code> guard, an array
-        length that never resizes its block, and a view whose handle index lives in reachable memory.
-      </p>
-      <p className="lede">
-        <a href="/forge/quickjs">/forge/quickjs</a> runs a real engine, QuickJS in WASM, so the model above can be
-        compared against one that has a parser, a compiler and a garbage collector.
+        Want a real engine? <a href="/forge/quickjs">QuickJS runs here too.</a>
       </p>
       <Forge />
     </main>
