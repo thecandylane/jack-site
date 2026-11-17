@@ -35,20 +35,33 @@ const WORK = [
     what: "FarmMind is a Baton Rouge company focused on making farming and agriculture a more forgiving industry. "
       + "I work on platform features and improvements, on keeping the platform up and running, and on protecting our users.",
     points: [
-      'I helped build the on-device speech-to-text, text-to-speech and translation suite with ONNX and sherpa-onnx.',
-      'I helped build field auto-draw with MobileSAM, inside the iOS and web apps.',
-      'I worked on cross-platform notifications, device and account monitoring, and Stripe and FirstPromoter billing.',
-      'I helped build the harness for Farmer AL, our in-app agent, and AnyFarms, our LiveKit tool for remote in-app support.',
+      "I led FarmMind's fully offline speech-to-speech and document translation, built on on-device speech-to-text, text-to-speech and translation models with ONNX and sherpa-onnx. FarmMind has credited the work publicly.",
+      'I built field auto-draw with SAM in the iOS and web apps. It turns weeks of drawing and mapping fields by hand into hours.',
+      'I run internal pentests of our web, iOS and Android platform with Burp Suite, ZAP, Invicti and Wapiti, review our infrastructure, and ship the fixes through GitHub and GCP CI/CD workflows I helped improve.',
+      'I built cross-device fraud detection and device and account monitoring that enforce our Terms of Service, and cross-platform notifications over Firebase, APNs and Android.',
+      'I built the harness for Farmer Al, our in-app agent, on LangChain, Langfuse, DSPy/GEPA and OpenRouter. I also integrated Stripe and FirstPromoter billing and built AnyFarms, our LiveKit tool for remote in-app support.',
       "I improved the Flutter app's local caching and its GIS state and event handling, and I simplified code along the way.",
-      'I run internal pentests with ZAP, Burp Suite, Invicti and Wapiti, review our infrastructure, and improve our GitHub, GCP and CI/CD workflows.',
-      'I travel to conferences and sponsored events to promote and support FarmMind.',
+      'I travel to Farm Bureau conferences, LSU AgCenter showcases and other events to pitch and support FarmMind.',
     ],
   },
   {
-    role: 'Full-Stack Software Engineer', org: 'Baton Rouge Community College, GuideOverride', when: 'January 2026 to August 2026',
-    what: "Our team built a system-of-record engine for BRCC's override request system. We used Django and React, and we built it "
-      + "entirely from the college's existing data. I still work with BRCC on their assisted workspace product.",
-    points: [],
+    role: 'Founder and infrastructure engineer', org: 'Schliewe Systems', when: '2025 to present',
+    what: 'I designed and run my own multi-node environment: a cloud VPS at the edge, a Proxmox VE node for compute and an Apple Silicon cluster for inference, joined over WireGuard through Pangolin and Cloudflare.',
+    points: [
+      'I ship host and service logs with Grafana Alloy into Loki and wrote alert rules based on MITRE ATT&CK, with metrics in Prometheus and Grafana.',
+      'I harden every host: SSH hardening, LUKS full-disk encryption, nftables and UFW, and Fail2ban.',
+      'I build and host sites for local clients. L. Ellis Designs is a store for custom buttons, built with Next.js, Stripe and Payload CMS.',
+    ],
+  },
+  {
+    role: 'Lead architect and full-stack engineer', org: 'Baton Rouge Community College, GuideOverride', when: 'January 2026 to August 2026',
+    what: "Our team built a system of record for BRCC's course override requests with Django and React, together with the college's administrators and deans. "
+      + "I led its architecture. I still work with BRCC on their assisted workspace product.",
+    points: [
+      "It runs on the college's own records: 380,000 rows of course equivalencies and institutions, and 3,000 past decisions by department chairs.",
+      'We replayed 1,046 real past decisions it had never seen. It never approved a case the chair had denied. It decided 30% of them on its own, and every one matched the chair; the rest went to the chair for review.',
+      'Deterministic rules make the call, and AI reads the documents. With the AI turned on, it still never made a call the chair disagreed with.',
+    ],
   },
   {
     role: 'Developer (side project)', org: 'Local Influence', when: 'May 2026 to present', href: 'https://localinfluence.ai',
@@ -56,27 +69,43 @@ const WORK = [
     points: [],
   },
   {
-    role: 'Automation Engineer (contract)', org: 'Turner Automation LLC', when: 'December 2025 to January 2026',
-    what: 'I helped Advanced Molding Solutions retrofit a Fanuc M-10iD and a Denso VM-series robot, using Studio 5000 Logix and Allen-Bradley controllers.',
+    role: 'Controls engineering contractor', org: 'Turner Automation LLC', when: 'December 2025 to January 2026',
+    what: 'I helped Advanced Molding Solutions retrofit a Fanuc M-10iD and a Denso VM-series robotic cell on Allen-Bradley PLCs in Studio 5000 Logix, and wrote ladder logic with safety interlocks.',
     points: [],
   },
 ];
 
-const PRIOR = "Before this, I was a student worker at the Attorney General's Office in Baton Rouge, and a server and bartender at Modesto.";
-
+const PRIOR = "Earlier, I was a software development intern at Flexi Solutions (Lightning Learn), where I built the marketing site and the learning platform in React and Material UI. "
+  + "Before that, I was a controls engineering intern at HighPoint Electrical, programming Allen-Bradley PLCs and Fanuc robots with iRVision, "
+  + "and a student worker at the Louisiana Attorney General's Office.";
 
 const SECURITY = [
-  ['Cyber Trials Completionist', 'TryHackMe issued this certificate in November 2026. The credential ID is THM-CHWJAKRCAD.'],
-  ['Web and API testing', "I test FarmMind's own apps with ZAP, Burp Suite, Invicti and Wapiti."],
-  ['Exploitation and reversing', 'I practice stack overflows, format strings and binary analysis in LSU coursework and CTFs.'],
+  ['Malware analysis', 'I wrote bash tooling to take apart the Shai-Hulud npm worm. It spread through developer machines and hooked the startup routines of AI coding assistants, so it ran without ever being executed directly.'],
+  ['Web and API testing', "I test FarmMind's own apps with Burp Suite, ZAP, Invicti and Wapiti."],
+  ['Exploitation and reversing', 'I practice stack overflows, format strings and binary analysis with Ghidra and IDA Pro, in LSU coursework and CTFs.'],
   ['Agent security', 'My own harnesses isolate credentials, sandbox agent rooms, and block image exfiltration when they render markdown.'],
+];
+
+const EDUCATION = [
+  ['Louisiana State University', "I graduate in December 2026 with a bachelor's in computer science, with a concentration in cybersecurity. I hold the Board of Supervisors Scholarship and the S&B Engineers and Constructors Scholarship, and I made the President's Honor Roll. I co-founded and led the Web Application Development Club from 2024 to 2025, and I'm a member of the Security Society."],
+  ['Coursework', 'Computer networks, operating systems, cryptography, reverse engineering and software exploitation, and AI and LLM development.'],
+  ['Baton Rouge Community College', 'Computer science with a cybersecurity concentration, 2023 to 2024.'],
+  ['Flatiron School', 'Software engineering bootcamp in React, JavaScript, Flask and Python, January to May 2023.'],
+];
+
+const CERTS = [
+  ['TryHackMe Cyber Trials Completionist', 'November 2026', 'THM-CHWJAKRCAD'],
+  ['TestOut Security Pro', 'April 2024', '6-2C6-VFU7PH'],
+  ['IBM Cloud Core', 'March 2024'],
+  ['IBM SkillsBuild Cybersecurity Certificate', 'December 2023'],
+  ['TryHackMe Pre Security', 'September 2023', 'THM-SLRP76YGHZ'],
+  ['TryHackMe Intro to Cyber Security', 'February 2023', 'THM-K4SLKGBCV9'],
 ];
 
 const CONTACT = [
   ['Email', 'jschli3@lsu.edu', 'mailto:jschli3@lsu.edu'],
-  ['Phone', '225-572-3924', 'tel:+12255723924'],
   ['GitHub', 'github.com/thecandylane', 'https://github.com/thecandylane'],
-  ['LinkedIn', 'linkedin.com/in/jack-schliewe', 'https://linkedin.com/in/jack-schliewe'],
+  ['LinkedIn', 'linkedin.com/in/thecandylane', 'https://www.linkedin.com/in/thecandylane/'],
   ['ref-radar', 'ref.lookit.space', RADAR],
 ];
 
@@ -126,7 +155,7 @@ export default async function Home() {
           <div className="bootlog">{boot.rows}</div>
           <h1>I build custom, secure hardware and software.</h1>
           <FlowText text={INTRO} />
-          <p className="hint muted">Drag the radar. Click the grid. Press ~ for the terminal.</p>
+          <p className="hint muted">Drag the radar. Press any empty space to drop a log in the rain, and drag it around. Press ~ for the terminal.</p>
           <nav className="cta" aria-label="Start here">
             <a href={RADAR}>Open ref-radar</a>
             <a href="#work">Work</a>
@@ -217,7 +246,17 @@ export default async function Home() {
         </ul>
       </Section>
 
-      <Section id="writing" num="06" title="Writing">
+      <Section id="education" num="06" title="Education">
+        <ul className="facts">
+          {EDUCATION.map(([k, v]) => <li key={k}><span>{k}</span><span className="muted">{v}</span></li>)}
+        </ul>
+        <h3 className="sub">Certifications</h3>
+        <ul className="facts">
+          {CERTS.map(([name, when, id]) => <li key={name}><span>{name}</span><span className="muted">{when}{id && <> · credential ID <code>{id}</code></>}</span></li>)}
+        </ul>
+      </Section>
+
+      <Section id="writing" num="07" title="Writing">
         <ul className="posts">
           {posts.slice(0, 5).map((p) => (
             <li key={p.slug}><a href={`/blog/${p.slug}`}><time className="muted">{p.date}</time><span>{p.title}</span></a></li>
@@ -226,7 +265,7 @@ export default async function Home() {
         <nav className="cta"><a href="/blog">All posts</a></nav>
       </Section>
 
-      <Section id="contact" num="07" title="Contact">
+      <Section id="contact" num="08" title="Contact">
         <p className="lead">Email is the best way to reach me.</p>
         <ul className="facts">
           {CONTACT.map(([k, v, href]) => <li key={k}><span>{k}</span><a href={href}>{v}</a></li>)}

@@ -310,3 +310,5 @@ html.coolfolio :is(.card, .tools > li, .stats > div, .jobs > li, .facts > li) { 
 input.pick, .pick input { flex: 1; min-width: 0; padding: .5rem 1ch; border: 1px solid var(--frame); background: var(--panel); color: var(--fg); font: inherit; }
 .pick button, .facts button { border: 1px solid var(--accent); background: none; color: var(--accent); font: inherit; padding: .25rem 1ch; cursor: pointer; }
 .facts button { border: 0; padding: 0; }
+
+.sec h3.sub { margin: 2.5rem 0 .5rem; font: 20px/1.2 var(--t); color: var(--accent); -webkit-font-smoothing: none; }

@@ -23,9 +23,9 @@ Next.js 15 App Router with React 19, plain JavaScript (no TypeScript). This repo
 
 - `src/app/layout.js` — fonts, metadata, the no-flash phosphor script and the `Strip`
 - `src/app/globals.css` — tokens (`--bg --fg --muted --accent --frame --panel --glow`, `.p12` amber), strip, blog, prose, ref card and hero styles
-- `src/app/page.js` — the home page, a server component built once per deploy (`force-static`): hero, then numbered sections led by ref-radar (01), work, projects, security, writing, contact. The copy lives in the data arrays at the top; keep claims to what the owner's resume and LinkedIn say
+- `src/app/page.js` — the home page, a server component built once per deploy (`force-static`): hero, then numbered sections led by ref-radar (01), work, projects, security, writing, contact. The copy lives in the data arrays at the top; keep claims to what the owner's resume (`~/Downloads/Jack_Schliewe_*Resume*.pdf`, newest first) and LinkedIn say, and never inflate them
 - `src/lib/radar.js` — ref-radar's live numbers and one real `search_refs` answer, fetched at build
-- `src/components/GridWarp.js` — the hero's canvas grid that bends around the pointer (static under reduced motion)
+- `src/components/MatrixRain.js` — the falling phosphor characters behind every page. A press drops a log the streams splash on and throws nearby characters; dragging moves it (one still frame under reduced motion)
 - `public/llms.txt` — this site for agents, pointing at ref-radar's MCP server
 - `src/components/Terminal.js` — the terminal (`~` or a `#terminal` link): `ref`, `feed`, `ls`, `cat`, `open`, `whoami`, `split` (panes like a Herdr workspace), `coolfolio` (the 2024 portfolio's dodging cards, from `thecandylane/coolfolio`) and `familiar` (the agent CTF)
 - `src/app/api/ref/route.js` — proxies ref-radar's `/api/search`, which sends no CORS header

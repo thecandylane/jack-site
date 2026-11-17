@@ -1,6 +1,6 @@
 import { JetBrains_Mono } from 'next/font/google';
 import Strip from '@/components/Strip';
-import GridWarp from '@/components/GridWarp';
+import MatrixRain from '@/components/MatrixRain';
 import Motion from '@/components/Motion';
 import Terminal from '@/components/Terminal';
 import { allPosts } from '@/lib/posts';
@@ -46,7 +46,7 @@ export default async function RootLayout({ children }) {
         <link rel="preload" href="/fonts/temple8.woff" as="font" type="font/woff" crossOrigin="" />
       </head>
       <body>
-        <GridWarp />
+        <MatrixRain />
         <Strip />
         {children}
         <Motion />
