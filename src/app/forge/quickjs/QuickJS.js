@@ -1,6 +1,6 @@
 'use client';
 
-import { useRef, useState } from 'react';
+import { useState } from 'react';
 
 const BUDGET_MS = 2000;
 const START = `// try: while (true) {}
@@ -22,12 +22,10 @@ export default function QuickJS() {
   const [src, setSrc] = useState(START);
   const [busy, setBusy] = useState(false);
   const [out, setOut] = useState(null);
-  const stop = useRef(false);
 
   async function run() {
     setBusy(true);
     setOut(null);
-    stop.current = false;
     let rt, ctx;
     try {
       const qjs = await load();
@@ -35,8 +33,10 @@ export default function QuickJS() {
       ctx = rt.newContext();
       const deadline = Date.now() + BUDGET_MS;
       let interrupted = false;
+      // The engine runs synchronously on this thread, so a button cannot land mid-run: the
+      // deadline is the only stop that exists, and the page says so.
       rt.setInterruptHandler(() => {
-        interrupted = stop.current || Date.now() > deadline;
+        interrupted = Date.now() > deadline;
         return interrupted;
       });
       const t0 = performance.now();
@@ -83,8 +83,7 @@ export default function QuickJS() {
       />
       <div className="qjs-bar">
         <button onClick={run} disabled={busy}>{busy ? 'Running…' : 'Run'}</button>
-        {/* ponytail: the engine is synchronous on the main thread, so a click cannot land mid-run; the 2 s budget is the real stop */}
-        <button onClick={() => (stop.current = true)} disabled={!busy}>Stop</button>
+        <span className="qjs-note">{BUDGET_MS / 1000} s budget, enforced by the engine&apos;s interrupt handler</span>
       </div>
       {out && (
         <div className="qjs-out" aria-live="polite">

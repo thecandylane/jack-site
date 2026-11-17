@@ -2,6 +2,7 @@
 
 import { useRef, useState, useEffect } from 'react';
 import { createForge } from '@/lib/forge/index';
+import { parse } from '@/lib/forge/parser';
 import './forge.css';
 
 const HEAP = 1 << 20;
@@ -13,7 +14,7 @@ print(o.n + 40);
 
 const hex = (n) => '0x' + n.toString(16).padStart(5, '0');
 
-export default function Forge({ parse }) {
+export default function Forge() {
   const forgeRef = useRef(null);
   const outRef = useRef(null);
   const [src, setSrc] = useState(SEED);
