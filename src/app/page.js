@@ -7,10 +7,11 @@ export const dynamic = 'force-static'; // built once per deploy: reads src/conte
 
 const RADAR = 'https://ref.lookit.space';
 
-// The copy below follows the owner's own LinkedIn wording. Keep it in full sentences, first person.
+// The copy follows the owner's LinkedIn wording. Work, security and education copy is factual and resume-style, without
+// leading "I"; only the personal ABOUT paragraphs speak in first person.
 // Laid out by Pretext around the draggable radar disc (FlowText).
 const INTRO = "My recent specialty is improving agent and human collaboration while developing secure software. "
-  + "I work at FarmMind, I build ref-radar on the side, and I graduate in December with a bachelor's in cybersecurity.";
+  + "Engineer at FarmMind, builder of ref-radar on the side, graduating in December with a bachelor's in cybersecurity.";
 
 const ABOUT = [
   "I've worked on custom 3D printer and PC builds, Klipper and GPU overclocking, custom MIDI software in Max/MSP and Pure Data, "
@@ -32,62 +33,61 @@ const TOOLS = [
 const WORK = [
   {
     role: 'Full-Stack AI Security Engineer', org: 'FarmMind', when: 'April 2026 to present', href: 'https://farmmind.org',
-    what: "FarmMind is a Baton Rouge company focused on making farming and agriculture a more forgiving industry. "
-      + "I work on platform features and improvements, on keeping the platform up and running, and on protecting our users.",
+    what: 'A Baton Rouge company making farming and agriculture a more forgiving industry. Platform features, uptime and user protection.',
     points: [
-      "I led FarmMind's fully offline speech-to-speech and document translation, built on on-device speech-to-text, text-to-speech and translation models with ONNX and sherpa-onnx. FarmMind has credited the work publicly.",
-      'I built field auto-draw with SAM in the iOS and web apps. It turns weeks of drawing and mapping fields by hand into hours.',
-      'I run internal pentests of our web, iOS and Android platform with Burp Suite, ZAP, Invicti and Wapiti, review our infrastructure, and ship the fixes through GitHub and GCP CI/CD workflows I helped improve.',
-      'I built cross-device fraud detection and device and account monitoring that enforce our Terms of Service, and cross-platform notifications over Firebase, APNs and Android.',
-      'I built the harness for Farmer Al, our in-app agent, on LangChain, Langfuse, DSPy/GEPA and OpenRouter. I also integrated Stripe and FirstPromoter billing and built AnyFarms, our LiveKit tool for remote in-app support.',
-      "I improved the Flutter app's local caching and its GIS state and event handling, and I simplified code along the way.",
-      'I travel to Farm Bureau conferences, LSU AgCenter showcases and other events to pitch and support FarmMind.',
+      'Led fully offline speech-to-speech and document translation on on-device speech-to-text, text-to-speech and translation models (ONNX, sherpa-onnx). Credited publicly by FarmMind.',
+      'Field auto-draw with SAM in the iOS and web apps: weeks of drawing and mapping fields by hand, cut to hours.',
+      'Internal pentests of the web, iOS and Android platform with Burp Suite, ZAP, Invicti and Wapiti, plus infrastructure review. Fixes ship through GitHub and GCP CI/CD workflows, co-improved along the way.',
+      'Cross-device fraud detection and device and account monitoring that enforce the Terms of Service. Cross-platform notifications over Firebase, APNs and Android.',
+      'The harness for Farmer Al, the in-app agent, on LangChain, Langfuse, DSPy/GEPA and OpenRouter. Stripe and FirstPromoter billing. AnyFarms, a LiveKit tool for remote in-app support.',
+      "Flutter app: faster local caching, cleaner GIS state and event handling, simpler code.",
+      'Pitching and support at Farm Bureau conferences, LSU AgCenter showcases and other events.',
     ],
   },
   {
     role: 'Founder and infrastructure engineer', org: 'Schliewe Systems', when: '2025 to present',
-    what: 'I designed and run my own multi-node environment: a cloud VPS at the edge, a Proxmox VE node for compute and an Apple Silicon cluster for inference, joined over WireGuard through Pangolin and Cloudflare.',
+    what: 'A self-designed, self-run multi-node environment: a cloud VPS at the edge, a Proxmox VE node for compute and an Apple Silicon cluster for inference, joined over WireGuard through Pangolin and Cloudflare.',
     points: [
-      'I ship host and service logs with Grafana Alloy into Loki and wrote alert rules based on MITRE ATT&CK, with metrics in Prometheus and Grafana.',
-      'I harden every host: SSH hardening, LUKS full-disk encryption, nftables and UFW, and Fail2ban.',
-      'I build and host sites for local clients. L. Ellis Designs is a store for custom buttons, built with Next.js, Stripe and Payload CMS.',
+      'Host and service logs shipped with Grafana Alloy into Loki, alert rules based on MITRE ATT&CK, metrics in Prometheus and Grafana.',
+      'Every host hardened: SSH hardening, LUKS full-disk encryption, nftables and UFW, Fail2ban.',
+      'Sites built and hosted for local clients, such as L. Ellis Designs, a store for custom buttons on Next.js, Stripe and Payload CMS.',
     ],
   },
   {
     role: 'Lead architect and full-stack engineer', org: 'Baton Rouge Community College, GuideOverride', when: 'January 2026 to August 2026',
-    what: "Our team built a system of record for BRCC's course override requests with Django and React, together with the college's administrators and deans. "
-      + "I led its architecture. I still work with BRCC on their assisted workspace product.",
+    what: "A system of record for BRCC's course override requests, built in Django and React with the college's administrators and deans. "
+      + 'Led its architecture; still working with BRCC on their assisted workspace product.',
     points: [
-      "It runs on the college's own records: 380,000 rows of course equivalencies and institutions, and 3,000 past decisions by department chairs.",
-      'We replayed 1,046 real past decisions it had never seen. It never approved a case the chair had denied. It decided 30% of them on its own, and every one matched the chair; the rest went to the chair for review.',
-      'Deterministic rules make the call, and AI reads the documents. With the AI turned on, it still never made a call the chair disagreed with.',
+      "Runs on the college's own records: 380,000 rows of course equivalencies and institutions, and 3,000 past decisions by department chairs.",
+      'Replayed against 1,046 real past decisions it had never seen: it never approved a case the chair had denied. It decided 30% on its own, every one matching the chair; the rest went to the chair for review.',
+      'Deterministic rules make the call; AI reads the documents. With the AI turned on, it still never made a call the chair disagreed with.',
     ],
   },
   {
     role: 'Developer (side project)', org: 'Local Influence', when: 'May 2026 to present', href: 'https://localinfluence.ai',
-    what: 'On the side, I work with Jack Minnich and Michael Vocke on LocalInfluence.ai, a marketplace that connects local businesses with influencers.',
+    what: 'LocalInfluence.ai, with Jack Minnich and Michael Vocke: a marketplace that connects local businesses with influencers.',
     points: [],
   },
   {
     role: 'Controls engineering contractor', org: 'Turner Automation LLC', when: 'December 2025 to January 2026',
-    what: 'I helped Advanced Molding Solutions retrofit a Fanuc M-10iD and a Denso VM-series robotic cell on Allen-Bradley PLCs in Studio 5000 Logix, and wrote ladder logic with safety interlocks.',
+    what: 'Helped Advanced Molding Solutions retrofit a Fanuc M-10iD and a Denso VM-series robotic cell on Allen-Bradley PLCs in Studio 5000 Logix, including ladder logic with safety interlocks.',
     points: [],
   },
 ];
 
-const PRIOR = "Earlier, I was a software development intern at Flexi Solutions (Lightning Learn), where I built the marketing site and the learning platform in React and Material UI. "
-  + "Before that, I was a controls engineering intern at HighPoint Electrical, programming Allen-Bradley PLCs and Fanuc robots with iRVision, "
-  + "and a student worker at the Louisiana Attorney General's Office.";
+const PRIOR = 'Earlier: software development intern at Flexi Solutions (Lightning Learn), building the marketing site and learning platform in React and Material UI. '
+  + 'Controls engineering intern at HighPoint Electrical, programming Allen-Bradley PLCs and Fanuc robots with iRVision. '
+  + "Student worker at the Louisiana Attorney General's Office.";
 
 const SECURITY = [
-  ['Malware analysis', 'I wrote bash tooling to take apart the Shai-Hulud npm worm. It spread through developer machines and hooked the startup routines of AI coding assistants, so it ran without ever being executed directly.'],
-  ['Web and API testing', "I test FarmMind's own apps with Burp Suite, ZAP, Invicti and Wapiti."],
-  ['Exploitation and reversing', 'I practice stack overflows, format strings and binary analysis with Ghidra and IDA Pro, in LSU coursework and CTFs.'],
-  ['Agent security', 'My own harnesses isolate credentials, sandbox agent rooms, and block image exfiltration when they render markdown.'],
+  ['Malware analysis', 'Bash tooling to take apart the Shai-Hulud npm worm, which spread through developer machines and hooked the startup routines of AI coding assistants, so it ran without ever being executed directly.'],
+  ['Web and API testing', "FarmMind's own apps, tested with Burp Suite, ZAP, Invicti and Wapiti."],
+  ['Exploitation and reversing', 'Stack overflows, format strings and binary analysis with Ghidra and IDA Pro, in LSU coursework and CTFs.'],
+  ['Agent security', 'Harnesses that isolate credentials, sandbox agent rooms, and block image exfiltration when rendering markdown.'],
 ];
 
 const EDUCATION = [
-  ['Louisiana State University', "I graduate in December 2026 with a bachelor's in computer science, with a concentration in cybersecurity. I hold the Board of Supervisors Scholarship and the S&B Engineers and Constructors Scholarship, and I made the President's Honor Roll. I co-founded and led the Web Application Development Club from 2024 to 2025, and I'm a member of the Security Society."],
+  ['Louisiana State University', "Bachelor's in computer science, cybersecurity concentration, graduating December 2026. Board of Supervisors Scholarship, S&B Engineers and Constructors Scholarship, President's Honor Roll. Co-founded and led the Web Application Development Club, 2024 to 2025. Member of the Security Society."],
   ['Coursework', 'Computer networks, operating systems, cryptography, reverse engineering and software exploitation, and AI and LLM development.'],
   ['Baton Rouge Community College', 'Computer science with a cybersecurity concentration, 2023 to 2024.'],
   ['Flatiron School', 'Software engineering bootcamp in React, JavaScript, Flask and Python, January to May 2023.'],
@@ -171,7 +171,7 @@ export default async function Home() {
         <p className="big">Prior art for coding agents.</p>
         <p className="lead">
           Context7 tells your agent how to call a library. ref-radar tells it who already built the thing,
-          where to start reading, and whether it can reuse the code. I built it, I run it, and I add to it every day.
+          where to start reading, and whether it can reuse the code. Built and run solo, with new refs every day.
         </p>
         {facts && (
           <dl className="stats">
