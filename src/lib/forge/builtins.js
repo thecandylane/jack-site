@@ -33,11 +33,20 @@ export function installHostBuiltins(vm, host) {
   vm.defineBuiltin('read', (args) => {
     const view = args[0];
     if (!isPtr(view)) return vm.undef;
-    const index = smiValue(vm.heap.readU32(ptrOffset(view) + slotOffset(1)));
+    const off = ptrOffset(view);
+    if (vm.maps.get(vm.heap.mapIdAt(off))?.kind !== KIND.VIEW) return vm.undef;
+    const index = smiValue(vm.heap.readU32(off + slotOffset(1)));
+    if (vm.defend && !host.mayRead(off, index)) {
+      // FIX-3: the slot is only a hint. What the view may name was recorded when it was made.
+      vm.log.push('read: refused, this view never held that capability');
+      return vm.undef;
+    }
     const value = host.read(index);
     return value == null ? vm.undef : vm.str(value);
   });
 }
+
+const DANGEROUS = new Set(['__proto__', 'constructor', 'prototype']);
 
 function mergeInto(vm, target, source, depth) {
   if (depth > 8) return;
@@ -45,10 +54,13 @@ function mergeInto(vm, target, source, depth) {
   if (!map) return;
   for (const prop of map.props) {
     const key = prop.key;
+    // FIX-2: no key that can change a prototype, and never recurse into an inherited value.
+    if (vm.defend && DANGEROUS.has(key)) continue;
     const sourceValue = vm.get(source, key);
     if (isPtr(sourceValue) && vm.mapOf(sourceValue)?.kind === KIND.OBJECT) {
       const targetValue = vm.get(target, key);
-      if (isPtr(targetValue) && vm.mapOf(targetValue)?.kind === KIND.OBJECT) {
+      const owned = !vm.defend || vm.maps.indexOf(vm.heap.mapIdAt(ptrOffset(target)), key) >= 0;
+      if (owned && isPtr(targetValue) && vm.mapOf(targetValue)?.kind === KIND.OBJECT) {
         mergeInto(vm, targetValue, sourceValue, depth + 1); // BUG-2: __proto__ gets here
       } else {
         vm.set(target, key, sourceValue);

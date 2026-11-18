@@ -33,6 +33,7 @@ export default function Forge() {
   const [used, setUsed] = useState(0);
   const [cage, setCage] = useState(1 << 16);
   const [verdict, setVerdict] = useState(null);
+  const [defended, setDefended] = useState(false);
   const [busy, setBusy] = useState(false);
   const outRef = useRef(null);
   const leave = useRef(false); // Escape, then Tab, moves focus out of the editor
@@ -62,7 +63,7 @@ export default function Forge() {
     const res = await fetch('/api/forge', {
       method: 'POST',
       headers: { 'content-type': 'application/json' },
-      body: JSON.stringify({ lab: labId, source: src }),
+      body: JSON.stringify({ lab: labId, source: src, defend: defended }),
     }).then((r) => r.json()).catch(() => ({ error: 'The forge did not answer.' }));
     setBusy(false);
     if (res.error && !res.ok) {
@@ -75,7 +76,7 @@ export default function Forge() {
     setRows(res.objects ?? []);
     setUsed(res.used ?? 0);
     setCage(res.heapBytes ?? 1 << 16);
-    setVerdict({ solved: res.solved, why: res.why, flag: res.flag });
+    setVerdict({ solved: res.solved, why: res.why, flag: res.flag, fix: res.fix, after: res.after });
   };
 
   const reset = () => {
@@ -121,6 +122,10 @@ export default function Forge() {
       <div className="forge-actions">
         <button type="button" onClick={run} disabled={busy} aria-label="Run the program">{busy ? 'Running…' : 'Run'}</button>
         <button type="button" onClick={reset} aria-label="Reset the editor, output and heap">Reset</button>
+        <label className="forge-check">
+          <input type="checkbox" checked={defended} onChange={(e) => setDefended(e.target.checked)} />
+          run against the fix
+        </label>
       </div>
 
       <h2 className="forge-label">Output</h2>
@@ -129,9 +134,24 @@ export default function Forge() {
       </div>
 
       {verdict && (
-        <p className={verdict.solved ? 'forge-ok' : 'forge-why'}>
-          {verdict.solved ? `solved. ${verdict.flag ?? verdict.why}` : verdict.why}
-        </p>
+        <div className="forge-verdict">
+          <p className={verdict.solved ? 'forge-ok' : 'forge-why'}>
+            {verdict.solved ? `solved. ${verdict.flag ?? verdict.why}` : verdict.why}
+          </p>
+          {verdict.after && (
+            <p className="forge-why">
+              after the fix: {verdict.after.solved ? 'still solved' : verdict.after.error ?? verdict.after.why}
+              {verdict.after.log?.length ? ` — ${verdict.after.log.slice(0, 2).join(' · ')}` : ''}
+            </p>
+          )}
+          {verdict.fix && (
+            <details className="hdrs forge-fix">
+              <summary>{verdict.fix.title}</summary>
+              <p className="forge-why">{verdict.fix.note}</p>
+              <pre>{verdict.fix.code}</pre>
+            </details>
+          )}
+        </div>
       )}
 
       <p className="forge-muted">

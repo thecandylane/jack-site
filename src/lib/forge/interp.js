@@ -31,10 +31,14 @@ class ThrowSignal {
 }
 
 export class Interpreter {
-  constructor(heap = new Heap(), maps = new Maps(), { steps = DEFAULT_STEPS } = {}) {
+  constructor(heap = new Heap(), maps = new Maps(), { steps = DEFAULT_STEPS, defend = false } = {}) {
     this.heap = heap;
     this.maps = maps;
     this.steps = steps;
+    // defend turns on the three fixes the labs teach. The same source then hits a repaired
+    // engine, which is the point: a solve should not survive the patch.
+    this.defend = defend;
+    this.host = null;
     this.used = 0;
     this.log = [];
     this.fns = [];
@@ -146,6 +150,7 @@ export class Interpreter {
     this.heap.writeU32(off + slotOffset(PROTO_SLOT), ptr(this.objectProto));
     this.heap.writeU32(off + slotOffset(1), smi(handleIndex));
     this.heap.writeU32(off + slotOffset(2), smi(0));
+    this.host?.bindView(off, handleIndex); // FIX-3: the capability lives outside the cage
     return ptr(off);
   }
 
@@ -209,6 +214,11 @@ export class Interpreter {
       return value;
     }
     if (map.kind === KIND.ARRAY && key === 'length') {
+      if (this.defend) {
+        if (!isSmi(value)) throw this.fail('length must be a whole number');
+        this.resizeArray(off, smiValue(value));
+        return value;
+      }
       // BUG-1: the length slot moves, the elements block keeps the size it was allocated
       // with. Every read and write past `oldLength` then walks the cage into whatever was
       // allocated next. Real engines have shipped the same shape as a corrupted JSArray
@@ -223,6 +233,23 @@ export class Interpreter {
     this.heap.setMapId(off, grown);
     this.heap.writeU32(off + slotOffset(slot), value);
     return value;
+  }
+
+  /** FIX-1: the length and the elements block move together, so no index can outrun memory. */
+  resizeArray(off, length) {
+    if (length < 0) throw this.fail('length cannot be negative');
+    const map = this.maps.get(this.heap.mapIdAt(off));
+    const oldLength = smiValue(this.heap.readU32(off + slotOffset(1)));
+    const stride = map.elemRep === 'double' ? 8 : 4;
+    const elems = this.heap.elemAt(off);
+    const block = this.heap.alloc(ELEM_BASE + length * stride, this.MAP_ELEMS);
+    for (let i = 0; i < Math.min(oldLength, length); i++) {
+      const from = ptrOffset(elems) + ELEM_BASE;
+      if (map.elemRep === 'double') this.heap.writeF64(block + ELEM_BASE + i * 8, this.heap.readF64(from + i * 8));
+      else this.heap.writeU32(block + ELEM_BASE + i * 4, this.heap.readU32(from + i * 4));
+    }
+    this.heap.setElem(off, length ? ptr(block) : 0);
+    this.heap.writeU32(off + slotOffset(1), smi(length));
   }
 
   getIndex(arrWord, index) {

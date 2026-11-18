@@ -22,11 +22,12 @@ export const labById = (id) => LABS.find((lab) => lab.id === id) ?? null;
  * @param {string} [options.flag] the host's flag value
  * @param {string|object} [options.lab] a lab id, or the lab itself; its start() seeds the cage
  */
-export function createForge({ heapBytes = 1 << 20, parse = null, steps, flag, lab = null } = {}) {
+export function createForge({ heapBytes = 1 << 20, parse = null, steps, flag, lab = null, defend = false } = {}) {
   const heap = new Heap(heapBytes);
   const maps = new Maps();
-  const vm = new Interpreter(heap, maps, steps ? { steps } : {});
+  const vm = new Interpreter(heap, maps, { ...(steps ? { steps } : {}), defend });
   const host = new Host(flag);
+  vm.host = host;
   installHostBuiltins(vm, host);
 
   const api = {

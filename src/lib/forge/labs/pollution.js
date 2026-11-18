@@ -16,6 +16,14 @@ export const POLLUTION_LAB = {
 
   start() {},
 
+  fix: {
+    title: 'Refuse the keys that move a prototype',
+    note: 'Two lines end the whole class: skip the keys that can change a prototype, and only recurse into a property the target already owns.',
+    code: `if (key === '__proto__' || key === 'constructor' || key === 'prototype') continue;
+if (!Object.hasOwn(target, key)) target[key] = source[key];
+else merge(target[key], source[key]);`,
+  },
+
   check(forge) {
     const { host } = forge;
     if (!host.opened) return { solved: false, why: 'the native exec path never ran' };

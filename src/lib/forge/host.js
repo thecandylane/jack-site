@@ -14,6 +14,16 @@ export class Host {
     ];
     this.opened = 0; // times the native exec path was taken
     this.reads = []; // handle ids the guest read, in order
+    this.caps = new Map(); // FIX-3: view offset -> the handle it was created with
+  }
+
+  /** Record what a view may name. The guest can rewrite the slot; it cannot rewrite this. */
+  bindView(offset, handle) {
+    this.caps.set(offset, handle);
+  }
+
+  mayRead(offset, handle) {
+    return this.caps.get(offset) === handle;
   }
 
   /** The native path. Its caller gets a view on the flag handle. */

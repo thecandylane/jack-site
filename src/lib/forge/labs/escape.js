@@ -16,6 +16,13 @@ export const ESCAPE_LAB = {
 
   start() {},
 
+  fix: {
+    title: 'Keep the capability out of the cage',
+    note: 'A handle index in memory the guest can write is a suggestion, not a capability. Record what each view was created with, in the host, and check it on every read.',
+    code: `host.bindView(off, handle);              // when the view is made
+if (!host.mayRead(off, index)) return;   // on every read`,
+  },
+
   check(forge) {
     return forge.host.reads.includes(3)
       ? { solved: true, why: 'a view named handle 3 and read it' }

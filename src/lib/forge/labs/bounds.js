@@ -26,6 +26,17 @@ export const BOUNDS_LAB = {
     forge.canary = ptr(canary);
   },
 
+  fix: {
+    title: 'Move the length with the block',
+    note: 'The length is an invariant over the elements block, so changing one has to change the other in the same operation. There is no window left to store through.',
+    code: `resizeArray(off, length) {
+  const block = alloc(ELEM_BASE + length * stride);
+  copy(oldBlock, block, min(oldLength, length));
+  setElem(off, block);
+  setLength(off, length);
+}`,
+  },
+
   check(forge) {
     const value = smiValue(forge.vm.get(forge.canary, 'touched'));
     return value === 1

@@ -15,6 +15,7 @@ pushing `main` deploys nothing.
 | M3 Lab B | done | `labs/bounds.js`; solver verified against the live API |
 | M4 Lab C | done | `labs/escape.js`; handle 3 read through a retargeted view |
 | Scoring | done | `/api/forge` runs the VM in the Worker; the flag never reaches the client |
+| Defender mode | done | `defend: true` applies the three fixes; a solve is re-run against them and reported |
 | M5 `/forge` UI | done | `src/app/forge/`; verified in a browser |
 | M6 QuickJS lane | done | `/forge/quickjs`; verified in a browser, interrupt at 2 s |
 | M7 content | not started | posts, ref-radar suggestions |

@@ -29,6 +29,7 @@ export async function GET() {
 export async function POST(request) {
   const body = await request.json().catch(() => null);
   const lab = labById(body?.lab) ?? labById('pollution');
+  const defend = body?.defend === true;
   const source = typeof body?.source === 'string' ? body.source : '';
   if (!source.trim()) return json({ error: 'Nothing to run.' }, 400);
   if (source.length > MAX_SOURCE) return json({ error: `Keep the program under ${MAX_SOURCE} characters.` }, 400);
@@ -42,9 +43,28 @@ export async function POST(request) {
   // One secret per lab, falling back to the shared one: FORGE_FLAG_POLLUTION, FORGE_FLAG_BOUNDS,
   // FORGE_FLAG_ESCAPE, then FORGE_FLAG. A lab with no flag still scores; it returns null.
   const flag = env[`FORGE_FLAG_${lab.id.toUpperCase()}`] || env.FORGE_FLAG || '';
-  const forge = createForge({ heapBytes: HEAP_BYTES, steps: MAX_STEPS, parse, flag, lab });
-  const out = forge.run(source);
-  const verdict = lab.check(forge);
+
+  const execute = (defended) => {
+    const forge = createForge({ heapBytes: HEAP_BYTES, steps: MAX_STEPS, parse, flag, lab, defend: defended });
+    const out = forge.run(source);
+    return { forge, out, verdict: lab.check(forge) };
+  };
+
+  const { forge, out, verdict } = execute(defend);
+
+  // A solve is only interesting next to the same source hitting the fix. Run it once more with
+  // the patches on, and report what happened — never a second flag.
+  let after = null;
+  if (verdict.solved && !defend) {
+    const fixed = execute(true);
+    after = {
+      ok: fixed.out.ok,
+      log: fixed.out.log.slice(-20),
+      error: fixed.out.error ?? null,
+      solved: fixed.verdict.solved,
+      why: fixed.verdict.why,
+    };
+  }
 
   return json({
     ok: out.ok,
@@ -58,8 +78,11 @@ export async function POST(request) {
       size: o.size,
       kind: forge.maps.get(o.mapId)?.kind ?? 'freed',
     })),
+    defended: defend,
     solved: verdict.solved,
     why: verdict.why,
-    flag: verdict.solved && flag ? flag : null,
+    flag: verdict.solved && !defend && flag ? flag : null,
+    fix: verdict.solved ? lab.fix ?? null : null,
+    after,
   });
 }
