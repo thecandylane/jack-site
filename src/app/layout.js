@@ -44,6 +44,7 @@ export default async function RootLayout({ children }) {
     <html lang="en" className={jetbrains.variable} suppressHydrationWarning>
       <head>
         <script dangerouslySetInnerHTML={{ __html: PHOSPHOR }} />
+        {process.env.GOOGLE_SITE_VERIFICATION ? <meta name="google-site-verification" content={process.env.GOOGLE_SITE_VERIFICATION} /> : null}
         <link rel="preload" href="/fonts/temple8.woff" as="font" type="font/woff" crossOrigin="" />
       </head>
       <body>

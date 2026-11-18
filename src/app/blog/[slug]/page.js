@@ -1,5 +1,7 @@
 import { pageMeta } from '@/lib/site';
 import { getPost, longDate, slugs } from '@/lib/posts';
+import { postJsonLd } from '@/lib/jsonld';
+import JsonLd from '@/components/JsonLd';
 import Radar from '@/components/Radar';
 
 export const dynamicParams = false; // only the posts in src/content/posts; anything else is a 404
@@ -17,6 +19,7 @@ export default async function Post({ params }) {
   const { Body, ...p } = await getPost((await params).slug);
   return (
     <main className="wrap post">
+      <JsonLd data={postJsonLd(p)} />
       <header>
         <a className="back" href="/blog">← cd ../blog</a>
         <div className="tags">{p.tags?.map((t) => <span key={t}>#{t}</span>)}</div>
