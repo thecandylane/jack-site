@@ -7,7 +7,7 @@ export const meta = {
 
 import * as ex from '@/content/exercises'
 
-At TryHackMe's Cyber Trials 2026, my team's favorite room was The Binding Circle. It's an AI agent with a few tools and a planner that refuses anything dangerous. You win by making the agent hurt itself anyway. I rebuilt the idea here, so anyone can play it from this site.
+The Binding Circle at TryHackMe's Cyber Trials 2026 is an agent with a few tools and a planner that refuses anything dangerous. You win by making it do the thing anyway. This is that room, on this site.
 
 ## How to play
 
@@ -46,17 +46,15 @@ flowchart LR
 
 ## Hints
 
-The two weaknesses are real ones. They show up again and again in agents that ship today.
-
-1. Ask yourself where the familiar's instructions come from, and whether it can tell its owner's words from yours.
+1. Where do the familiar's instructions come from, and can it tell the owner's words from yours?
 2. Read the description of every tool, then think about how a tool like that usually checks its input.
 
 If you solve it, write it up and send it to me. I'll link the best writeups here.
 
 ## Building one that holds
 
-The familiar is weak on purpose. Here's the shape of a tool that would hold. The model never writes a command: it picks a check from a menu, and the tool maps that name to a fixed argument list. The model's tool call is untrusted input like any other, so the tool checks all of it: the tool name, the shape of the arguments, and the value, without trusting anything it inherits from JavaScript's `Object`.
+The familiar is weak on purpose. A tool that holds does not let the model write a command. The model picks a name from a menu. The tool maps that name to a fixed argument list and checks the tool name, the shape, and the value. It does not trust anything inherited from `Object`.
 
 <Playground {...ex.familiar} />
 
-Notice what isn't in the fix: no rule in the prompt, no filter on the model's words. The model can still be talked into anything. The tool just has nothing dangerous to give it.
+The fix has no prompt rule and no filter on the model's words. The model can still be talked into the call. The tool has nothing dangerous to run.

@@ -1,15 +1,13 @@
 export const meta = {
   title: 'What 194 flagged repos look like',
-  lede: "ref-radar marks some repos \"dangerous code: read, don't run\". I had an agent read every one of them: what's really in there, the shapes that repeat, the repos built to fool AI agents, and where my own scanner gets it wrong.",
+  lede: "An agent read all 194 repos ref-radar had flagged on 17 November 2026. 50 were attack tools, 68 were wrong flags, and two rules caused most of the mistakes.",
   date: '2026-11-17',
   tags: ['ref-radar', 'malware', 'ai-security', 'detection'],
 }
 
 import * as ex from '@/content/exercises'
 
-[ref-radar](https://ref.lookit.space) is my catalog of reference repos for coding agents. Before a repo goes live, a scanner checks it, and anything that looks risky gets a flag: "dangerous code: read, don't run". On November 17 there were 194 flagged repos. I wanted to know two things: what's actually behind those flags, and how often my scanner is right.
-
-So I had an agent read all 194, using only ref-radar's own read tools: file trees, manifests, outlines, text search and file reads. Nothing was cloned, built or run, and files the scanner holds back as possible traps stayed unread. The agent wrote down structure only (file layout, APIs, the order things happen in), never payloads.
+[ref-radar](https://ref.lookit.space) flags a repo "dangerous code: read, don't run" before it goes live. On 17 November 2026 that was 194 repos. An agent read all 194 with ref-radar's own tools: trees, manifests, outlines, text search, file reads. Nothing was cloned, built, or run. Files held back as possible traps stayed unread. The notes are structure: layout, APIs, order of operations. No payloads.
 
 ## What's in there
 
@@ -22,13 +20,13 @@ flowchart LR
   F --> B[harmless, wrongly flagged: 68]
 ```
 
-The attack tooling is what you'd expect from a security catalog: command-and-control frameworks, Active Directory and Entra ID attack kits, wireless and radio tools, web exploit collections, cloud and container tooling, and a new group, AI agents that run penetration tests. Dual-use covers things like scanners and recon tools that defenders use as much as attackers.
+Attack tooling: command-and-control frameworks, Active Directory and Entra ID kits, wireless and radio tools, web exploit collections, cloud and container tooling, and agents that run penetration tests. Dual-use is scanners and recon tools.
 
-What's missing matters too. There are no worms, no credential stealers and no malware loaders. ref-radar keeps live malware out of the catalog and quarantines any repo that carries a known worm's files, and that held. Among the repos the agent read, the stealer's core move, sweeping up credentials and sending them out, showed up exactly once, as a deliberate test case inside a scanner's test suite.
+No worms, no credential stealers, no malware loaders. ref-radar keeps live malware out and quarantines a repo that carries a known worm's files. That held. The stealer move, sweep credentials and send them out, showed up once, as a test case inside a scanner's suite.
 
 ## Shapes that repeat
 
-Payloads differ, but the attack tooling is built from a handful of shapes. Each one is easy to recognize once you know it:
+The attack tooling repeats a few shapes:
 
 - **One module per technique.** A `modules/` or `plugins/` folder with one file per attack, CVE or target, and a core that loads them by name. 27 repos. It's the most common shape in the attack tooling, across Active Directory, web, wireless, Android and LLM attack kits alike.
 - **A server and an implant.** An operator server in one folder and the agent it controls in another, often with several ways to talk (HTTPS, DNS, sometimes a SaaS API used as the channel). 16 repos.
@@ -36,7 +34,7 @@ Payloads differ, but the attack tooling is built from a handful of shapes. Each 
 - **Raw radio frames.** Monitor mode, crafted 802.11 frames and rogue access points. 8 repos; 7 of the 8 contain the tell-tale terms.
 - **Attack corpora for LLMs.** Collections of jailbreak and injection prompts, or agents that run them. 8 repos.
 
-One shape surprised me by where it lives. A text search found install-time execution (npm `postinstall`, Python `setup.py` hooks, plugin hooks that run at session start) in 13 of the 56 flagged repos it checked, and in none of the 13 attack tools it checked. In this catalog, auto-run hooks belong to ordinary projects that download a prebuilt binary or show a status line. The attack tools make you run them on purpose.
+Install-time execution (`postinstall`, `setup.py` hooks, session-start plugin hooks) showed up in 13 of 56 flagged repos the search checked, and in none of the 13 attack tools it checked. In this catalog the auto-run hooks are ordinary projects that download a binary or print a status line. The attack tools expect you to run them.
 
 ## Repos built to fool agents
 
@@ -44,11 +42,11 @@ Three repos are aimed at the AI agents that read code, on purpose:
 
 - **One poisons reverse-engineering agents.** It plants decoy symbols and poisoned text tuned to mislead one specific AI reverse-engineering tool, and writes its own MCP config and skill into the user's home agent settings.
 - **One is a honeypot for attacking agents.** It's HTTP middleware that rewrites pages to carry instructions aimed at any agent browsing them, next to a fake MCP endpoint and decoy credentials.
-- **One is a scanner's test fixture.** A skill that looks innocent, whose helper reads environment variables and sends the sensitive-looking ones out. It exists so the scanner has something to catch, and it's the clearest example of the pattern I've seen.
+- **One is a scanner's test fixture.** A skill that looks ordinary. Its helper reads environment variables and sends the sensitive-looking ones out. It exists so the scanner has something to catch.
 
 And one ordinary repo, a well-known Active Directory library, ships a `CLAUDE.md` asking agents to run a PowerShell command. It's almost certainly a harmless developer setup step, and the agent reading it correctly ignored it. But it's exactly the shape a trap would take, which is the point: a repo's agent files are input, and an agent has to treat them as data.
 
-That's why "has a `CLAUDE.md`" can't be the signal. 59 of the 194 flagged repos ship agent instruction files, and almost all are normal. What's worth flagging is narrower: an instruction file that names a command to run or a URL to fetch, hidden characters or comments with orders in them, an MCP config pointing at a server the project doesn't own, or code that writes into the user's own agent settings.
+"Has a `CLAUDE.md`" is not the signal. 59 of the 194 ship agent instruction files, and almost all are ordinary. The narrower flags: an instruction file that names a command or a URL, hidden characters or comments with orders, an MCP config pointing at a server the project does not own, or code that writes the user's own agent settings.
 
 ## Where my scanner is wrong
 
@@ -68,8 +66,8 @@ All of this is filed as issues on ref-radar, along with one repo that should get
 
 ## How far to trust this
 
-- Every count is a lower bound. The text search skips very common words, caps how much it returns, and was rate-limited.
-- Safety filters stopped the deeper read of the 18 command-and-control and post-exploitation repos, so those are described from their catalog entries, not their code.
-- The categories are one agent's reading, checked by me against the summaries. A second reader would draw a few borders differently.
+- Every count is a lower bound. Text search skips very common words, caps its results, and was rate-limited.
+- Safety filters stopped the deeper read of 18 command-and-control and post-exploitation repos. Those descriptions come from the catalog entries, not the code.
+- The categories are one agent's reading. I checked them against the summaries. A second reader would move a few borders.
 
-The useful result isn't the exact numbers. It's that a security catalog's flags need context to mean anything. A byte array, a hook or a `CLAUDE.md` is common and almost always fine. What matters is the combination: bytes plus executable memory, a hook plus a download it runs, an instruction file plus a command it wants you to run.
+A byte array, a hook, or a `CLAUDE.md` is common. The combinations that mattered here were bytes plus executable memory, a hook plus a download, and an instruction file plus a command.

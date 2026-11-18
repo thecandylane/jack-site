@@ -1,19 +1,17 @@
 export const meta = {
   title: 'Defanging Shai-Hulud: keeping a worm you never run',
-  lede: 'How I kept a copy of the Shai-Hulud npm worm for study, safe to open in an editor or hand to a coding agent, without running a single byte of it.',
+  lede: 'A bash script that renames a Shai-Hulud checkout so install hooks, editors and agents cannot run it, and leaves the bytes unchanged.',
   date: '2026-11-17',
   tags: ['malware', 'supply-chain', 'ai-security', 'bash'],
 }
 
 import * as ex from '@/content/exercises'
 
-Early this summer, in May, the source of the Shai-Hulud worm showed up on GitHub. Shai-Hulud spread through npm packages and developer machines, and it was one of the first to reach into AI coding assistants: it hooked into the routines those tools run when they start, so it never needed anyone to execute it directly. I wanted a copy to study, and to keep. Repos like that get taken down, and in a few years the next worm will hook the next generation of tools the same way.
+In May the source of the Shai-Hulud worm showed up on GitHub. It spread through npm packages, and later waves hooked the routines coding agents run when they start, so nobody had to execute it on purpose. I wanted a copy before the repo came down. Opening it is the risky part, so I wrote `defang-specimen.sh` first: one bash script, about 1,500 lines, that makes a copy nothing runs by accident.
 
-The problem is that a repo like this is dangerous to *open*, not just to run. So before I read a line of it, I wrote `defang-specimen.sh`, a single bash script that turns the repo into a copy nothing can run by accident.
+## What runs when you open a repo
 
-## Why opening it is the dangerous part
-
-Most people think of malware as something you have to run. A modern dev repo runs itself in a dozen quiet ways:
+A dev repo can run itself without a double-click:
 
 - **Package managers run install scripts.** One `npm install` in the wrong folder runs whatever `postinstall` says.
 - **Git runs hooks and filters.** A `.gitattributes` filter or a hook runs code on checkout, commit or diff.
@@ -32,13 +30,13 @@ flowchart LR
   R --> S[shell sources .envrc]
 ```
 
-So the goal was a copy where every one of those doors is shut, and where I can still read every byte.
+The copy has to shut each of those and still be readable byte for byte.
 
 ## Rename, don't modify
 
 The core rule is to change file *names*, never file *contents*. Every script, manifest, config and agent file gets a suffix, so `package.json` becomes `package.json.AUDIT-SPECIMEN.txt`. Nothing recognizes it anymore: npm doesn't see a package, git doesn't see a hook, an editor doesn't see a workspace, and an agent doesn't see a config. But the bytes are untouched, so the analysis is still of the real thing.
 
-The script is about 1,500 lines, and it runs as a pipeline of phases over a copy. The original is never modified. Among them:
+It runs as a pipeline over a copy. The original is never modified. The phases:
 
 - **Manifests and configs**, over 100 name patterns across npm, Bun, Deno, Python, Rust, Go, Ruby, Java, Docker, CI and agent tooling, renamed and kept.
 - **Source and executables**, from `.js` and `.sh` to `.ps1`, `.lnk`, `.hta`, Office macro formats, `.jar`, disk images and `.apk`, renamed.
@@ -70,7 +68,7 @@ The opaque-blob check is the least obvious one, and it fits in a dozen lines. Sh
 
 ## The rules the script holds itself to
 
-A defanger with a bug is worse than none, because you trust it. So the script states its invariants at the top and treats any violation as a bug:
+The script states these at the top and treats a violation as a bug:
 
 1. The specimen is never executed. Its bytes are only read by `sha256sum`, a small entropy helper, `rsync`, `tar` and `gzip`.
 2. Specimen content is never printed to the terminal. Even file names are hex-escaped before they are logged, so a crafted name can't inject escape sequences into my terminal.
@@ -95,8 +93,4 @@ Version 2.0.1 (November 2026) closed a gap in 2.0.0. The original renamed every 
 
 ## What it isn't
 
-It isn't a sandbox. Defanging stops accidents: an install, a hook, an editor task, an agent reading the wrong file. It doesn't make the code safe to run, and the real analysis still happens in an isolated VM with no credentials on it. The point is that I can open the copy, grep it, and hand it to a coding agent for context without any of those tools turning it back into a worm.
-
-## What I took away
-
-The worm's real lesson is that AI coding tools widened the attack surface of a repo from "the code you run" to "every file a tool reads". Any folder you open with an agent is input to that agent. If you build agent tooling, treat configs and Markdown in a repo like untrusted input. And if you study malware, assume the specimen is armed until every door is shut.
+It is not a sandbox. It stops an install, a hook, an editor task, or an agent reading the wrong file. It does not make the code safe to run. The read still happens in a VM with no credentials. The copy is what I can grep, and what I can hand an agent, without those tools turning it back into the worm.

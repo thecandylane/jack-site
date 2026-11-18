@@ -1,13 +1,11 @@
 export const meta = {
   title: 'Shai-Hulud: ten waves, one shape',
-  lede: 'Every public report on the Shai-Hulud npm worm, from September 2025 to October 2026, read side by side. The payload changed every time. The shape never did, and that shape is what you can check for.',
+  lede: 'Ten Shai-Hulud waves, September 2025 to October 2026. The payload changed. The loop did not: install, sweep, GitHub, republish.',
   date: '2026-11-17',
   tags: ['malware', 'supply-chain', 'npm', 'detection'],
 }
 
-After [defanging a copy of Shai-Hulud](/blog/defanging-shai-hulud), I read every public report on it I could find: vendor writeups from Wiz, Unit 42, Datadog, StepSecurity, Socket, Sonatype, OX, JFrog, Endor Labs, Sygnia and others, plus CISA's alert. It isn't one worm. It's at least ten waves over thirteen months, each with a rewritten payload, and five other attacks borrowed the same moves.
-
-This post is the comparison. It describes structure only (what runs when, what it reads, where data goes) and no payload code. Two tools at the end let you check a package or a repo for the shape yourself.
+After [defanging a copy](/blog/defanging-shai-hulud), I read the public reports: Wiz, Unit 42, Datadog, StepSecurity, Socket, Sonatype, OX, JFrog, Endor Labs, Sygnia, and CISA. It is at least ten waves over thirteen months. Each rewrote the payload. Five other attacks used the same moves. Structure only: what runs, what it reads, where the data goes. No payload code. Two tools at the end check a package or a repo for that shape.
 
 ## Ten waves
 
@@ -53,7 +51,7 @@ flowchart TD
 
 ## The trigger kept moving
 
-The interesting part is the trigger. Every time defenders started watching one place, the next wave used another:
+Each wave used a different trigger:
 
 1. `postinstall`, the obvious one (September 2025).
 2. `preinstall`, which runs earlier and installs Bun, a runtime most projects never use (November 2025).
@@ -62,7 +60,7 @@ The interesting part is the trigger. Every time defenders started watching one p
 5. `binding.gyp`, which makes npm run a native build with no script in `package.json`, and Python `.pth` files, which run when Python starts (June 2026).
 6. No install at all: a Claude Code `SessionStart` hook in `.claude/settings.json` and a VS Code task set to run on folder open, committed into every repo the stolen GitHub token could reach (from April 2026 on). Opening the repo in either tool runs the worm.
 
-That last step is why I wrote [defang-specimen.sh](/blog/defanging-shai-hulud) the way I did: in 2026, opening a repo is enough.
+From April 2026, opening the repo was enough. That is why [defang-specimen.sh](/blog/defanging-shai-hulud) renames `.claude` and `.vscode`, not only `package.json`.
 
 ## What other attacks share
 
@@ -95,7 +93,7 @@ This checks a live package for exactly that, against the version before it. It r
 
 <NpmDiff />
 
-Two honest limits. The TanStack wave published with valid build provenance, because it stole the CI identity that provenance vouches for, so a provenance check alone would have passed it. And a brand-new package has no previous version to compare against. Waiting a few days before adopting a new release helps with both: several waves were flagged by scanners within hours of publishing.
+Two limits. The TanStack wave had valid build provenance, because it stole the CI identity provenance vouches for. A new package has no previous version to diff. Several waves were flagged by scanners within hours of publishing.
 
 ## Catching it in a repo
 
