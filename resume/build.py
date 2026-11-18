@@ -7,11 +7,11 @@ out = "/Users/crumpeteer/Dev/code/jack-site-resume-src/public/Jack_Schliewe_Resu
 
 name = ParagraphStyle("name", fontName="Times-Bold", fontSize=14, leading=16, alignment=1, spaceAfter=0)
 center = ParagraphStyle("center", fontName="Times-Roman", fontSize=8, leading=9.2, alignment=1, spaceAfter=0)
-h = ParagraphStyle("h", fontName="Times-Bold", fontSize=8.4, leading=10, spaceBefore=4, spaceAfter=1)
-body = ParagraphStyle("body", fontName="Times-Roman", fontSize=7.6, leading=9.1, spaceAfter=1)
-job = ParagraphStyle("job", fontName="Times-Bold", fontSize=7.6, leading=9.1, spaceBefore=1.5, spaceAfter=0)
-bullet = ParagraphStyle("bullet", fontName="Times-Roman", fontSize=7.6, leading=9.0, leftIndent=9, bulletIndent=0, spaceAfter=0)
-skill = ParagraphStyle("skill", fontName="Times-Roman", fontSize=7.6, leading=9.0, spaceAfter=0.2)
+h = ParagraphStyle("h", fontName="Times-Bold", fontSize=8.2, leading=9.4, spaceBefore=3, spaceAfter=0.6)
+body = ParagraphStyle("body", fontName="Times-Roman", fontSize=7.3, leading=8.6, spaceAfter=0.6)
+job = ParagraphStyle("job", fontName="Times-Bold", fontSize=7.3, leading=8.6, spaceBefore=1, spaceAfter=0)
+bullet = ParagraphStyle("bullet", fontName="Times-Roman", fontSize=7.3, leading=8.6, leftIndent=9, bulletIndent=0, spaceAfter=0)
+skill = ParagraphStyle("skill", fontName="Times-Roman", fontSize=7.3, leading=8.6, spaceAfter=0.1)
 
 def bullets(items):
     return [Paragraph("• " + t, bullet) for t in items]
@@ -43,7 +43,7 @@ story += bullets([
 story.append(Paragraph("Schliewe Systems — Founder and Infrastructure Engineer · 2025 – Present", job))
 story += bullets([
     "Designed and run a multi-node environment (cloud VPS at the edge, Proxmox VE node for compute, Apple Silicon cluster for inference) joined over WireGuard through Pangolin and Cloudflare; host a client's store (L. Ellis Designs) on Coolify, Next.js, Stripe and Payload.",
-    "Ship host and service logs with Grafana Alloy into Loki with alert rules based on MITRE ATT&CK, and metrics in Prometheus and Grafana; hardened every host with SSH hardening, LUKS full-disk encryption, nftables and UFW, and Fail2ban.",
+    "Ship host and service logs with Grafana Alloy into Loki with alert rules based on MITRE ATT&CK, and metrics in Prometheus and Grafana; hardened every host with SSH hardening, LUKS full-disk encryption, nftables and UFW, and Fail2ban. Services up: Gitea, Nextcloud, Vaultwarden, Pi-hole, Uptime Kuma.",
 ])
 story.append(Paragraph("Earlier: Turner Automation LLC, Controls Engineering Contractor (December 2025 – January 2026), robotic cell retrofits. Flexi Solutions LLC, Software Development Intern (January – March 2024), React and Material UI.", body))
 story.append(Paragraph("PROJECTS", h))
@@ -69,12 +69,20 @@ story.append(Paragraph("ImJustABill · github.com/thecandylane/ImJustABill · 20
 story += bullets([
     "RAG over a bill PDF: LlamaIndex vector index (Unstructured reader, on-disk GPTVectorStoreIndex), LangChain and text-davinci-003 query engine, Streamlit UI.",
 ])
+story.append(Paragraph("PKM capture · Electron/Tauri", job))
+story += bullets([
+    "Screen-capture personal knowledge base with Claude vision OCR and an MCP server for Claude Code.",
+])
+story.append(Paragraph("SEC filings research", job))
+story += bullets([
+    "Four-layer read of SEC EDGAR: DeepSeek batch summaries, Claude for the synthesis. No trading.",
+])
 story.append(Paragraph("SKILLS", h))
 for label, text in [
     ("Web, API and offensive security:", "Burp Suite, ZAP, Invicti, Wapiti, Strix, nuclei, sqlmap, nmap, OpenVAS, Metasploit, Sliver, BloodHound, Certipy, Impacket, Mimikatz, hashcat, John the Ripper, Atomic Red Team"),
     ("Reversing, mobile and forensics:", "Ghidra, IDA Pro, JADX, Frida, pwntools, angr, z3, binwalk, Volatility, Autopsy, Wireshark, YARA-X; x86 and RISC-V assembly; RISC-V disassembler in C++"),
     ("Detection and monitoring:", "Wazuh, Splunk (SPL), Sigma rules, Suricata, Zeek, Loki, Grafana Alloy, Prometheus, Grafana, MITRE ATT&CK alert rules, Fail2ban, gitleaks"),
-    ("AI and agent security:", "RAG (LlamaIndex), prompt-injection testing (garak, PyRIT, promptfoo), Claude Code, OpenAI Batch API, OpenRouter, credential isolation, agent sandboxing, MCP servers, LangChain, Langfuse, DSPy/GEPA, ONNX, vLLM, llama.cpp, Ollama, LiveKit"),
+    ("AI and agent security:", "RAG (LlamaIndex), prompt-injection testing (garak, PyRIT, promptfoo), Claude Code, OpenAI Batch API, OpenRouter, credential isolation, agent sandboxing, MCP servers, LangChain, Langfuse, DSPy/GEPA with Petri nets (pm4py, PySPN), ONNX, TensorRT, CUDA, vLLM, llama.cpp, Ollama, LiveKit"),
     ("Cloud and infrastructure:", "GCP (Cloud Run, IAM, Firebase), AWS, Cloudflare Workers, Linux, Proxmox VE, Docker/Compose, Coolify, WireGuard, Tailscale, Pangolin, Traefik, Caddy, Nginx, LUKS, nftables/UFW, GitHub Actions"),
     ("Industrial control systems:", "Allen-Bradley PLCs, Studio 5000, ICS software and design; Fanuc and Denso robotic cells, safety interlocks"),
     ("Languages and frameworks:", "Python, TypeScript/JavaScript, Node.js, Rust, Bash, SQL, Dart, Go, C/C++; React, Next.js, Flutter, Django, FastAPI, Streamlit, Postgres"),
