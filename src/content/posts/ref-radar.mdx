@@ -21,10 +21,10 @@ claude mcp add --transport http ref-radar https://ref.lookit.space/mcp
 
 On 18 November 2026 the catalog file listed 4,208 refs. 4,167 were curated and 41 were discovered. Keyed use over the previous 30 days was 1. A keyed use is a logged-in `ref report`, not an anonymous search.
 
-Over the seven days ending 18 November 2026, Cloudflare counted 164 requests to the ref-radar Worker and no errors. On the lookit.space zone, `/lane` had 94 eyeball requests and the homepage had 35. `/api/search` was not in the twenty heaviest paths. Those counts include reloads and bots. They are the size of the public use, not a claim about who stayed.
+Over the seven days ending 18 November 2026, Cloudflare counted 164 requests to the ref-radar Worker and no errors. On the lookit.space zone, `/lane` had 94 eyeball requests and the homepage had 35. `/api/search` was not in the twenty heaviest paths. Reloads and bots are in those counts.
 
 ## What a miss is
 
 A search from a logged-in key that finds nothing above the relevance floor is recorded as a miss. Anonymous searches are not. Each day, up to ten of those misses are asked again of GitHub, awesome lists, Hugging Face, arXiv, and the package registries. A repo that comes back from a miss is filed as a suggestion. It does not publish itself.
 
-That loop is how the catalog is supposed to grow. The number I am watching is keyed use moving off 1, and misses turning into refs. Page views are the other number, and this week they were small.
+Keyed use moving off 1, and misses turning into refs, are the two counts I am using. Page views that week were small.

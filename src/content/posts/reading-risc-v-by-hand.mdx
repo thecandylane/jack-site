@@ -1,25 +1,15 @@
 export const meta = {
   title: 'Reading RISC-V by hand: finishing a disassembler from 2023',
-  lede: 'How one 32-bit word turns back into an instruction, the three bugs a hand-written decoder runs into, and a disassembler you can run on this page.',
+  lede: 'How a 32-bit RISC-V word splits into fields, three bugs in a 2023 C++ disassembler, and a JavaScript port checked against llvm-mc.',
   date: '2026-11-18',
   tags: ['reversing', 'risc-v', 'javascript', 'c++'],
 }
 
 import * as ex from '@/content/exercises'
 
-In 2023 I wrote a small C++ program that reads RISC-V machine code and prints the instructions it finds. It was coursework-era code, about 200 lines, and it still carries a comment that says `//work in progress`. The [repo is still public](https://github.com/thecandylane/RISC-V_Disassembler). The tool further down this page is its JavaScript port, finished: it covers the whole RV32I base set, and it fixes the bugs the original has.
+In 2023 I wrote about 200 lines of C++ that turn RISC-V machine code back into instructions. The comment at the top still says `//work in progress`. The [repo is still public](https://github.com/thecandylane/RISC-V_Disassembler). The tool on this page is the JavaScript port: all 40 RV32I instructions, with the original's bugs fixed.
 
-This post walks through how the decoding works, where the original went wrong, and how to check a decoder like this against one you can trust.
-
-## Why a disassembler comes first
-
-A disassembler turns the bytes of a program back into the instructions a processor would run. I think it's the first reversing tool worth writing yourself, for three reasons.
-
-- **Everything else is built on it.** A debugger, an emulator and a decompiler all start by decoding instructions. If you understand that step, the tools above it stop being magic.
-- **It makes you read the spec.** You can't guess an encoding. You have to open the manual and find out which bit means what, and that habit carries over to file formats and network protocols.
-- **It's easy to check.** One word goes in and one line of text comes out. Somebody else's disassembler can tell you whether your line is right.
-
-RISC-V is a good place to start. In the base set every instruction is exactly 32 bits, and there are only 40 of them. An x86 instruction can be anywhere from 1 to 15 bytes long, so you have to decode one just to find where the next one begins.
+A disassembler takes bytes in and prints one line per instruction, so another disassembler can check it. RISC-V's base set is a good first one. Every instruction is 32 bits, and there are 40 of them. An x86 instruction is 1 to 15 bytes, so you have to decode one just to find the next.
 
 ## One word, split into fields
 
@@ -142,4 +132,4 @@ The same tool is on the [Lab](/lab) page.
 
 The port decodes all 40 RV32I instructions, plus the eight multiply and divide instructions of the M extension, because the original had started on `MUL` and `DIV`. It prints plain instructions and never shorthands, so a return shows up as `jalr zero, 0(ra)` and not `ret`. It doesn't know the 16-bit compressed instructions, the control register instructions or the 64-bit ones. A word it doesn't know is printed as `.word` with its hex value, so you can always see what was skipped.
 
-The original covers register arithmetic, loads, immediate arithmetic, stores, branches and `JAL`, and it prints register numbers where the port prints names. It was a first pass at the problem, and its mistakes are a fair map of the parts of the encoding that are easy to get wrong.
+The original covers register arithmetic, loads, immediate arithmetic, stores, branches and `JAL`, and it prints register numbers where the port prints names. The bugs above are the parts of the encoding that a first pass gets wrong.

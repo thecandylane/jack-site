@@ -1,17 +1,13 @@
 export const meta = {
   title: 'Cyber Trials 2026: five rooms and the bugs behind them',
-  lede: "What my team and I ran into at TryHackMe's Cyber Trials: the bug behind each room, why it was there, and how a defender would catch or fix it.",
+  lede: "Five rooms from TryHackMe's Cyber Trials 2026. The bug, why it was there, and the fix. No flags.",
   date: '2026-11-17',
   tags: ['ctf', 'tryhackme', 'appsec', 'pwn', 'ai-security'],
 }
 
 import * as ex from '@/content/exercises'
 
-On November 13, my team played TryHackMe's Cyber Trials 2026, a jeopardy CTF covering AI security, web, binary exploitation and a full box. We played from brick, a cockpit I built for the event: one process, one SQLite file, eight seats and a live board. I finished as a Cyber Trials Completionist.
-
-This isn't a walkthrough. There are no flags or exploit steps here, because the rooms may still be live and the fun is in solving them. Instead, for each room, here's the bug, why it existed, and what would have stopped it. Those are the parts worth keeping.
-
-Each room also gets a diagram and a small exercise: the buggy code, editable, with tests that pass once you've fixed it. It runs in a sandbox in your browser and can't touch the page.
+On November 13 my team played TryHackMe's Cyber Trials 2026 from brick: one process, one SQLite file, eight seats, a live board. I finished as a Cyber Trials Completionist. No flags and no exploit steps. The rooms may still be live. Each section is the bug, why it was there, and the fix, plus a diagram and a small exercise that runs in the browser.
 
 ## The Forge: three ways memory goes wrong
 
@@ -114,7 +110,7 @@ flowchart LR
 
 ## The Binding Circle: an AI agent that hurts itself
 
-My team's favorite. The Binding Circle was an AI agent with a few tools and a planner that refused anything dangerous. Two weaknesses made the refusal useless:
+The Binding Circle was an AI agent with a few tools and a planner that refused anything dangerous. Two weaknesses made the refusal useless:
 
 1. **It couldn't tell its owner's instructions from ours.** Text that we controlled ended up in its context, and it followed it. That's indirect prompt injection.
 2. **A tool checked only the start of its input.** A diagnostics tool approved commands by their first word, so anything chained after an approved command ran too.
@@ -136,8 +132,4 @@ flowchart TD
 
 <Playground {...ex.bindingCircle} />
 
-I liked this room so much that I rebuilt it on this site. Press `~` and type `familiar` to play [the familiar](/blog/the-familiar-agent-ctf), which has the same two weaknesses.
-
-## What the rooms taught
-
-Every room was a trust boundary in the wrong place: a buffer that trusted its input's length, a shell that trusted a hostname, a parser that trusted an image, an extractor that trusted a path, a verifier that trusted a token, and an agent that trusted whatever it read. The tools differ, but the habit that prevents all six is the same: decide where untrusted input enters, and check it there, completely.
+I rebuilt this room on the site. Press `~` and type `familiar`. [The familiar](/blog/the-familiar-agent-ctf) has the same two weaknesses.

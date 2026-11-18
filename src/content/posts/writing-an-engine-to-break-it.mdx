@@ -1,18 +1,14 @@
 export const meta = {
   title: 'Writing an engine to break it',
-  lede: 'A checker that reads your exploit source is a quiz. To make a bug real, I had to write the machine it lives in.',
+  lede: 'The Forge layout, the length bug that does not resize its block, and why the score runs in a Worker instead of the browser.',
   date: '2026-11-17',
   tags: ['javascript', 'exploitation', 'design', 'ctf'],
   refs: ['gh:bellard/quickjs', 'gh:dwisiswant0/ppfuzz'],
 }
 
-Most "exploitation" exercises are a filter. You send a string, something compares it, you get a flag. The comparison is the whole challenge, and the bug is a story told around it.
-
-I did not want that. I wanted the bug to exist in the code, reachable by an ordinary program, and I wanted the checker to look at memory afterwards rather than at what you typed. That meant writing an engine.
+A lot of "exploitation" exercises compare a string and return a flag. The bug is a story around the comparison. I wanted the bug in the code, reachable by an ordinary program, and a checker that reads memory afterwards. That meant writing an engine.
 
 ## The layout
-
-The Forge's memory model fits on one page, which is the only reason it is teachable.
 
 | Offset | Field | Meaning |
 |---|---|---|
@@ -27,7 +23,7 @@ Slots are four bytes. A value is a 32-bit word: low bit zero means a Smi carryin
 
 A double needs eight bytes. A slot has four. So a `double` property does not hold a number; it holds a pointer to an eight-byte HeapNumber elsewhere in the cage.
 
-That indirection looks like a workaround until you look at what it does to a store. When an array of Smis starts receiving doubles, its element representation has to change: the block is reallocated with eight-byte elements, every value is copied, and the array's map is swapped. Between the load of the old block and the store into the new one, there is a window. V8 shipped a bug in exactly that window this year — the second bug in the [previous post](/blog/three-bugs-one-model) — and the HeapNumber split is why the window exists at all.
+When an array of Smis starts receiving doubles, the block is reallocated with eight-byte elements, the values are copied, and the map is swapped. Between the load of the old block and the store into the new one there is a window. V8 shipped a bug in that window this year, the second bug in the [previous post](/blog/three-bugs-one-model). The HeapNumber split is why the window exists.
 
 ## The bug I left in
 
@@ -44,11 +40,11 @@ The index is not secret. The heap panel lists every live block with its offset, 
 
 The host is a table of values outside the cage: the flag, a shell path, a file, a secret. Guest code reaches it only through a view object, whose first slot holds a handle index. `open()` hands out a view on handle 1. Handle 3 is never handed out by anything.
 
-So the last lab is the length bug aimed at the view's index slot. Allocate the view after the array and the forward walk reaches it; allocate it before and it does not. That is the whole lesson: allocation order decides what a bug can reach.
+The last lab aims the length bug at the view's index slot. Allocate the view after the array and the forward walk reaches it. Allocate it before and it does not. Allocation order decides what the bug can reach.
 
 ## Who judges
 
-The first version ran in the browser. That is a problem, and not a small one: a flag shipped to the browser is in the bundle, and a client that decides whether you solved something can be edited.
+The first version ran in the browser. A flag in the bundle is visible, and a client that decides the solve can be edited.
 
 The fix came from the engine itself. Workers ban `eval`, but nothing here evaluates strings — the parser produces an AST and the interpreter walks it. So the scored run moved into the Worker. The flag lives in the environment, the checkers read the heap and the host log, and the client only sends source and draws the reply.
 
@@ -83,4 +79,4 @@ The write is four bytes wide and lands exactly on the index slot. Nothing checks
 
 No JIT, so no compiler bugs. No pointer compression, so the cage is small. No GC pressure worth the name. And the final step of a real chain — turning cage access into native execution — has nowhere to happen, because there is no native code.
 
-The model is honest about that on the page. What it does have is the part that matters for learning the shape: bugs in the engine, state-based judging, and a boundary you can point at.
+The page says so. What is there: bugs in the engine, a score read from the heap, and a boundary you can point at.
