@@ -40,6 +40,15 @@ const fixes = {
   return CHECKS[a.check];
 }
 `),
+  noteGate: (c) => c.replace(/function allowCall[\s\S]*?\n}\n/, `function allowCall(call, ctx) {
+  if (call?.name === 'read_note') return true;
+  if (PAGE.includes(call?.name)) return !ctx.noteRead;
+  if (call?.name !== 'run_diagnostic') return false;
+  const cmd = call.args?.cmd;
+  if (typeof cmd !== 'string' || !CHECKS.includes(cmd)) return false;
+  return !ctx.noteRead || ctx.userText.toLowerCase().split(/[^a-z]+/).includes(cmd);
+}
+`),
   fingerprintBits: (c) => c.replace('return 0; // TODO', 'return -Math.log2(share);'),
   typing: (c) => c.replace('return { dwell: [], flight: [] }; // TODO', `const presses = [], dwell = [];
   for (const e of events) {
