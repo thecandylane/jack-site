@@ -17,24 +17,28 @@ export async function generateMetadata({ params }) {
 
 export default async function Post({ params }) {
   const { Body, ...p } = await getPost((await params).slug);
+  const general = p.audience === 'general'; // reader skin: paper, serif, no phosphor chrome (globals.css, "reader")
   return (
-    <main className="wrap post">
+    <main className={general ? 'wrap post reader' : 'wrap post'}>
       <JsonLd data={postJsonLd(p)} />
       <header>
-        <a className="back" href="/blog">← cd ../blog</a>
-        <div className="tags">{p.tags?.map((t) => <span key={t}>#{t}</span>)}</div>
+        <a className="back" href="/blog">{general ? '← All posts' : '← cd ../blog'}</a>
+        {!general && <div className="tags">{p.tags?.map((t) => <span key={t}>#{t}</span>)}</div>}
         <h1>{p.title}</h1>
         <p className="lede">{p.lede}</p>
-        <p className="whoami"><b>$</b> whoami <b>Jack Schliewe</b> · {longDate(p.date)} · {p.minutes} min read</p>
-        {p.refs?.length ? <Radar lit={p.refs} /> : null}
+        {general
+          ? <p className="whoami">Jack Schliewe · {longDate(p.date)} · {p.minutes} min read</p>
+          : <p className="whoami"><b>$</b> whoami <b>Jack Schliewe</b> · {longDate(p.date)} · {p.minutes} min read</p>}
+        {!general && p.refs?.length ? <Radar lit={p.refs} /> : null}
       </header>
-      {p.toc.length > 0 && (
+      {!general && p.toc.length > 0 && (
         <nav className="toc" aria-label="Contents">
           <h2>CONTENTS</h2>
           {p.toc.map((h) => <a key={h.id} href={`#${h.id}`} className={h.depth === 3 ? 'l3' : undefined}>{h.text}</a>)}
         </nav>
       )}
       <article className="prose"><Body /></article>
+      {general && <footer><a href="/">Jack Schliewe builds software and security tools at schliewesystems.com →</a></footer>}
     </main>
   );
 }

@@ -25,7 +25,7 @@ export default async function Blog() {
               <div>
                 <h2>{p.title}</h2>
                 <p>{p.lede}</p>
-                <p>{p.tags?.map((t) => `#${t}`).join(' ')} · {p.minutes} min read</p>
+                <p>{p.audience === 'general' ? 'for everyone' : p.tags?.map((t) => `#${t}`).join(' ')} · {p.minutes} min read</p>
               </div>
             </a>
           </li>
