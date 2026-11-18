@@ -1,4 +1,6 @@
 import FlowText from '@/components/FlowText';
+import JsonLd from '@/components/JsonLd';
+import { personJsonLd } from '@/lib/jsonld';
 import { allPosts } from '@/lib/posts';
 import { radarFacts, SAMPLE } from '@/lib/radar';
 import { PROJECTS } from '@/lib/site';
@@ -154,6 +156,7 @@ export default async function Home() {
 
   return (
     <main className="home">
+      <JsonLd data={personJsonLd()} />
       <header className="hero">
         <div className="hero-in" style={{ '--boot': boot.end }}>
           <div className="bootlog">{boot.rows}</div>
