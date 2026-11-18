@@ -2,7 +2,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { headings, minutes } from './text';
 
-// Posts are src/content/posts/<slug>.mdx, each exporting `meta` ({ title, lede, date, tags, refs }).
+// Posts are src/content/posts/<slug>.mdx, each exporting `meta` ({ title, lede, date, tags, refs, audience }; audience: 'general' gives the post the reader skin).
 // Every blog page is prerendered at build, so this runs only during `next build`, never in the standalone server.
 const DIR = path.join(process.cwd(), 'src/content/posts');
 

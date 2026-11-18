@@ -353,3 +353,25 @@ input.pick, .pick input { flex: 1; min-width: 0; padding: .5rem 1ch; border: 1px
 /* keyboard focus stays visible on the two inputs that drop the default outline */
 #bar input:focus-visible, .term-in input:focus-visible { outline: 1px solid var(--accent); outline-offset: 2px; }
 .ip-wait { min-height: 14rem; }
+
+/* ---------- reader: a post with meta.audience = 'general' ----------
+   For readers who are not here for the terminal. Colours and serif stack are flipnotes' Paper theme
+   (flipnotes public/static/themes.css). The page sets .reader on <main>; :has() restyles the shell around it. */
+body:has(.reader) {
+  --bg: #f1eee8; --fg: #24211d; --muted: #8f897e; --accent: #d1553e; --frame: #e6e1d7; --panel: #fffdf9; --glow: none;
+  --t: "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif; --mono: var(--t);
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  body:has(.reader) { --bg: #1a1917; --fg: #ece6db; --muted: #8e877b; --accent: #e57a62; --frame: #35322d; --panel: #22211e; color-scheme: dark; }
+}
+body:has(.reader)::after, body:has(.reader) .warp, body:has(.reader) #bar { display: none; }
+.reader.post { display: block; max-width: 720px; }
+.reader.post h1 { font-size: clamp(32px, 5vw, 46px); color: var(--fg); -webkit-font-smoothing: auto; }
+.reader .lede { font-size: 21px; font-style: italic; }
+.reader .prose { font-size: 19px; line-height: 1.7; margin-top: 2.5rem; }
+.reader .prose h2, .reader .prose h3 { color: var(--fg); -webkit-font-smoothing: auto; }
+.reader .prose h2 { font-size: 28px; } .reader .prose h3 { font-size: 22px; }
+.reader .prose code, .reader .prose pre { font-family: ui-monospace, Menlo, monospace; }
+.reader footer { margin-top: 4rem; padding-top: 1.25rem; border-top: 1px solid var(--frame); font-size: 15px; }
+.reader footer a { color: var(--accent); }
