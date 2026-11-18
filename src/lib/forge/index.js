@@ -9,9 +9,10 @@ import { installHostBuiltins } from './builtins.js';
 import { POLLUTION_LAB } from './labs/pollution.js';
 import { BOUNDS_LAB } from './labs/bounds.js';
 import { ESCAPE_LAB } from './labs/escape.js';
+import { CLOBBER_LAB } from './labs/clobber.js';
 import { isSmi, isPtr, smiValue, ptrOffset } from './values.js';
 
-export const LABS = [POLLUTION_LAB, BOUNDS_LAB, ESCAPE_LAB];
+export const LABS = [POLLUTION_LAB, BOUNDS_LAB, ESCAPE_LAB, CLOBBER_LAB];
 export const labById = (id) => LABS.find((lab) => lab.id === id) ?? null;
 
 /**
@@ -21,6 +22,7 @@ export const labById = (id) => LABS.find((lab) => lab.id === id) ?? null;
  * @param {number} [options.steps] instruction ceiling for one run
  * @param {string} [options.flag] the host's flag value
  * @param {string|object} [options.lab] a lab id, or the lab itself; its start() seeds the cage
+ * @param {boolean} [options.defend] apply the three fixes
  */
 export function createForge({ heapBytes = 1 << 20, parse = null, steps, flag, lab = null, defend = false } = {}) {
   const heap = new Heap(heapBytes);

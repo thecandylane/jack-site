@@ -1,5 +1,6 @@
 import { getCloudflareContext } from '@opennextjs/cloudflare';
 import { LIMITS, clean, runDiagnostic, sameFlag, uiAction } from '@/lib/familiar';
+import { mediate, label, TOOLS as AGENT_TOOLS } from '@/lib/agent-tools';
 
 // The familiar, the site's agent CTF (src/lib/familiar.js). Gemini plans; every tool runs here, simulated.
 // Env: GEMINI_API_KEY (an AI Studio key), CTF_FLAG, optional CTF_MODEL and CTF_DAILY (calls a day, all visitors).
@@ -84,7 +85,26 @@ export async function POST(request) {
       let output;
       if (name === 'read_note') output = notes[Number(args.id) - 1] ?? `no note ${args.id}`;
       else if (name === 'run_diagnostic') output = runDiagnostic(args.cmd, flag).output;
-      else { const a = uiAction(name, args); if (a) ui.push(a); output = a ? 'done' : 'refused'; }
+      else {
+        // WebMCP-style mediation: the host mints the origin-bound label and capability from
+        // its own registry, never from the model's arguments. mediate re-checks the label,
+        // capability, tool name and arguments before the UI tool is allowed to run.
+        const def = AGENT_TOOLS.find((t) => t.name === name);
+        const invocation = {
+          tool: name,
+          args,
+          label: def ? label(def.origin, def.name) : undefined,
+          capability: def ? def.capability : undefined,
+        };
+        const verdict = mediate(invocation);
+        if (verdict.ok) {
+          const a = uiAction(name, args);
+          if (a) ui.push(a);
+          output = verdict.output;
+        } else {
+          output = verdict.refused;
+        }
+      }
       steps.push({ tool: name, args: JSON.stringify(args).slice(0, 200), output: String(output).slice(0, 1000) });
       return { functionResponse: { name, ...(id ? { id } : {}), response: { result: output } } };
     });

@@ -13,6 +13,14 @@ export const POLLUTION_LAB = {
     'sees shell wherever a lookup finds it — including the prototype chain.',
     'Nothing on this host is real. Handle 0 is the flag; exec() never hands it out.',
   ].join('\n'),
+  language: 'js',
+  seed: '// merge(target, source) copies keys. exec(opts) reads opts.shell.\n// read(view) returns what the host handle behind it holds.\nvar opts = {};\nvar view = exec(opts);\nprint(read(view));\n',
+  hints: [
+    'merge recurses where both sides are objects. Ask what target["__proto__"] resolves to before the recursion.',
+    'An own key named __proto__ is data, not the accessor. An object literal here creates one.',
+    'Merge {"__proto__":{"shell":true}} into an object, then call exec({}) — it reads shell off the chain.',
+  ],
+
 
   start() {},
 

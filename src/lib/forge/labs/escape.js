@@ -13,6 +13,14 @@ export const ESCAPE_LAB = {
     'Order matters: allocate the view after the array, and the walk forward reaches it. The panel shows both offsets.',
     'Goal: have read(v) return the secret, handle 3.',
   ].join('\n'),
+  language: 'js',
+  seed: '// open() gives you a view on handle 1. Make it name another handle.\nvar xs = [1, 2, 3, 4];\nvar v = open();\nprint(read(v));\n',
+  hints: [
+    'The view keeps its handle index in a slot that is ordinary cage memory.',
+    'Allocate the view after the array: the forward walk from the elements block reaches it.',
+    'Index 15 points at that slot. xs.length = 512; xs[15] = 3; then read(v).',
+  ],
+
 
   start() {},
 

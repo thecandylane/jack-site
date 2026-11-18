@@ -16,6 +16,14 @@ export const BOUNDS_LAB = {
     'an element i sits at elements + 16 + i*4, and a declared property sits at object + 16 + slot*4, where slot 1 is the first property.',
     'Goal: make the canary object\'s touched property read 1.',
   ].join('\n'),
+  language: 'js',
+  seed: '// xs is seeded for you, with a canary allocated right after it.\n// The panel lists block offsets; elements start at elements + 16, and i*4 is the stride.\nxs.length = 4;\nxs[0] = 1;\n',
+  hints: [
+    'The length slot and the elements block are separate. Only one of them moves when you assign xs.length.',
+    'Read the heap panel: element i is at elements + 16 + i*4, and a declared property at object + 16 + slot*4.',
+    'Index 15 lands on the canary in this build. xs.length = 64; xs[15] = 1;',
+  ],
+
 
   start(forge) {
     const vm = forge.vm;

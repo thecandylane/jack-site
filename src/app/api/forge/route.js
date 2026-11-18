@@ -2,7 +2,7 @@ import { getCloudflareContext } from '@opennextjs/cloudflare';
 import { createForge, labById, LABS } from '@/lib/forge/index';
 import { parse } from '@/lib/forge/parser';
 
-// The Forge's judge. The VM is an interpreter, not eval, so it runs here: the Cage, the bugs and
+// The Forge's judge. The VM is an interpreter, not eval, so it runs here: the cage, the bugs and
 // the host table all live in the Worker, and the flag only leaves when the lab's checker says so.
 // The client never holds the flag and never decides whether a solve happened.
 export const dynamic = 'force-dynamic';
@@ -22,8 +22,19 @@ function cf() {
 
 const json = (body, status = 200) => Response.json(body, { status, headers: { 'cache-control': 'no-store' } });
 
+const hintCount = (lab) => lab.hints?.length ?? 0;
+
 export async function GET() {
-  return json({ labs: LABS.map(({ id, title, brief }) => ({ id, title, brief })) });
+  return json({
+    labs: LABS.map(({ id, title, brief, language, seed, hints }) => ({
+      id,
+      title,
+      brief,
+      language: language ?? 'js',
+      seed: seed ?? '',
+      hintCount: hints?.length ?? 0,
+    })),
+  });
 }
 
 export async function POST(request) {
@@ -31,6 +42,7 @@ export async function POST(request) {
   const lab = labById(body?.lab) ?? labById('pollution');
   const defend = body?.defend === true;
   const source = typeof body?.source === 'string' ? body.source : '';
+  const hintsUsed = Math.max(0, Math.min(hintCount(lab), Math.trunc(Number(body?.hintsUsed) || 0)));
   if (!source.trim()) return json({ error: 'Nothing to run.' }, 400);
   if (source.length > MAX_SOURCE) return json({ error: `Keep the program under ${MAX_SOURCE} characters.` }, 400);
 
@@ -41,12 +53,13 @@ export async function POST(request) {
   }
 
   // One secret per lab, falling back to the shared one: FORGE_FLAG_POLLUTION, FORGE_FLAG_BOUNDS,
-  // FORGE_FLAG_ESCAPE, then FORGE_FLAG. A lab with no flag still scores; it returns null.
+  // FORGE_FLAG_ESCAPE, FORGE_FLAG_CLOBBER, then FORGE_FLAG.
   const flag = env[`FORGE_FLAG_${lab.id.toUpperCase()}`] || env.FORGE_FLAG || '';
 
   const execute = (defended) => {
     const forge = createForge({ heapBytes: HEAP_BYTES, steps: MAX_STEPS, parse, flag, lab, defend: defended });
-    const out = forge.run(source);
+    // HTML labs have their own tiny document model instead of the JavaScript VM.
+    const out = lab.kind === 'html' ? lab.evaluate(source, forge, defended) : forge.run(source);
     return { forge, out, verdict: lab.check(forge) };
   };
 
@@ -70,7 +83,7 @@ export async function POST(request) {
     ok: out.ok,
     log: out.log.slice(-100),
     error: out.error ?? null,
-    steps: out.steps,
+    steps: out.steps ?? 0,
     used: forge.used(),
     heapBytes: HEAP_BYTES,
     objects: forge.objects().slice(0, MAX_BLOCKS).map((o) => ({
@@ -79,6 +92,7 @@ export async function POST(request) {
       kind: forge.maps.get(o.mapId)?.kind ?? 'freed',
     })),
     defended: defend,
+    hintsUsed,
     solved: verdict.solved,
     why: verdict.why,
     flag: verdict.solved && !defend && flag ? flag : null,

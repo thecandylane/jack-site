@@ -11,6 +11,7 @@ const LINKS = [
   ['projects', '/#projects', 'wide'],
   ['blog', '/blog'],
   ['forge', '/forge', 'wide'],
+  ['headers', '/headers', 'wide'],
   ['contact', '/#contact'],
   ['you', '/you', 'wide'],
   ['lab', '/lab', 'wide'],

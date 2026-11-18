@@ -16,6 +16,8 @@ pushing `main` deploys nothing.
 | M4 Lab C | done | `labs/escape.js`; handle 3 read through a retargeted view |
 | Scoring | done | `/api/forge` runs the VM in the Worker; the flag never reaches the client |
 | Defender mode | done | `defend: true` applies the three fixes; a solve is re-run against them and reported |
+| Lab D | done | `labs/clobber.js` + `html.js`: a sanitizer that copies `<svg>` as text, a DOM that reparses it |
+| Hints | done | three per lab, one at a time from `/api/forge/hint`, counted in the verdict |
 | M5 `/forge` UI | done | `src/app/forge/`; verified in a browser |
 | M6 QuickJS lane | done | `/forge/quickjs`; verified in a browser, interrupt at 2 s |
 | M7 content | not started | posts, ref-radar suggestions |
