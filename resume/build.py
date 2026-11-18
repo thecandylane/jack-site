@@ -23,32 +23,34 @@ story = [
     Spacer(1, 3),
     HRFlowable(width="100%", thickness=0.6, color="black", spaceAfter=2),
     Paragraph("SUMMARY", h),
-    Paragraph("AI and cyber engineer. LSU computer science, cybersecurity concentration, December 2026. Pentests production web, iOS, and Android. Runs the practice on The Bakery. Publishes supply-chain detections.", body),
+    Paragraph("AI and cyber engineer. LSU computer science, cybersecurity, December 2026. I pentest production web, iOS, and Android, and I run the software enterprise on The Bakery.", body),
     Paragraph("EXPERIENCE", h),
-    Paragraph("FarmMind, AI and Cyber Engineer. Baton Rouge, LA. April 2026 to present", job),
+    Paragraph("FarmMind, Full-Stack AI Security Engineer. Baton Rouge. April 2026 to present", job),
 ]
 story += bullets([
-    "Pentest the production web, iOS, and Android apps with Burp Suite, ZAP, Invicti, and Wapiti. Host review in Wazuh. Fixes ship in GitHub and GCP CI.",
-    "Fraud and account-sharing detection from device and location telemetry. Push over Firebase, APNs, and Android.",
-    "Offline speech-to-speech and document translation on device. ONNX, sherpa-onnx, TensorRT, CUDA. FarmMind credited the work in public.",
-    "Field auto-draw with SAM on iOS and web. Days of tracing a field by hand, now minutes.",
-    "Farmer Al agent harness on LangChain, Langfuse, DSPy, and OpenRouter. AnyFarms support calls on LiveKit. Stripe billing.",
+    "Cross-platform agriculture app. I helped build the on-device ONNX and sherpa-onnx suite for speech-to-text, text-to-speech, and translation, on iOS and web. TensorRT and CUDA under the voice models.",
+    "mobileSAM in the iOS and web apps for field auto-draw. Flutter work on local caching, GIS state, and event handling.",
+    "Cross-platform notifications and device and account monitoring. Stripe and FirstPromoter billing. Farmer Al, the in-app agent. AnyFarms on LiveKit for remote support inside the app.",
+    "Internal pentests with ZAP, Burp, Invicti, and Wapiti, plus infrastructure review. GitHub and GCP CI. Conferences and sponsored events for FarmMind.",
 ])
-story.append(Paragraph("GuideOverride, lead architect. LSU project for Baton Rouge Community College. January 2026 to August 2026", job))
+story.append(Paragraph("GuideOverride, Full-Stack Software Engineer. Baton Rouge Community College. January 2026 to August 2026", job))
 story += bullets([
-    "Django and React system of record for course overrides, built with the college's deans. 380,000 equivalency rows. 3,000 past chair decisions.",
-    "Replay of 1,046 decisions the engine had not seen. It never approved a case the chair denied. It decided 30% itself, all matching the chair, and sent the rest to a person. Rules decide. The model only reads documents.",
+    "Our team built the system of record for BRCC course overrides, in Django and React, on their own data. 380,000 equivalency rows and 3,000 past chair decisions.",
+    "Replay of 1,046 decisions it had not seen. It never approved a case the chair denied. It decided 30% on its own, every one matching the chair, and sent the rest to a person. The rules decide. The model only reads the documents.",
 ])
 story.append(Paragraph("Schliewe Systems, founder. 2025 to present", job))
 story += bullets([
-    "The network I run: edge VPS, Proxmox, Apple Silicon for inference, WireGuard, Pangolin, Cloudflare. Packet and host monitoring with Zeek, Suricata, and Loki. ATT&CK alerts. LUKS, nftables, Fail2ban.",
-    "Up: Gitea, Nextcloud, Vaultwarden, Pi-hole, Uptime Kuma. Client store for L. Ellis Designs on Next.js and Stripe.",
+    "The network I run. Edge VPS, Proxmox, Apple Silicon for inference, WireGuard, Pangolin, Cloudflare. Packet and host monitoring with Zeek, Suricata, and Loki. ATT&CK alerts. LUKS, nftables, Fail2ban.",
+    "Already up: Gitea, Nextcloud, Vaultwarden, Pi-hole, Uptime Kuma. L. Ellis Designs, a client store, on Next.js and Stripe.",
 ])
-story.append(Paragraph("Earlier: Turner Automation, controls contractor, December 2025 to January 2026, Fanuc and Denso cell retrofits on Allen-Bradley. Flexi Solutions, intern, January to March 2024, React.", body))
+story.append(Paragraph("Turner Automation, contract, December 2025 to January 2026. Retrofit of a Fanuc M-10iD and a Denso VM-Series for Advanced Molding Solutions, Studio 5000 Logix, Allen-Bradley.", body))
+story.append(Paragraph("Modesto, server and bartender, January 2024 to June 2026. Opening, closing, events, and the IT when the floor terminals broke.", body))
+story.append(Paragraph("Attorney General's office, Baton Rouge, student worker, May 2024 to August 2024. Inventory, work orders, fleet.", body))
+story.append(Paragraph("Flexi Solutions, software intern, January to March 2024. React.", body))
 story.append(Paragraph("PROJECTS", h))
 story.append(Paragraph("The Bakery. github.com/thecandylane/thebakery", job))
 story += bullets([
-    "The harness the practice runs on. Agents, git, files, and the machines, across Claude, Grok, Gemini, and OpenAI. Rust node, Tauri and Electron clients. A room never holds a live key. Still under active build.",
+    "Where the software enterprise runs. Claude, Grok, Gemini, and OpenAI agents, the git repos, the files, and the machines. Rust node, Tauri and Electron clients. A room never holds a live API key. Still being built.",
 ])
 story.append(Paragraph("ref-radar. ref.lookit.space", job))
 story += bullets([
@@ -94,7 +96,7 @@ story.append(Paragraph("Board of Supervisors Scholarship. S&amp;B Engineers and 
 story.append(Paragraph("<b>Coursework.</b> Networks, packet capture, and monitoring on the wire. Operating systems, shells, and kernels I built. Cryptography. Mobile security on iOS and Android. Reverse engineering and exploitation. CSC 4700: BPE, n-grams, and a SQuAD 2.0 eval of GPT-5-nano and Qwen3-8B. CSC 4101: Scheme and parsing.", body))
 story.append(Paragraph("<b>Baton Rouge Community College.</b> CS credits, 2023 to 2024. <b>Flatiron School.</b> Software engineering bootcamp, 2023", body))
 story.append(Paragraph("CERTIFICATIONS", h))
-story.append(Paragraph("TryHackMe Cyber Trials 2026 Completionist (THM-CHWJAKRCAD) · TestOut Security Pro · IBM Cloud Core · IBM SkillsBuild Cybersecurity", body))
+story.append(Paragraph("TryHackMe Cyber Trials 2026. LSU team, 10th of 27 universities, 10 of 12 rooms. Completionist, THM-CHWJAKRCAD. The AI room hit our token limit before the flag. TestOut Security Pro. IBM Cloud Core. IBM SkillsBuild Cybersecurity.", body))
 
 doc = SimpleDocTemplate(
     out, pagesize=letter,
