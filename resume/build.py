@@ -23,7 +23,7 @@ story = [
     Spacer(1, 3),
     HRFlowable(width="100%", thickness=0.6, color="black", spaceAfter=2),
     Paragraph("SUMMARY", h),
-    Paragraph("AI and cyber engineer. LSU computer science, cybersecurity, December 2026. I pentest production web, iOS, and Android, and I run the software enterprise on The Bakery.", body),
+    Paragraph("AI and cyber engineer. LSU computer science, cybersecurity concentration, December 2026.", body),
     Paragraph("EXPERIENCE", h),
     Paragraph("FarmMind, Full-Stack AI Security Engineer. Baton Rouge. April 2026 to present", job),
 ]
@@ -40,8 +40,8 @@ story += bullets([
 ])
 story.append(Paragraph("Schliewe Systems, founder. 2025 to present", job))
 story += bullets([
-    "The network I run. Edge VPS, Proxmox, Apple Silicon for inference, WireGuard, Pangolin, Cloudflare. Packet and host monitoring with Zeek, Suricata, and Loki. ATT&CK alerts. LUKS, nftables, Fail2ban.",
-    "Already up: Gitea, Nextcloud, Vaultwarden, Pi-hole, Uptime Kuma. L. Ellis Designs, a client store, on Next.js and Stripe.",
+    "Proxmox 8.4 on an FX-6300. dockbox runs LiteLLM, AdGuard, Caddy, Grafana, Loki, Prometheus, Alloy, and Postgres. Pangolin, Traefik, Gerbil, and Badger on a Hetzner VPS. Ollama on the Mac Mini.",
+    "Coolify hosts schliewesystems.com, lellisdesigns.com, and sugarandsoulbakery.org. Logs and metrics in Loki and Grafana. LUKS, nftables, Fail2ban.",
 ])
 story.append(Paragraph("Turner Automation, contract, December 2025 to January 2026. Retrofit of a Fanuc M-10iD and a Denso VM-Series for Advanced Molding Solutions, Studio 5000 Logix, Allen-Bradley.", body))
 story.append(Paragraph("Modesto, server and bartender, January 2024 to June 2026. Opening, closing, events, and the IT when the floor terminals broke.", body))
@@ -50,7 +50,7 @@ story.append(Paragraph("Flexi Solutions, software intern, January to March 2024.
 story.append(Paragraph("PROJECTS", h))
 story.append(Paragraph("The Bakery. github.com/thecandylane/thebakery", job))
 story += bullets([
-    "Where the software enterprise runs. Claude, Grok, Gemini, and OpenAI agents, the git repos, the files, and the machines. Rust node, Tauri and Electron clients. A room never holds a live API key. Still being built.",
+    "IDE, git client, and container manager in one app. bakery-node, Rust, listens on 127.0.0.1:7717 and owns the SQLite log, git, the files, and the agent loop. SvelteKit UI, Tauri and Electron shells. Claude, Grok, Gemini, OpenAI, and local models. Rooms are sandboxed. Credentials stay in the node.",
 ])
 story.append(Paragraph("ref-radar. ref.lookit.space", job))
 story += bullets([
@@ -78,9 +78,9 @@ story += bullets([
 ])
 story.append(Paragraph("SKILLS", h))
 for label, text in [
-    ("Networks:", "Wireshark, Zeek, Suricata, nmap, packet capture on the wire, nftables, WireGuard"),
-    ("Systems:", "Linux kernels and shells I built, Proxmox, LUKS, Docker, Rust"),
-    ("Crypto and mobile:", "cryptography, hashcat, John the Ripper, Frida, JADX, iOS and Android pentest"),
+    ("Networks:", "Wireshark, Zeek, Suricata, nmap, nftables, WireGuard"),
+    ("Systems:", "Proxmox, Linux, Docker, LUKS, Rust"),
+    ("Crypto and mobile:", "hashcat, John the Ripper, Frida, JADX"),
     ("Reversing:", "Ghidra, IDA Pro, pwntools, angr, x86 and RISC-V, YARA-X"),
     ("Web and offensive:", "Burp Suite, ZAP, Invicti, Wapiti, nuclei, sqlmap, Metasploit, Sliver, BloodHound, Impacket, Mimikatz, Atomic Red Team"),
     ("Detection:", "Wazuh, Splunk, Sigma, Loki, Grafana, ATT&CK alerts, gitleaks"),
@@ -93,7 +93,7 @@ for label, text in [
 story.append(Paragraph("EDUCATION", h))
 story.append(Paragraph("<b>Louisiana State University.</b> B.S. Computer Science, Cybersecurity Concentration, College of Engineering. Expected December 2026", body))
 story.append(Paragraph("Board of Supervisors Scholarship. S&amp;B Engineers and Constructors Scholarship. President's Honor Roll. President, Web Application Development Club, 2024 to 2025. Security Society.", body))
-story.append(Paragraph("<b>Coursework.</b> Networks, packet capture, and monitoring on the wire. Operating systems, shells, and kernels I built. Cryptography. Mobile security on iOS and Android. Reverse engineering and exploitation. CSC 4700: BPE, n-grams, and a SQuAD 2.0 eval of GPT-5-nano and Qwen3-8B. CSC 4101: Scheme and parsing.", body))
+story.append(Paragraph("<b>Coursework.</b> CSC 4501 networks. Wireshark and Zeek. Operating systems. Cryptography. Mobile security. Reverse engineering, Ghidra and the RISC-V disassembler. CSC 4700: BPE, n-grams, SQuAD 2.0 on GPT-5-nano and Qwen3-8B. CSC 4101: Scheme and parsing.", body))
 story.append(Paragraph("<b>Baton Rouge Community College.</b> CS credits, 2023 to 2024. <b>Flatiron School.</b> Software engineering bootcamp, 2023", body))
 story.append(Paragraph("CERTIFICATIONS", h))
 story.append(Paragraph("TryHackMe Cyber Trials 2026. LSU team, 10th of 27 universities, 10 of 12 rooms. Completionist, THM-CHWJAKRCAD. The AI room hit our token limit before the flag. TestOut Security Pro. IBM Cloud Core. IBM SkillsBuild Cybersecurity.", body))
