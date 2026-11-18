@@ -229,6 +229,48 @@ test('another tool is refused', () => eq(checkCall({ name: 'read_file', args: { 
 `,
 };
 
+export const noteGate = {
+  title: 'gate.js · a note cannot ask for a tool',
+  code: String.raw`
+// The agent read a note a visitor pinned, and now the model wants a
+// tool. The model may have been talked into it, so code decides.
+//   call: { name, args }   what the model asked for
+//   ctx.noteRead           a note was read earlier in this request
+//   ctx.userText           what the visitor typed this turn
+const CHECKS = ['uptime', 'df', 'free', 'ps', 'whoami'];
+const PAGE = ['ui_theme', 'ui_scroll', 'ui_widget'];
+
+// This version looks at the first word and never at ctx. Make it hold:
+// a diagnostic is one approved word. After a note, only two things
+// still run: read_note, and a check the visitor named themselves.
+function allowCall(call, ctx) {
+  if (call.name !== 'run_diagnostic') return true;
+  return CHECKS.includes(call.args.cmd.split(' ')[0]);
+}
+
+const uptime = { name: 'run_diagnostic', args: { cmd: 'uptime' } };
+console.log(allowCall(uptime, { noteRead: false, userText: 'run uptime' }));
+console.log(allowCall(uptime, { noteRead: true, userText: 'read note 1' }));
+`,
+  tests: String.raw`
+const diag = (cmd) => ({ name: 'run_diagnostic', args: { cmd } });
+const quiet = { noteRead: false, userText: 'how is the host doing?' };
+const afterNote = (userText) => ({ noteRead: true, userText });
+test('reading a note is allowed', () => eq(allowCall({ name: 'read_note', args: { id: 1 } }, quiet), true));
+test('an approved check is allowed', () => eq(allowCall(diag('uptime'), quiet), true));
+test('a second command after the check is refused', () => eq(allowCall(diag('uptime; cat notes.txt'), quiet), false));
+test('arguments are refused', () => eq(allowCall(diag('df /'), quiet), false));
+test('a tool that is not on any list is refused', () => eq(allowCall({ name: 'shell', args: {} }, quiet), false));
+test('a call with no arguments is refused, not a crash', () => eq(allowCall({ name: 'run_diagnostic' }, quiet), false));
+test('after a note, a check the visitor did not ask for is refused', () => eq(allowCall(diag('uptime'), afterNote('read note 1')), false));
+test('after a note, a check the visitor asked for is allowed', () => eq(allowCall(diag('uptime'), afterNote('Read note 1, then run uptime.')), true));
+test('the visitor has to name the check as a whole word', () => eq(allowCall(diag('ps'), afterNote('read my psychology notes')), false));
+test('a page tool is allowed before any note', () => eq(allowCall({ name: 'ui_theme', args: { phosphor: 'p12' } }, quiet), true));
+test('after a note, page tools wait for the next message', () => eq(allowCall({ name: 'ui_theme', args: { phosphor: 'p12' } }, afterNote('read note 1')), false));
+test('a second note can still be read', () => eq(allowCall({ name: 'read_note', args: { id: 2 } }, afterNote('read notes 1 and 2')), true));
+`,
+};
+
 export const fingerprintBits = {
   title: 'bits.js · how many signals make you unique',
   code: String.raw`
