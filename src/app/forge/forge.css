@@ -23,3 +23,6 @@
 .forge-ok { color: var(--accent); margin: 0.5rem 0; }
 
 .forge-why { color: var(--muted); margin: 0.5rem 0; }
+.forge-check { display: flex; align-items: center; gap: 0.4rem; color: var(--muted); font-size: 0.9rem; }
+.forge-fix { margin-top: 0.6rem; }
+.forge-fix pre { background: var(--panel); border: 1px solid var(--frame); padding: 0.6rem; overflow-x: auto; margin: 0.4rem 0 0; }
