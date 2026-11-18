@@ -3,12 +3,13 @@
 <head>
 <meta charset="utf-8">
 <title>Jack Schliewe - Resume</title>
+<!-- Source of public/Jack_Schliewe_Resume.pdf. Build with resume/build.sh -->
 <style>
-  @page { size: letter; margin: 0.42in 0.52in; }
+  @page { size: letter; margin: 0.3in 0.52in; }
   * { box-sizing: border-box; }
   html, body { margin: 0; padding: 0; }
   body {
-    font: 8.6pt/1.22 "Helvetica Neue", Helvetica, Arial, sans-serif;
+    font: 8.3pt/1.2 "Helvetica Neue", Helvetica, Arial, sans-serif;
     color: #111;
   }
   h1 {
@@ -18,44 +19,43 @@
     margin: 0 0 2px;
     font-weight: 700;
   }
-  .contact { text-align: center; font-size: 8.4pt; margin: 0 0 1px; }
-  .links { text-align: center; font-size: 8.4pt; margin: 0 0 6px; }
+  .contact, .links { text-align: center; margin: 0; }
+  .links { margin-bottom: 4px; }
   h2 {
     font-size: 9.2pt;
     letter-spacing: 0.06em;
-    margin: 7px 0 2px;
+    margin: 5px 0 2px;
     padding-bottom: 1px;
     border-bottom: 1px solid #111;
   }
-  p { margin: 0 0 3px; }
-  ul { margin: 0 0 3px; padding-left: 14px; }
-  li { margin: 0 0 1px; }
-  .role { font-weight: 700; }
-  .job { margin-bottom: 4px; }
+  p { margin: 0 0 2px; }
+  ul { margin: 0 0 2px; padding-left: 14px; }
+  li { margin: 0; }
+  b { font-weight: 700; }
+  .job { margin-bottom: 3px; }
   a { color: inherit; text-decoration: none; }
 </style>
 </head>
 <body>
 <h1>JACK SCHLIEWE</h1>
-<p class="contact">Baton Rouge, LA (open to remote) · jschli3@lsu.edu</p>
-<p class="links">schliewesystems.com · ref.lookit.space · linkedin.com/in/thecandylane · github.com/thecandylane</p>
+<p class="contact">Baton Rouge, LA (open to remote, onsite and relocation) · <a href="mailto:jschli3@lsu.edu">jschli3@lsu.edu</a></p>
+<p class="links"><a href="https://schliewesystems.com">schliewesystems.com</a> · <a href="https://ref.lookit.space">ref.lookit.space</a> · <a href="https://www.linkedin.com/in/thecandylane">linkedin.com/in/thecandylane</a> · <a href="https://github.com/thecandylane">github.com/thecandylane</a></p>
 
 <h2>SUMMARY</h2>
-<p>Security-focused software engineer graduating from LSU in December 2026 (computer science, cybersecurity concentration), seeking a remote role in AI/agent security, application security or detection engineering. Pentests a production web, iOS and Android platform, builds agent harnesses that isolate credentials, and publishes supply-chain malware research with working detections.</p>
+<p>I build custom, secure hardware and software. My recent specialty is improving agent and human collaboration while developing secure software. AI and cyber engineer at FarmMind and builder of ref-radar on the side, graduating from LSU in December 2026 and seeking a remote or onsite role, anywhere, in AI/agent security, application security or detection engineering.</p>
 
 <h2>EXPERIENCE</h2>
 <div class="job">
-<p><span class="role">FarmMind — AI and Cyber Engineer</span> · Baton Rouge, LA · April 2026 – Present</p>
+<p><b>FarmMind — AI and Cyber Engineer</b> · Baton Rouge, LA · April 2026 – Present</p>
 <ul>
 <li>Run internal penetration tests of the web, iOS and Android platform with Burp Suite, ZAP, Invicti and Wapiti, plus infrastructure review and host monitoring with Wazuh; fixes ship through GitHub and GCP CI/CD workflows.</li>
-<li>Built cross-device fraud detection and device and account monitoring that enforce the Terms of Service. Notifications over Firebase, APNs and Android.</li>
-<li>Led fully offline speech-to-speech and document translation on on-device speech-to-text, text-to-speech and translation models (ONNX, sherpa-onnx); credited publicly by FarmMind.</li>
-<li>Built field auto-draw with SAM in the iOS and web apps, cutting the drawing and mapping of fields by hand from days to minutes.</li>
-<li>Harness for Farmer Al, the in-app agent, on LangChain, Langfuse, DSPy/GEPA and OpenRouter. AnyFarms remote support over LiveKit. Stripe and FirstPromoter billing.</li>
+<li>Led fully offline speech-to-speech and document translation on on-device speech-to-text, text-to-speech and translation models (ONNX, sherpa-onnx; cloud voice models on vLLM, TensorRT and CUDA); credited publicly by FarmMind.</li>
+<li>Built field auto-draw with MobileSAM in the iOS and web apps, cutting the drawing and mapping of fields by hand from days to minutes.</li>
+<li>Built cross-platform notifications and the device and account monitoring that enforce the Terms of Service; the harness for Farmer AL, the in-app agent (LangChain, Langfuse, DSPy/GEPA); AnyFarms remote support over LiveKit; Stripe and FirstPromoter billing.</li>
 </ul>
 </div>
 <div class="job">
-<p><span class="role">GuideOverride, LSU course project for Baton Rouge Community College — Lead Architect</span> · January 2026 – August 2026</p>
+<p><b>GuideOverride, LSU course project for Baton Rouge Community College — Lead Architect</b> · January 2026 – August 2026</p>
 <ul>
 <li>Led the architecture of a system of record for course override requests (Django, React), built with the college's administrators and deans on 380,000 rows of course equivalency and institution records and 3,000 past chair decisions.</li>
 <li>Replayed the engine against 1,046 real past decisions it had never seen: it never approved a case the chair had denied, decided 30% on its own with every one matching the chair, and routed the rest to the chair for review.</li>
@@ -63,76 +63,54 @@
 </ul>
 </div>
 <div class="job">
-<p><span class="role">Schliewe Systems — Founder and Infrastructure Engineer</span> · 2025 – Present</p>
+<p><b>Schliewe Systems — Founder and Infrastructure Engineer</b> · 2025 – Present</p>
 <ul>
-<li>Designed and run a multi-node environment (cloud VPS at the edge, Proxmox VE node for compute, Apple Silicon cluster for inference) joined over WireGuard through Pangolin and Cloudflare; host a client's store (L. Ellis Designs) on Coolify, Next.js, Stripe and Payload.</li>
-<li>Ship host and service logs with Grafana Alloy into Loki with alert rules based on MITRE ATT&CK, and metrics in Prometheus and Grafana; hardened every host with SSH hardening, LUKS full-disk encryption, nftables and UFW, and Fail2ban. Services up: Gitea, Nextcloud, Vaultwarden, Pi-hole, Uptime Kuma.</li>
+<li>Built and run an environment (VPS as the front door, Proxmox as the brain, Apple Silicon cluster for inference) joined by WireGuard, Pangolin and Cloudflare. Coolify hosts a client store (L. Ellis Designs) beside Gitea, Nextcloud, Vaultwarden, Pi-hole and Uptime Kuma.</li>
+<li>Ship host and service logs with Grafana Alloy into Loki with alert rules based on MITRE ATT&amp;CK, and metrics in Prometheus and Grafana; hardened with LUKS full-disk encryption, nftables and UFW, Fail2ban and SSH hardening.</li>
 </ul>
 </div>
-<p>Earlier: Turner Automation LLC, Controls Engineering Contractor (December 2025 – January 2026), robotic cell retrofits. Flexi Solutions LLC, Software Development Intern (January – March 2024), React and Material UI.</p>
+<p><b>Earlier:</b> Turner Automation, Controls Engineering Contractor (December 2025 – January 2026), retrofit of a Fanuc M-10iD and Denso VM-Series robot cell on Allen-Bradley PLCs in Studio 5000. Modesto, Server and Bartender (2024 – 2026), batched the margaritas, fixed the IT and taste-tested the kitchen for quality (and poison). Attorney General's Office, Baton Rouge, Student Worker (May – August 2024), inventory, work orders and fleet vehicles. Flexi Solutions, Software Development Intern (January – March 2024).</p>
 
 <h2>PROJECTS</h2>
 <div class="job">
-<p><span class="role">ref-radar</span> · ref.lookit.space · prior-art index for coding agents, built and run solo</p>
+<p><b>ref-radar</b> · <a href="https://ref.lookit.space">ref.lookit.space</a> · prior-art index for coding agents, built and run solo</p>
 <ul>
-<li>Serves a curated catalog of reference repos to coding agents over an MCP server and as plain files (llms.txt, catalog.json); a scanner flags risky repos "dangerous code: read, don't run" before they go live.</li>
-<li>Audited all 194 flagged repos with a read-only agent and published the result, including 68 harmless repos the scanner had wrongly flagged.</li>
+<li>Serves a hand-curated catalog of reference repos to coding agents over an MCP server and as plain files (llms.txt, catalog.json); a scanner flags risky repos "dangerous code: read, don't run" before they go live.</li>
+<li>Audited all 194 flagged repos with a read-only agent and published the result, including the 68 the scanner got wrong.</li>
 </ul>
 </div>
 <div class="job">
-<p><span class="role">Shai-Hulud defanger and detection research</span> · schliewesystems.com/blog/defanging-shai-hulud</p>
+<p><b>Shai-Hulud defanger and detection research</b> · <a href="https://schliewesystems.com/blog/defanging-shai-hulud">schliewesystems.com/blog/defanging-shai-hulud</a></p>
 <ul>
 <li>Wrote defang-specimen.sh (about 1,500 lines of bash), which makes a copy of the npm worm's repo safe to open in an editor or coding agent: renames over 100 manifest, config and agent-file patterns without changing contents and flags high-entropy blobs.</li>
 <li>Compared public reports on ten waves of the worm (September 2025 – October 2026) and built two detections for the structure they share, an npm release-diff check and YARA-X rules for install and agent startup hooks, both runnable at schliewesystems.com/lab.</li>
 </ul>
 </div>
 <div class="job">
-<p><span class="role">Security tools on schliewesystems.com</span></p>
+<p><b>The Bakery</b> · <a href="https://github.com/thecandylane/thebakery">github.com/thecandylane/thebakery</a> · IDE and AI agent harness (Rust, SvelteKit, Tauri, Electron, SQLite)</p>
 <ul>
-<li>The familiar: a public prompt-injection CTF against a tool-using AI agent with simulated tools. /you: shows what any site learns about a visitor (14-signal browser fingerprint, WebRTC leak check, EXIF stripping, k-anonymity breached-password check) and stores nothing.</li>
+<li>My daily workspace: an IDE, git client and container manager in one app. A Rust daemon runs Claude, Grok, Gemini, OpenAI and local models in sandboxed rooms; a room never holds a real API key, and the daemon swaps it in at the boundary, only for that provider's hosts.</li>
 </ul>
 </div>
-<div class="job">
-<p><span class="role">The Bakery</span> · github.com/thecandylane/thebakery · AI agent harness (Rust, Tauri, Electron, SQLite)</p>
-<ul>
-<li>One Rust daemon runs Claude, Grok, Gemini and OpenAI agents in sandboxed rooms; a room never holds a real API key, and the daemon swaps the key in at the room's boundary only for that provider's own hosts. Daily driver for Claude Code.</li>
-</ul>
-</div>
-<div class="job">
-<p><span class="role">ImJustABill</span> · github.com/thecandylane/ImJustABill · 2023 hackathon</p>
-<ul>
-<li>RAG over a bill PDF: LlamaIndex vector index (Unstructured reader, on-disk GPTVectorStoreIndex), LangChain and text-davinci-003 query engine, Streamlit UI.</li>
-</ul>
-</div>
-<div class="job">
-<p><span class="role">PKM capture</span> · Electron/Tauri</p>
-<ul>
-<li>Screen-capture personal knowledge base with Claude vision OCR and an MCP server for Claude Code.</li>
-</ul>
-</div>
-<div class="job">
-<p><span class="role">SEC filings research</span></p>
-<ul>
-<li>Four-layer read of SEC EDGAR: DeepSeek batch summaries, Claude for the synthesis. No trading.</li>
-</ul>
-</div>
+<p><b>On schliewesystems.com:</b> the familiar, a prompt-injection CTF against a tool-using AI agent with simulated tools; /you, which shows what any site learns about a visitor (browser fingerprint, WebRTC leak check, EXIF stripping, k-anonymity breached-password check) and stores nothing.</p>
+<p><b>Also:</b> ImJustABill, a 2023 hackathon RAG app on a bill PDF (LlamaIndex, Streamlit); a screen-capture knowledge base with Claude vision OCR and an MCP server; an SEC EDGAR research pipeline that reads and never trades; a RISC-V disassembler in C++, now in my site's lab.</p>
 
-<h2>SKILLS</h2>
-<p><span class="role">Web, API and offensive security:</span> Burp Suite, ZAP, Invicti, Wapiti, Strix, nuclei, sqlmap, nmap, OpenVAS, Metasploit, Sliver, BloodHound, Certipy, Impacket, Mimikatz, hashcat, John the Ripper, Atomic Red Team</p>
-<p><span class="role">Reversing, mobile and forensics:</span> Ghidra, IDA Pro, JADX, Frida, pwntools, angr, z3, binwalk, Volatility, Autopsy, Wireshark, YARA-X; x86 and RISC-V assembly; RISC-V disassembler in C++</p>
-<p><span class="role">Detection and monitoring:</span> Wazuh, Splunk (SPL), Sigma rules, Suricata, Zeek, Loki, Grafana Alloy, Prometheus, Grafana, MITRE ATT&CK alert rules, Fail2ban, gitleaks</p>
-<p><span class="role">AI and agent security:</span> RAG (LlamaIndex), prompt-injection testing (garak, PyRIT, promptfoo), Claude Code, OpenAI Batch API, OpenRouter, credential isolation, agent sandboxing, MCP servers, LangChain, Langfuse, DSPy/GEPA with Petri nets (pm4py, PySPN), ONNX, TensorRT, CUDA, vLLM, llama.cpp, Ollama, LiveKit</p>
-<p><span class="role">Cloud and infrastructure:</span> GCP (Cloud Run, IAM, Firebase), AWS, Cloudflare Workers, Linux, Proxmox VE, Docker/Compose, Coolify, WireGuard, Tailscale, Pangolin, Traefik, Caddy, Nginx, LUKS, nftables/UFW, GitHub Actions</p>
-<p><span class="role">Industrial control systems:</span> Allen-Bradley PLCs, Studio 5000, ICS software and design; Fanuc and Denso robotic cells, safety interlocks</p>
-<p><span class="role">Languages and frameworks:</span> Python, TypeScript/JavaScript, Node.js, Rust, Bash, SQL, Dart, Go, C/C++; React, Next.js, Flutter, Django, FastAPI, Streamlit, Postgres</p>
+<h2>MORE SKILLS</h2>
+<p><b>Offensive:</b> nuclei, sqlmap, nmap, OpenVAS, Metasploit, Sliver, BloodHound, Certipy, Impacket, Mimikatz, hashcat, John the Ripper</p>
+<p><b>Reversing and forensics:</b> Ghidra, IDA Pro, JADX, Frida, pwntools, angr, z3, binwalk, Volatility, Autopsy, Wireshark; x86 and RISC-V assembly</p>
+<p><b>Detection:</b> Splunk (SPL), Sigma rules, Suricata, Zeek, Atomic Red Team, gitleaks</p>
+<p><b>AI and agents:</b> Strix, garak, PyRIT, promptfoo, llama.cpp, Ollama, LiteLLM, LangGraph, DSPy with Petri nets (pm4py, PySPN)</p>
+<p><b>Cloud and infra:</b> GCP (Cloud Run, IAM, Firebase), AWS, Cloudflare Workers, Supabase, Docker, Tailscale, Traefik, Caddy, Nginx, DuckDNS</p>
+<p><b>Languages:</b> Python, TypeScript/JavaScript, Rust, Bash, SQL, Dart, Go, C/C++, C#/.NET, Java</p>
+<p><b>Frameworks:</b> React, Next.js, SvelteKit, Node.js, Flutter, Django, Flask, FastAPI, Electron, Tauri, Payload CMS, PostgreSQL, SQLite</p>
 
 <h2>EDUCATION</h2>
-<p><span class="role">Louisiana State University —</span> B.S. in Computer Science, Cybersecurity Concentration, College of Engineering · expected December 2026</p>
+<p><b>Louisiana State University</b> — B.S. in Computer Science, Cybersecurity Concentration, College of Engineering · expected December 2026</p>
 <p>Board of Supervisors Scholarship; S&amp;B Engineers and Constructors Scholarship; President's Honor Roll. Co-founder and President, Web Application Development Club (2024 – 2025); member, Security Society.</p>
-<p><span class="role">Coursework.</span> CSC 4700 AI/LLM development: BPE and n-gram tokenization; SQuAD 2.0 evaluation of GPT-5-nano (OpenAI Batch API) and Qwen3-8B (OpenRouter). CSC 4101: Scheme, grammars, parsing. CSC 4501: sockets and protocols. Also cryptography, operating systems, and reverse engineering.</p>
-<p><span class="role">Baton Rouge Community College —</span> CS coursework (credits only), 2023 – 2024 · <span class="role">Flatiron School —</span> Software Engineering Bootcamp, 2023</p>
+<p><b>Coursework:</b> networks, operating systems, cryptography, mobile security, reverse engineering, software exploitation, LLM development.</p>
+<p><b>Baton Rouge Community College</b> — CS coursework, 2023 – 2024 · <b>Flatiron School</b> — Software Engineering Bootcamp, 2023</p>
 
 <h2>CERTIFICATIONS</h2>
-<p>TryHackMe Cyber Trials 2026 Completionist (THM-CHWJAKRCAD) · TestOut Security Pro · IBM Cloud Core · IBM SkillsBuild Cybersecurity</p>
+<p><b>TryHackMe Cyber Trials 2026</b> (THM-CHWJAKRCAD): 10th of 27 universities, 10 of 12 rooms. My solves: pwn (ret2win, ret2libc, seccomp ORW), web (JWT/JWKS forgery, upload chain), boot2root. TestOut Security Pro, IBM Cloud Core, IBM SkillsBuild Cybersecurity.</p>
 </body>
 </html>
