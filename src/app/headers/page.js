@@ -10,7 +10,7 @@ export const metadata = pageMeta({
 });
 
 // Strength is colour-coded with the phosphor tokens, never a hard-coded colour.
-const STRENGTH_COLOR = { strong: 'var(--accent)', weak: 'var(--key)', info: 'var(--muted)' };
+const STRENGTH_COLOR = { strong: 'var(--accent)', weak: 'var(--fg)', info: 'var(--muted)' };
 
 export default function Headers() {
   const weak = CSP_DIRECTIVES.find((d) => d.strength === 'weak');
@@ -31,7 +31,7 @@ export default function Headers() {
         <strong>strong</strong> (it blocks a whole class of attack), <strong>info</strong> (an allowlist that narrows
         where resources come from), or <strong>weak</strong> (a deliberate concession). Verbatim, the header is:
       </p>
-      <pre><code>{`Content-Security-Policy: ${csp}`}</code></pre>
+      <pre style={{ whiteSpace: 'pre-wrap', overflowWrap: 'anywhere', maxWidth: '100%' }}><code>{`Content-Security-Policy: ${csp}`}</code></pre>
       <p>
         <strong>One directive is weak: <code>{weak.directive}</code>.</strong> {weak.note}
       </p>
@@ -41,17 +41,23 @@ export default function Headers() {
         With <code>object-src 'none'</code>, <code>base-uri 'none'</code> and <code>frame-ancestors 'none'</code>, the
         usual escalation paths stay closed.
       </p>
-      <table>
+      <table style={{ tableLayout: 'fixed', width: '100%' }}>
+        <colgroup>
+          <col style={{ width: '7.5rem' }} />
+          <col style={{ width: '26%' }} />
+          <col />
+          <col style={{ width: '6.5rem' }} />
+        </colgroup>
         <thead>
           <tr><th>Directive</th><th>Value</th><th>What it stops</th><th>Strength</th></tr>
         </thead>
         <tbody>
           {CSP_DIRECTIVES.map((d) => (
             <tr key={d.directive}>
-              <td><code>{d.directive}</code></td>
-              <td><code>{d.value}</code></td>
+              <td style={{ overflowWrap: 'anywhere' }}><code>{d.directive}</code></td>
+              <td style={{ overflowWrap: 'anywhere' }}><code>{d.value}</code></td>
               <td>{d.note}</td>
-              <td><span style={{ color: STRENGTH_COLOR[d.strength] }}>{d.strength}</span></td>
+              <td style={{ whiteSpace: 'nowrap' }}><span style={{ color: STRENGTH_COLOR[d.strength] }}>{d.strength}</span></td>
             </tr>
           ))}
         </tbody>
@@ -62,7 +68,12 @@ export default function Headers() {
         Six more headers go out on every response, each with a fixed value. They cover framing, MIME types, referrers,
         device permissions and cross-origin isolation.
       </p>
-      <table>
+      <table style={{ tableLayout: 'fixed', width: '100%' }}>
+        <colgroup>
+          <col style={{ width: '18%' }} />
+          <col style={{ width: '24%' }} />
+          <col />
+        </colgroup>
         <thead>
           <tr><th>Header</th><th>Value</th><th>What it stops</th></tr>
         </thead>
