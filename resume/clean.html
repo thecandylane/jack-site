@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Jack Schliewe - Resume</title>
+<!-- The short resume: a 30-second read. resume/index.html stays the full record. Build: sh resume/build.sh resume/clean.html <out.pdf> -->
+<style>
+  @page { size: letter; margin: 0.5in 0.7in; }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body { font: 9pt/1.22 "Helvetica Neue", Helvetica, Arial, sans-serif; color: #111; }
+  h1 { font-size: 17pt; letter-spacing: 0.12em; text-align: center; margin: 0 0 3px; font-weight: 700; }
+  .contact { text-align: center; margin: 0 0 8px; }
+  h2 { font-size: 10pt; letter-spacing: 0.08em; margin: 9px 0 4px; padding-bottom: 2px; border-bottom: 1px solid #111; }
+  p { margin: 0 0 3px; }
+  ul { margin: 0 0 5px; padding-left: 15px; }
+  li { margin: 0 0 1px; }
+  b { font-weight: 700; }
+  .when { float: right; }
+  a { color: inherit; text-decoration: none; }
+</style>
+</head>
+<body>
+<h1>JACK MAGUIRE SCHLIEWE</h1>
+<p class="contact">Baton Rouge, LA · U.S. citizen · open to relocation · <a href="mailto:jschli3@lsu.edu">jschli3@lsu.edu</a><br>
+<a href="https://schliewesystems.com">schliewesystems.com</a> · <a href="https://www.linkedin.com/in/thecandylane">linkedin.com/in/thecandylane</a> · <a href="https://github.com/thecandylane">github.com/thecandylane</a></p>
+
+<p>AI and cyber engineer. I build custom, secure hardware and software. B.S. Computer Science, Cybersecurity Concentration, LSU, December 2026.</p>
+
+<h2>EXPERIENCE</h2>
+<p><b>FarmMind</b>, AI and Cyber Engineer <span class="when">April 2026 – Present</span></p>
+<ul>
+<li>Run internal penetration tests of the web, iOS and Android platform with Burp Suite, ZAP, Invicti and Wapiti. Fixes ship through GitHub and GCP CI/CD.</li>
+<li>Built the harness for the in-app AI agent (Python, LangChain, Langfuse, DSPy).</li>
+<li>Led offline speech-to-speech translation on on-device models (ONNX, sherpa-onnx).</li>
+<li>Built device and account monitoring that enforces the Terms of Service.</li>
+</ul>
+<p><b>Schliewe Systems</b>, Founder and Infrastructure Engineer <span class="when">2025 – Present</span></p>
+<ul>
+<li>Run a multi-node environment (cloud VPS, Proxmox, Apple Silicon) joined over WireGuard.</li>
+<li>Ship host logs to Loki with alert rules based on MITRE ATT&amp;CK. Hosts hardened with LUKS, nftables, Fail2ban and key-only SSH.</li>
+<li>The Bakery is the runtime: my agent workspace (Rust daemon, Electron and Tauri clients), where agents work in sandboxed rooms that never hold a real API key.</li>
+<li>Build and host client sites, such as L. Ellis Designs (Next.js, Stripe).</li>
+</ul>
+
+<h2>PROJECTS</h2>
+<p><b>ref-radar</b> · ref.lookit.space · TypeScript <span class="when">2026</span></p>
+<ul>
+<li>Index of reference repos for coding agents, served over an MCP server. Built and run solo.</li>
+<li>Audited all 194 repos its scanner flagged and published the result, including the 68 it got wrong.</li>
+</ul>
+<p><b>GuideOverride</b> · LSU project for Baton Rouge Community College · Django, React <span class="when">2026</span></p>
+<ul>
+<li>Lead architect of a system of record for course override requests, on 380,000 rows of college records.</li>
+<li>Replayed against 1,046 past decisions it had never seen: it never approved a case the chair had denied.</li>
+</ul>
+<p><b>Local Influence</b> · localinfluence.ai · React, Supabase, Stripe <span class="when">2026</span></p>
+<ul>
+<li>Marketplace for local businesses and influencers, team of three. Joined May 2026: built the offer composer, multi-creator campaigns, the Google Cloud deploy pipeline and CI, and a security review with fixes to payments, database and sign-in.</li>
+</ul>
+<p><b>Facing</b> · LSU team project · React Native, Supabase <span class="when">2026</span></p>
+<ul>
+<li>Shopping and virtual try-on app. Built the scaffold and the whole backend: deny-by-default database with 280 database tests, feed ranking in Postgres (pgvector), Stripe billing, Google sign-in (OAuth 2.0 with PKCE) and staging deploys.</li>
+</ul>
+<p><b>Shai-Hulud research</b> · schliewesystems.com/blog <span class="when">2026</span></p>
+<ul>
+<li>Wrote a bash tool that makes the npm worm's repo safe to open, and two detections for it (YARA-X rules, an npm release-diff check).</li>
+</ul>
+
+<h2>SKILLS</h2>
+<p><b>Offensive:</b> Burp Suite, ZAP, Invicti, Wapiti, nuclei, sqlmap, nmap, OpenVAS, Metasploit, Sliver, BloodHound, Certipy, Impacket, Mimikatz, hashcat, John the Ripper</p>
+<p><b>Reversing and forensics:</b> Ghidra, IDA Pro, JADX, Frida, pwntools, angr, z3, binwalk, Volatility, Autopsy, Wireshark; x86 and RISC-V assembly</p>
+<p><b>Detection:</b> Splunk (SPL), Sigma, YARA-X, Suricata, Zeek, Wazuh, Loki, Atomic Red Team, gitleaks</p>
+<p><b>App security:</b> OAuth 2.0, SSO, scrypt, HMAC-signed sessions, CSRF defences, rate limiting, CSP with Trusted Types, row-level security, signed webhooks, internal CA, Seatbelt sandboxing, Docker hardening</p>
+<p><b>AI and agents:</b> Strix, Artex, garak, PyRIT, promptfoo, LangChain, LangGraph, DSPy, MCP servers, llama.cpp, Ollama, LiteLLM</p>
+<p><b>Languages:</b> Python, TypeScript/JavaScript, Rust, Bash, SQL, Dart, Go, C/C++, C#/.NET, Java</p>
+<p><b>Frameworks:</b> React, Next.js, SvelteKit, Node.js, Flutter, Django, Flask, FastAPI, Electron, Tauri, Payload CMS, PostgreSQL, SQLite</p>
+<p><b>Cloud and infra:</b> Linux, GCP, AWS, Cloudflare Workers, Supabase, Docker, Tailscale, Traefik, Caddy, Nginx</p>
+
+<h2>EDUCATION AND CERTIFICATIONS</h2>
+<p><b>Louisiana State University</b>, B.S. Computer Science, Cybersecurity Concentration <span class="when">December 2026</span></p>
+<p>Board of Supervisors Scholarship. Co-founder and President, Web Application Development Club.</p>
+<p>TryHackMe Cyber Trials 2026 (team placed 10th of 27 universities) · TestOut Security Pro · IBM Cloud Core</p>
+</body>
+</html>
