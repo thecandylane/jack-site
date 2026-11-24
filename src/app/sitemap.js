@@ -10,6 +10,7 @@ export default async function sitemap() {
     { url: `${SITE}/forge`, changeFrequency: 'monthly', priority: 0.9 },
     { url: `${SITE}/lab`, changeFrequency: 'monthly', priority: 0.8 },
     { url: `${SITE}/you`, changeFrequency: 'monthly', priority: 0.8 },
+    { url: `${SITE}/farmmind`, changeFrequency: 'monthly', priority: 0.8 },
     { url: `${SITE}/forge/quickjs`, changeFrequency: 'monthly', priority: 0.6 },
     ...posts.map((p) => ({ url: `${SITE}/blog/${p.slug}`, lastModified: p.date })),
   ];

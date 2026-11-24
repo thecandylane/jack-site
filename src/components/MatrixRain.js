@@ -99,7 +99,7 @@ export default function MatrixRain() {
 
     const at = (e) => { const r = canvas.getBoundingClientRect(); return [e.clientX - r.left, e.clientY - r.top]; };
     // Logs drop only on empty space, so pressing on text still selects it and links still work.
-    const TEXT = 'a, button, input, textarea, select, label, summary, p, li, h1, h2, h3, pre, code, dt, dd, .orb, .term-win, .widget';
+    const TEXT = 'a, button, input, textarea, select, label, summary, p, li, h1, h2, h3, pre, code, dt, dd, .orb, .term-win, .widget, .fm, figure, img';
     const down = (e) => {
       if (e.button !== 0 || e.target.closest?.(TEXT)) return;
       const [x, y] = at(e);

@@ -15,6 +15,7 @@
     "@chenglou/pretext": "^1.0.0",
     "@codemirror/lang-javascript": "6.2.5",
     "@codemirror/language": "6.13.1",
+    "@huggingface/transformers": "4.3.2",
     "@lezer/highlight": "1.2.5",
     "@mdx-js/loader": "^3.1.1",
     "@mdx-js/react": "^3.1.1",

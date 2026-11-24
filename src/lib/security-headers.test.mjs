@@ -13,7 +13,7 @@ const ORIGINAL_CSP = [
   `font-src 'self'`,
   `img-src 'self' data:`,
   `connect-src 'self' https://ref.lookit.space https://api.pwnedpasswords.com https://registry.npmjs.org`,
-  `frame-src https://ref.lookit.space`,
+  `frame-src https://ref.lookit.space https://www.youtube-nocookie.com`, // the FarmMind showcase's click-to-load videos
   `worker-src 'self' blob:`,
   `object-src 'none'`,
   `base-uri 'none'`,
