@@ -15,6 +15,7 @@ const HELP = [
   ['ls [posts|projects]', 'list what is on the site'],
   ['cat <post>', 'open a blog post'],
   ['forge', 'the JavaScript engine running on this site'],
+  ['farmmind', "FarmMind's showcase: tour, Auto-Draw demo, press"],
   ['open <section|project>', 'go somewhere on the site'],
   ['whoami', 'what your browser tells every site it visits'],
   ['familiar', 'talk to the familiar, the agent CTF on this site'],
@@ -139,10 +140,10 @@ export default function Terminal({ posts }) {
         const name = arg.toLowerCase();
         const project = PROJECTS.find((p) => p.name.toLowerCase() === name);
         if (SECTIONS.includes(name)) { if (location.pathname !== '/') location.href = `/#${name}`; else document.getElementById(name)?.scrollIntoView({ behavior: 'smooth' }); }
-        else if (name === 'blog' || name === 'you') location.href = `/${name}`;
+        else if (name === 'blog' || name === 'you' || name === 'farmmind') location.href = `/${name}`;
         else if (project?.href) location.href = project.href;
         else if (project) print({ t: `${project.name} is not public. ${project.what}` });
-        else print({ t: `open what? ${SECTIONS.join(', ')}, blog, you, or a project`, c: 'err' });
+        else print({ t: `open what? ${SECTIONS.join(', ')}, blog, you, farmmind, or a project`, c: 'err' });
         break;
       }
       case 'ref': {
@@ -171,6 +172,7 @@ export default function Terminal({ posts }) {
         break;
       }
       case 'forge': location.href = '/forge'; break;
+      case 'farmmind': location.href = '/farmmind'; break;
       case 'familiar': setMode('familiar'); turns.current = []; print(...FAMILIAR_HELP.map((t) => ({ t, c: 'agent' }))); break;
       case 'split': case 'herdr': setSplit((s) => !s); if (!feed) loadFeed(); print({ t: split ? 'Panes closed.' : 'Panes open: terminal, radar, feed. Type split again to close.' }); break;
       case 'coolfolio': {

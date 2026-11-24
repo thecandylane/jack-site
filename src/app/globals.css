@@ -375,3 +375,81 @@ body:has(.reader)::after, body:has(.reader) .warp, body:has(.reader) #bar { disp
 .reader .prose code, .reader .prose pre { font-family: ui-monospace, Menlo, monospace; }
 .reader footer { margin-top: 4rem; padding-top: 1.25rem; border-top: 1px solid var(--frame); font-size: 15px; }
 .reader footer a { color: var(--accent); }
+
+/* ---------- /farmmind: a phosphor window (.term) with FarmMind's own dark palette inside (.fm) ----------
+   The --fm-* colours are FarmMind's brand, so they stay the same under both phosphors. */
+:root {
+  --fm-bg: #0A1F17; --fm-surface: #142E23; --fm-primary: #13352B; --fm-cream: #F5EFE0;
+  --fm-accent: #15A47E; --fm-mint: #3DD4B0; --fm-orange: #D96B2C; --fm-peach: #F2A26B;
+  --fm-line: color-mix(in srgb, var(--fm-cream) 16%, transparent);
+  --fm-soft: color-mix(in srgb, var(--fm-cream) 78%, transparent);
+  --fm-sans: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+}
+.fm-page .lede a { color: var(--accent); text-decoration: underline; text-underline-offset: 3px; }
+.fm-stat { margin-top: 1rem; }
+.fm-note { margin-top: .75rem; }
+.fm-win .term-bar { align-items: center; }
+.fm-addr { min-width: 0; overflow-wrap: anywhere; }
+.fm-dev { display: flex; gap: .5ch; }
+.fm-dev button { font: 12px/1.4 var(--mono); padding: .2em 1.2ch; border: 1px solid var(--frame); background: none; color: var(--muted); cursor: pointer; }
+.fm-dev button[aria-pressed="true"] { border-color: var(--accent); color: var(--accent); }
+
+.fm { background: var(--fm-bg); color: var(--fm-cream); font: 15px/1.6 var(--fm-sans); }
+.fm a { color: var(--fm-mint); text-decoration: underline; text-underline-offset: 3px; }
+.fm :focus-visible { outline: 2px solid var(--fm-mint); outline-offset: 2px; }
+.fm-head { display: flex; flex-wrap: wrap; align-items: center; gap: .25rem .75rem; padding: .75rem 1rem; background: var(--fm-primary); border-bottom: 1px solid var(--fm-line); }
+.fm-head img { display: block; border-radius: 6px; }
+.fm-head span { color: var(--fm-soft); font-size: 13px; }
+.fm-app { display: grid; grid-template-columns: minmax(0, 1fr); }
+.fm-rail { display: flex; flex-wrap: wrap; gap: .25rem; padding: .75rem; background: var(--fm-surface); border-bottom: 1px solid var(--fm-line); }
+.fm button { font: inherit; color: inherit; background: none; border: 1px solid var(--fm-line); border-radius: 6px; padding: .35em .9em; cursor: pointer; }
+.fm button:hover { background: color-mix(in srgb, var(--fm-accent) 22%, transparent); }
+.fm-rail button { font-size: 14px; text-align: left; border-color: transparent; }
+.fm-rail button[aria-pressed="true"] { background: var(--fm-mint); color: var(--fm-bg); font-weight: 600; }
+@media (min-width: 900px) {
+  .fm-app { grid-template-columns: 230px minmax(0, 1fr); }
+  .fm-rail { flex-direction: column; flex-wrap: nowrap; border-bottom: 0; border-right: 1px solid var(--fm-line); }
+}
+.fm-stage { min-width: 0; padding: 1rem clamp(.75rem, 3vw, 1.5rem) 1.25rem; }
+.fm-stage h2 { font-size: 13px; letter-spacing: .08em; text-transform: uppercase; color: var(--fm-peach); }
+.fm-hl { margin-top: .25rem; font-size: clamp(20px, 3vw, 28px); font-weight: 700; line-height: 1.2; }
+.fm-line { margin-top: .5rem; max-width: 70ch; color: var(--fm-soft); }
+.fm-shot { margin-top: 1rem; }
+.fm-shot img { display: block; width: 100%; height: auto; border: 1px solid var(--fm-line); border-radius: 8px; background: var(--fm-surface); }
+.fm-shot.phone img { width: min(100%, 300px); margin: 0 auto; border-radius: 18px; }
+.fm-shot figcaption { margin-top: .75rem; color: var(--fm-soft); }
+.fm-shot figcaption b { display: block; color: var(--fm-cream); }
+.fm-count { display: block; font-size: 12px; color: var(--fm-peach); }
+.fm-steps { display: flex; flex-wrap: wrap; align-items: center; gap: .5rem; margin-top: .75rem; }
+.fm-dots { display: flex; }
+.fm .fm-dots button { width: 28px; height: 28px; padding: 0; border: 0; border-radius: 50%;
+  background: radial-gradient(circle, color-mix(in srgb, var(--fm-cream) 50%, transparent) 5px, transparent 6px); }
+.fm .fm-dots button[aria-current] { background: radial-gradient(circle, var(--fm-mint) 6px, transparent 7px); }
+.fm-links { display: flex; flex-wrap: wrap; gap: .5rem 1.5rem; margin-top: 1rem; font-size: 14px; }
+
+/* click-to-load YouTube (YouTubeFacade.js): nothing sits over the iframe once it plays */
+.fm-yt { aspect-ratio: 16 / 9; border: 1px solid var(--frame); background: var(--fm-bg); }
+.fm-yt button, .fm-yt iframe { display: block; width: 100%; height: 100%; border: 0; }
+.fm-yt button { position: relative; padding: 0; background: none; cursor: pointer; }
+.fm-yt img { display: block; width: 100%; height: 100%; object-fit: cover; }
+.fm-play { position: absolute; left: 50%; top: 50%; width: 68px; height: 48px; translate: -50% -50%; border-radius: 12px;
+  background: color-mix(in srgb, var(--fm-bg) 85%, transparent); box-shadow: 0 0 0 2px var(--fm-mint); transition: background .2s; }
+.fm-play::after { content: ""; position: absolute; left: 27px; top: 14px; border-style: solid; border-width: 10px 0 10px 17px;
+  border-color: transparent transparent transparent var(--fm-cream); }
+.fm-yt button:hover .fm-play, .fm-yt button:focus-visible .fm-play { background: var(--fm-orange); }
+.fm-vids { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 260px), 1fr)); gap: 1.25rem; margin-top: 1.5rem; }
+.fm-vids figcaption { margin-top: .5rem; color: color-mix(in srgb, var(--fg) 80%, transparent); }
+
+.fm-cards { grid-template-columns: repeat(auto-fill, minmax(min(100%, 320px), 1fr)); margin-top: 1.5rem; }
+.fm-cards .wide { grid-column: 1 / -1; }
+.fm-cards .card h3 { font: 700 17px/1.35 var(--mono); -webkit-font-smoothing: auto; }
+.fm-cards .card h3 a:hover { color: var(--accent); }
+.fm-cards .fm-vids { margin-top: .25rem; }
+.fm-thumb { display: block; width: 100%; height: auto; aspect-ratio: 16 / 9; object-fit: cover; border: 1px solid var(--frame); }
+
+.fm-tuts { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 320px), 1fr)); gap: 0 2rem; align-items: start; margin-top: 1.5rem; }
+.fm-tuts summary { cursor: pointer; padding: .6rem 0; border-bottom: 1px solid var(--frame); color: var(--accent); }
+.fm-tuts ul { list-style: none; padding: .5rem 0 1rem 2ch; font-size: 14px; }
+.fm-tuts li + li { margin-top: .25rem; }
+.fm-tuts a { color: var(--accent); }
+.fm-tuts a:hover { text-decoration: underline; }

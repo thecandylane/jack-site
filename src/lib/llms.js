@@ -77,6 +77,7 @@ export function llmsText(posts) {
     `- Lab: ${SITE}/lab`,
     `- Forge: ${SITE}/forge`,
     `- What this site sees: ${SITE}/you`,
+    `- FarmMind showcase: ${SITE}/farmmind`,
     '- GitHub: https://github.com/thecandylane',
     '',
   );

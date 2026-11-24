@@ -54,7 +54,7 @@ export const CSP_DIRECTIVES = [
     directive: `script-src`,
     value: `'self' 'unsafe-inline' 'wasm-unsafe-eval'`,
     strength: `weak`,
-    note: `The one weak directive. It keeps 'unsafe-inline' because every page here is prerendered and Next streams its hydration payload as inline scripts; a per-request CSP nonce needs request-time rendering, which the read-only static-asset cache on the Worker cannot do. 'unsafe-eval' is gone (no component evaluates a string); 'wasm-unsafe-eval' stays only for the YARA-X engine. Trusted Types, enforced below, is what keeps this from being a free pass for injected markup.`,
+    note: `The one weak directive. It keeps 'unsafe-inline' because every page here is prerendered and Next streams its hydration payload as inline scripts; a per-request CSP nonce needs request-time rendering, which the read-only static-asset cache on the Worker cannot do. 'unsafe-eval' is gone (no component evaluates a string); 'wasm-unsafe-eval' stays only for the in-browser WASM engines (YARA-X, QuickJS and the FarmMind Auto-Draw model). Trusted Types, enforced below, is what keeps this from being a free pass for injected markup.`,
   },
   {
     directive: `style-src`,
@@ -82,9 +82,9 @@ export const CSP_DIRECTIVES = [
   },
   {
     directive: `frame-src`,
-    value: `https://ref.lookit.space`,
+    value: `https://ref.lookit.space https://www.youtube-nocookie.com`,
     strength: `info`,
-    note: `Only ref-radar's /radar and /universe views may be embedded; no other site can be framed in.`,
+    note: `Only ref-radar's /radar and /universe views and the FarmMind page's YouTube videos may be embedded; no other site can be framed in. The videos use YouTube's privacy-enhanced nocookie host, and each player loads only after a click on its self-hosted poster, so a page view contacts no Google server.`,
   },
   {
     directive: `worker-src`,

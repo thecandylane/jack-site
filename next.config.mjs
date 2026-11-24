@@ -1,3 +1,4 @@
+import { fileURLToPath } from 'node:url';
 import createMDX from '@next/mdx';
 import remarkGfm from 'remark-gfm';
 import rehypeShiki from '@shikijs/rehype';
@@ -20,6 +21,17 @@ const withMDX = createMDX({
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   output: 'standalone',
+  // The Auto-Draw demo (src/components/AutoDraw.js) imports @huggingface/transformers in the browser only.
+  // Server: never bundle it (its node build pulls in onnxruntime-node and sharp); transpilePackages takes it off
+  // Next's built-in external list so the alias to false applies. Browser: swap the WebGPU build of
+  // onnxruntime-web, whose 25.6 MiB wasm is over the Workers 25 MiB asset limit, for the CPU build, which
+  // loads its 14 MB wasm from public/autodraw/ort/.
+  transpilePackages: ['@huggingface/transformers'],
+  webpack(config, { isServer }) {
+    if (isServer) config.resolve.alias['@huggingface/transformers'] = false;
+    else config.resolve.alias['onnxruntime-web/webgpu$'] = fileURLToPath(new URL('./node_modules/onnxruntime-web/dist/ort.wasm.min.mjs', import.meta.url));
+    return config;
+  },
   async headers() {
     return [
       {

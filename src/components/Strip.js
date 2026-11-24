@@ -15,6 +15,7 @@ const LINKS = [
   ['contact', '/#contact'],
   ['you', '/you', 'wide'],
   ['lab', '/lab', 'wide'],
+  ['farmmind', '/farmmind', 'wide'],
 ];
 
 export default function Strip() {

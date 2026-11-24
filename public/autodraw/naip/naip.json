@@ -1,0 +1,41 @@
+[
+  {
+    "slug": "rice-crowley",
+    "label": "Rice near Crowley",
+    "bbox": [554314.35, 3348330.22, 555338.35, 3349354.22],
+    "crs": "EPSG:26915",
+    "mpp": 1.0,
+    "size": [1024, 1024],
+    "year": 2025,
+    "acquired": "2025-05-05",
+    "sample": [565, 735],
+    "source": "https://apps.geo.fpac.usda.gov/geo-imagery/rest/services/naip/conus_naip/ImageServer/exportImage",
+    "credit": "USDA FSA NAIP, public domain"
+  },
+  {
+    "slug": "cane-napoleonville",
+    "label": "Sugarcane near Napoleonville",
+    "bbox": [688119.84, 3310359.15, 689348.64, 3311587.95],
+    "crs": "EPSG:26915",
+    "mpp": 1.2,
+    "size": [1024, 1024],
+    "year": 2025,
+    "acquired": "2025-05-14",
+    "sample": [505, 495],
+    "source": "https://apps.geo.fpac.usda.gov/geo-imagery/rest/services/naip/conus_naip/ImageServer/exportImage",
+    "credit": "USDA FSA NAIP, public domain"
+  },
+  {
+    "slug": "rowcrop-tensas",
+    "label": "Row crops in Tensas Parish",
+    "bbox": [656879.52, 3547538.38, 658415.52, 3549074.38],
+    "crs": "EPSG:26915",
+    "mpp": 1.5,
+    "size": [1024, 1024],
+    "year": 2025,
+    "acquired": "2025-07-28",
+    "sample": [885, 455],
+    "source": "https://apps.geo.fpac.usda.gov/geo-imagery/rest/services/naip/conus_naip/ImageServer/exportImage",
+    "credit": "USDA FSA NAIP, public domain"
+  }
+]

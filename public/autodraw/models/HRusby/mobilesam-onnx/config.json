@@ -1,0 +1,6 @@
+{
+  "architectures": [
+    "SamModel"
+  ],
+  "model_type": "sam"
+}

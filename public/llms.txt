@@ -35,4 +35,5 @@ ref-radar answers "who already built this, where do I start reading, and can I r
 - Lab: https://schliewesystems.com/lab
 - Forge: https://schliewesystems.com/forge
 - What this site sees: https://schliewesystems.com/you
+- FarmMind showcase: https://schliewesystems.com/farmmind
 - GitHub: https://github.com/thecandylane

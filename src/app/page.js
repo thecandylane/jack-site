@@ -34,7 +34,7 @@ const TOOLS = [
 
 const WORK = [
   {
-    role: 'AI and Cyber Engineer', org: 'FarmMind', when: 'April 2026 to present', href: 'https://farmmind.org',
+    role: 'AI and Cyber Engineer', org: 'FarmMind', when: 'April 2026 to present', href: 'https://farmmind.org', more: '/farmmind',
     what: 'A Baton Rouge company making farming and agriculture a more forgiving industry. Platform features, uptime and user protection.',
     points: [
       'Led fully offline speech-to-speech and document translation on on-device speech-to-text, text-to-speech and translation models (ONNX, sherpa-onnx). Credited publicly by FarmMind.',
@@ -223,6 +223,7 @@ export default async function Home() {
               <p className="when muted">{j.when}</p>
               <p className="what">{j.what}</p>
               {j.points.length > 0 && <ul>{j.points.map((p) => <li key={p}>{p}</li>)}</ul>}
+              {j.more && <p className="what"><a href={j.more}>See FarmMind in Action →</a></p>}
             </li>
           ))}
         </ul>
