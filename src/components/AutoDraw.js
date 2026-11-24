@@ -7,19 +7,23 @@ import { fieldOutline, area, acres } from '@/lib/mask2poly';
 // Click a field on a USDA NAIP aerial and a segmentation model running in this browser outlines it.
 // Built on transformers.js (gh:huggingface/transformers.js, Apache-2.0): SamModel and AutoProcessor as in its
 // modeling_sam.js example, with the image embedding computed once per tile and reused for every click, the way
-// its segment-anything example does. The model is MobileSAM (gh:ChaoningZhang/MobileSAM, Apache-2.0) as exported for
-// transformers.js by huggingface.co/HRusby/mobilesam-onnx (Apache-2.0 on its card), self-hosted in public/autodraw/models/.
+// its segment-anything example does. Two models, self-hosted in public/autodraw/models/ and pinned to one revision each:
+// MobileSAM (gh:ChaoningZhang/MobileSAM, Apache-2.0) as exported by huggingface.co/HRusby/mobilesam-onnx @ c67a738, and
+// SlimSAM (gh:czg1225/SlimSAM, Apache-2.0) as exported by huggingface.co/Xenova/slimsam-77-uniform @ 5850ab4.
 // Everything loads from /autodraw/ on this site; nothing is uploaded.
 // ponytail: the model runs on the main thread (about 3 s per new tile, 0.2 s per click); move it to a module worker
 // with a Trusted Types policy if the page ever needs to stay responsive while a tile is read.
-const MODEL = 'HRusby/mobilesam-onnx';
-const CARD = 'https://huggingface.co/HRusby/mobilesam-onnx';
-const MB = 33; // two quantized ONNX files (19 MB) and the onnxruntime-web wasm (14 MB)
-const ONNX_BYTES = 14106884 + 4675484; // vision_encoder_quantized.onnx + prompt_encoder_mask_decoder_quantized.onnx
+const MODELS = [
+  // bytes: vision_encoder_quantized.onnx + prompt_encoder_mask_decoder_quantized.onnx
+  { id: 'HRusby/mobilesam-onnx', name: 'MobileSAM', bytes: 14106884 + 4675484 },
+  { id: 'Xenova/slimsam-77-uniform', name: 'SlimSAM', bytes: 8882165 + 4903810 },
+];
+const RUNTIME_MB = 14; // the onnxruntime-web wasm, fetched once for both models
 const SIDE = 1024; // every tile is 1024 x 1024 pixels
 
-let lib; // one load per page: { model, processor, Tensor, RawImage }
-const load = (onProgress) => (lib ??= (async () => {
+let onBytes = () => {};
+let runtime; // one transformers.js import and setup per page
+const setup = () => (runtime ??= (async () => {
   const t = await import('@huggingface/transformers');
   t.env.allowRemoteModels = false;
   t.env.allowLocalModels = true;
@@ -31,28 +35,38 @@ const load = (onProgress) => (lib ??= (async () => {
     proxy: false,
   });
   // Count model bytes as they stream in. (A progress_callback would make transformers.js fetch each file twice.)
-  let got = 0;
-  const base = t.env.fetch.base ?? t.env.fetch; // a retry after a failed load must not wrap the wrapper
-  t.env.fetch = Object.assign(async (...args) => {
+  const base = t.env.fetch;
+  t.env.fetch = async (...args) => {
     const r = await base(...args);
     if (!r.body || !String(args[0]).endsWith('.onnx')) return r;
-    const count = new TransformStream({ transform(chunk, c) { got += chunk.length; onProgress(Math.min(99, Math.round((100 * got) / ONNX_BYTES))); c.enqueue(chunk); } });
+    const count = new TransformStream({ transform(chunk, c) { onBytes(chunk.length); c.enqueue(chunk); } });
     return new Response(r.body.pipeThrough(count), r);
-  }, { base });
+  };
+  return t;
+})().catch((e) => { runtime = undefined; throw e; }));
+
+const libs = {}; // model id -> Promise<{ model, processor, Tensor, RawImage }>
+const load = (m, onProgress) => (libs[m.id] ??= (async () => {
+  const t = await setup();
+  let got = 0;
+  onBytes = (n) => { got += n; onProgress(Math.min(99, Math.round((100 * got) / m.bytes))); };
   const [model, processor] = await Promise.all([
-    t.SamModel.from_pretrained(MODEL, { dtype: 'q8', device: 'wasm' }),
-    t.AutoProcessor.from_pretrained(MODEL),
+    t.SamModel.from_pretrained(m.id, { dtype: 'q8', device: 'wasm' }),
+    t.AutoProcessor.from_pretrained(m.id),
   ]);
   return { model, processor, Tensor: t.Tensor, RawImage: t.RawImage };
-})().catch((e) => { lib = undefined; throw e; }));
+})().catch((e) => { delete libs[m.id]; throw e; }));
+const mbFor = (m) => Math.round(m.bytes / 1e6) + (runtime ? 0 : RUNTIME_MB);
 
-const embeddings = {}; // slug -> { inputs, emb }, computed once per tile
+const embeddings = {}; // `${model id} ${slug}` -> { inputs, emb }, computed once per model and tile
 const paint = () => new Promise((r) => requestAnimationFrame(() => setTimeout(r)));
 const secs = (ms) => `${(ms / 1000).toFixed(1)} s`;
 
 export default function AutoDraw() {
   const [tile, setTile] = useState(TILES[0]);
-  const [ready, setReady] = useState(false);
+  const [m, setM] = useState(MODELS[0]);
+  const [loaded, setLoaded] = useState([]); // model ids ready to run
+  const ready = loaded.includes(m.id);
   const [busy, setBusy] = useState(false);
   const [points, setPoints] = useState([]); // [{ x, y, include }] in tile pixels
   const [ring, setRing] = useState(null);
@@ -62,31 +76,32 @@ export default function AutoDraw() {
   async function loadModel() {
     if (busy) return;
     setBusy(true);
-    setSay(`Downloading the model (${MB} MB)…`);
+    setSay(`Downloading ${m.name} (${mbFor(m)} MB)…`);
     const t0 = performance.now();
     try {
-      await load((pct) => setSay(`Downloading the model: ${pct}%`));
-      setReady(true);
-      setSay(`Model ready in ${secs(performance.now() - t0)}. Click a field or press Try a Sample Point.`);
+      await load(m, (pct) => setSay(`Downloading ${m.name}: ${pct}%`));
+      setLoaded((l) => [...l, m.id]);
+      setSay(`${m.name} ready in ${secs(performance.now() - t0)}. Click a field or press Try a Sample Point.`);
     } catch (e) {
       setSay(`The model did not load: ${e.message}`);
     }
     setBusy(false);
   }
 
-  async function segment(t, pts) {
+  async function segment(t, pts, mm = m) {
     const id = ++run.current;
     if (!pts.some((p) => p.include)) { setRing(null); setSay(pts.length ? 'Add a point inside a field.' : ''); return; }
     setBusy(true);
     try {
-      const { model, processor, Tensor, RawImage } = await lib;
-      let e = embeddings[t.slug];
+      const { model, processor, Tensor, RawImage } = await libs[mm.id];
+      const key = `${mm.id} ${t.slug}`;
+      let e = embeddings[key];
       if (!e) {
         setSay('Reading the image…');
         await paint();
         const t0 = performance.now();
         const inputs = await processor(await RawImage.fromURL(`/autodraw/naip/${t.slug}.jpg`));
-        e = embeddings[t.slug] = { inputs, emb: await model.get_image_embeddings(inputs) };
+        e = embeddings[key] = { inputs, emb: await model.get_image_embeddings(inputs) };
         e.ms = performance.now() - t0;
       }
       const t1 = performance.now();
@@ -125,6 +140,13 @@ export default function AutoDraw() {
   };
   const change = (pts) => { if (busy) return setSay('Still working on the last point.'); setPoints(pts); segment(tile, pts); };
   const pick = (t) => { run.current++; setTile(t); setPoints([]); setRing(null); setSay(''); };
+  // Switching models keeps the points and redraws them with the other model, so the two outlines can be compared.
+  const swap = (next) => {
+    if (busy || next === m) return;
+    run.current++; setM(next); setRing(null); setSay('');
+    if (!loaded.includes(next.id)) setPoints([]);
+    else if (points.length) segment(tile, points, next);
+  };
 
   return (
     <figure className="play tool autodraw">
@@ -132,11 +154,16 @@ export default function AutoDraw() {
         <span>Auto-Draw Demo</span>
         <span className="play-btns">
           {/* one button, never disabled, so keyboard focus stays put while it works; add() and load() refuse repeats */}
-          <button type="button" className="go" onClick={ready ? () => add(...tile.sample, true) : loadModel}>{ready ? 'Try a Sample Point' : `Load Model (${MB} MB)`}</button>
+          <button type="button" className="go" onClick={ready ? () => add(...tile.sample, true) : loadModel}>{ready ? 'Try a Sample Point' : `Load ${m.name} (${mbFor(m)} MB)`}</button>
           <button type="button" onClick={() => change(points.slice(0, -1))} disabled={!points.length}>Undo</button>
           <button type="button" onClick={() => change([])} disabled={!points.length}>Clear</button>
         </span>
       </figcaption>
+      <div className="tool-form" role="group" aria-label="Model">
+        {MODELS.map((x) => (
+          <button key={x.id} type="button" aria-pressed={x === m} className={x === m ? 'go' : undefined} onClick={() => swap(x)}>{x.name}</button>
+        ))}
+      </div>
       <div className="tool-form" role="group" aria-label="Aerial image">
         {TILES.map((t) => (
           <button key={t.slug} type="button" aria-pressed={t === tile} className={t === tile ? 'go' : undefined} onClick={() => pick(t)} disabled={busy}>{t.label}</button>
@@ -159,7 +186,7 @@ export default function AutoDraw() {
         <p role="status" aria-live="polite">{say || (ready ? 'Click a field to include it, or press Try a Sample Point. Shift-click or Alt-click marks ground to leave out.' : 'Load the model, then click a field.')}</p>
         <p className="ok">Model runs in this browser. Nothing is uploaded.</p>
         <p className="ok">
-          Model: <a href={CARD}>MobileSAM</a>, Apache-2.0, run with <a href="https://github.com/huggingface/transformers.js">transformers.js</a>. Imagery: USDA FSA NAIP {tile.year}, public domain.
+          Model: <a href={`https://huggingface.co/${m.id}`}>{m.name}</a>, Apache-2.0, run with <a href="https://github.com/huggingface/transformers.js">transformers.js</a>. Imagery: USDA FSA NAIP {tile.year}, public domain.
         </p>
       </div>
     </figure>

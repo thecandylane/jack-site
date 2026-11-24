@@ -23,6 +23,7 @@ const ABOUT = [
   + "(I'll try) almost anything else with strings or wires.",
   "I was a speaker at LSU's AI 2026 presentation for GuideOverride. I regularly volunteer with SQL Saturday Baton Rouge, "
   + "and I was fortunate enough to help out at an Anthropic SMB event here in Baton Rouge.",
+  "On client work I write the specification first and ask for feedback early. The hard part is rarely the code; it is agreeing on what the system should do, which decisions stay with a person, and which can be automated. I would rather cut a feature than ship one that does not earn its place.",
 ];
 
 const TOOLS = [
@@ -38,10 +39,10 @@ const WORK = [
     what: 'A Baton Rouge company making farming and agriculture a more forgiving industry. Platform features, uptime and user protection.',
     points: [
       'Led fully offline speech-to-speech and document translation on on-device speech-to-text, text-to-speech and translation models (ONNX, sherpa-onnx). Credited publicly by FarmMind.',
-      'Field auto-draw with SAM in the iOS and web apps: weeks of drawing and mapping fields by hand, cut to hours.',
+      'Field auto-draw with SAM in the iOS and web apps: days of drawing and mapping fields by hand, cut to minutes.',
       'Internal pentests of the web, iOS and Android platform with Burp Suite, ZAP, Invicti and Wapiti, plus infrastructure review. Fixes ship through GitHub and GCP CI/CD workflows, co-improved along the way.',
       'Cross-device fraud detection and device and account monitoring that enforce the Terms of Service. Cross-platform notifications over Firebase, APNs and Android.',
-      'The harness for Farmer Al, the in-app agent, on LangChain, Langfuse, DSPy/GEPA and OpenRouter. Stripe and FirstPromoter billing. AnyFarms, a LiveKit tool for remote in-app support.',
+      'The harness for Farmer Al, the in-app agent: LangChain, Langfuse tracing, evals, DSPy/GEPA and OpenRouter. Stripe billing and an in-house referral system. AnyFarms, a LiveKit tool for remote in-app support.',
       "Flutter app: faster local caching, cleaner GIS state and event handling, simpler code.",
       'Pitching and support at Farm Bureau conferences, LSU AgCenter showcases and other events.',
     ],
@@ -65,7 +66,7 @@ const WORK = [
     points: [
       "Runs on the college's own records: 380,000 rows of course equivalencies and institutions, and 3,000 past decisions by department chairs.",
       'Replayed against 1,046 real past decisions it had never seen: it never approved a case the chair had denied. It decided 30% on its own, every one matching the chair; the rest went to the chair for review.',
-      'Deterministic rules make the call; AI reads the documents. With the AI turned on, it still never made a call the chair disagreed with.',
+      'Discovery with the administrators and deans mapped the process, its decision points and exceptions before choosing the technology. Deterministic rules make the call; AI only reads the documents. With the AI turned on, it still never made a call the chair disagreed with.',
     ],
   },
   {

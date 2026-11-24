@@ -126,7 +126,7 @@ export const BUILT = [
   {
     key: 'autodraw',
     title: 'Field Auto-Draw',
-    body: 'Built field Auto-Draw with MobileSAM in the FarmMind web and mobile apps, released in version 3.1.13 as "Auto-Draw fields from satellite imagery". The demo above runs the same kind of model in the browser on public USDA aerial imagery.',
+    body: 'Built field Auto-Draw with MobileSAM in the FarmMind web and mobile apps, released in version 3.1.13 as "Auto-Draw fields from satellite imagery". The demo above runs MobileSAM and a second open model, SlimSAM, in the browser on public USDA aerial imagery.',
     links: [{ label: 'Try the Demo', href: '#autodraw' }, { label: 'Release Notes', href: SITE.appStore }],
     videos: [],
   },
